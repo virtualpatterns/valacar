@@ -1,0 +1,25 @@
+{
+  "name": "valacar",
+  "version": "0.0.1",
+  "description": "Import DHCP leases into a database",
+  "bin": "index.js",
+  "scripts": {
+    "select-tmigration": "sqlite3 -header -csv -nullvalue NULL data/valacar.db < resources/select-tmigration.sql",
+    "select-tversion": "sqlite3 -header -csv -nullvalue NULL data/valacar.db < resources/select-tversion.sql",
+    "select-tlease-active": "sqlite3 -header -csv -nullvalue NULL data/valacar.db < resources/select-tlease-active.sql",
+    "_install": "node index.js install --enableTrace",
+    "uninstall": "node index.js uninstall --enableTrace",
+    "import": "scp PIGWIDGEON.local:/var/lib/dhcp/dhcpd.leases .; node index.js import ./dhcpd.leases --enableTrace",
+    "clean": "node index.js clean --enableTrace"
+  },
+  "author": "code@virtualpatterns.com",
+  "license": "ISC",
+  "dependencies": {
+    "app-module-path": "^1.0.6",
+    "async": "^2.0.0-rc.3",
+    "commander": "^2.9.0",
+    "dhcpd-leases": "0.0.1",
+    "sqlite3": "^3.1.3",
+    "winston": "^2.2.0"
+  }
+}

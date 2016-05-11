@@ -1,0 +1,3 @@
+DELETE
+FROM    tLease
+WHERE   NOT cTo IS NULL;

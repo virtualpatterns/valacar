@@ -1,0 +1,2 @@
+SELECT  tVersion.*
+FROM    tVersion;
