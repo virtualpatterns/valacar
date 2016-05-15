@@ -1,6 +1,7 @@
 'use strict';
 
 const _Database = require('library/database');
+const Log = require('library/log');
 const Path = require('library/path');
 const Utilities = require('util');
 
@@ -36,18 +37,19 @@ Database.existsStaticLease = function(connection, address, device, host, callbac
   this.existsLease(connection, address, this.MINIMUM_DATE, this.MINIMUM_DATE, device, host, callback);
 };
 
-Database.existsLease = function(connection, address, from, to, device, host, callback) {
+Database.existsLease = function(connection, address, _from, _to, device, host, callback) {
+  Log.info('= Database.existsLease(connection, %j, %j, %j, %j, %j, callback)', address, _from, _to, device, host);
   this.getFile(connection, Path.join(RESOURCES_PATH, 'exists-tlease.sql'), {
     $Address: address,
-    $From: from.toISOString(),
-    $To: to.toISOString(),
+    $From: _from.toISOString(),
+    $To: _to.toISOString(),
     $Device: device,
     $Host: host
   }, function(error, row) {
     if (error)
       callback(error);
     else if (!row)
-      callback(new Error(Utilities.format('The lease %j from %j to %j does not exist.', address, from, to)));
+      callback(new Error(Utilities.format('The lease %j from %j to %j does not exist.', address, _from, _to)));
     else
       callback(null);
   });

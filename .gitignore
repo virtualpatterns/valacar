@@ -1,5 +1,4 @@
-data
-dhcpd.leases
+./dhcpd.leases
 node_modules
 sandbox
 process/data/*.db
