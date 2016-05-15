@@ -17,7 +17,6 @@ const Process = require('library/process');
 const DATABASE_PATH = Path.join(Process.cwd(), 'process', 'data', Utilities.format('%s.%s', Package.name, 'db'));
 const LEASES_PATH = Path.join(Process.cwd(), 'dhcpd.leases');
 const LOG_PATH = Path.join(Process.cwd(), 'process', 'log', Utilities.format('%s.%s', Package.name, 'log'));
-const PID_PATH = Path.join(Process.cwd(), 'process', Utilities.format('%s.%s', Package.name, 'pid'));
 
 Command
   .version(Package.version);
