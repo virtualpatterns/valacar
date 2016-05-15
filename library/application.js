@@ -1,5 +1,6 @@
 'use strict';
 
+const Assert = require('assert');
 const Utilities = require('util');
 
 const Database = require('library/database');
@@ -90,7 +91,10 @@ Application.remove = function (address, databasePath, options, callback) {
       $Address: address,
       $From: Database.MINIMUM_DATE.toISOString(),
       $To: Database.MINIMUM_DATE.toISOString()
-    }, callback);
+    }, function(error) {
+      Assert.ok(this.changes <= 1, Utilities.format('The number of rows deleted from tLease should be 0 or 1 but is instead %d.', this.changes));
+      callback(error);
+    });
   }, callback);
 };
 

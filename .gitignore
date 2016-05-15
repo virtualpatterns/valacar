@@ -1,6 +1,6 @@
 node_modules
 npm-debug.log
 process/data/dhcpd.leases
-process/data/*.db
-process/log/*.log
+process/data/*
+process/log/*
 sandbox
