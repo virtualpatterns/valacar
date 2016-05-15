@@ -16,7 +16,8 @@ const DATABASE_OPTIONS = {
   'enableProfile': false
 };
 
-const RESOURCES_PATH = Path.join(__dirname, 'resources');
+const TEST_NAME = Path.basename(__filename, '.js');
+const RESOURCES_PATH = Path.join(__dirname, TEST_NAME, 'resources');
 const LEASES_PATH = Path.join(RESOURCES_PATH, 'dhcpd.leases');
 
 describe('Application.import', function() {
