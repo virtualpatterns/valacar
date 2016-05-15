@@ -1,5 +1,6 @@
-./dhcpd.leases
 node_modules
-sandbox
+npm-debug.log
+process/data/dhcpd.leases
 process/data/*.db
 process/log/*.log
+sandbox

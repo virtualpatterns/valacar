@@ -111,7 +111,7 @@ Command
 
 Command
   .command('clean [databasePath]')
-  .description(Utilities.format('Empty relevant tables, database defaults to %s.', Path.trim(DATABASE_PATH)))
+  .description(Utilities.format('Remove all imported DHCP leases, database defaults to %s.', Path.trim(DATABASE_PATH)))
   .option('--logPath', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
   .option('--enableTrace', 'Enable database tracing')
   .option('--enableProfile', 'Enable database profiling')
@@ -140,7 +140,7 @@ Command
 
 Command
   .command('add <IPAddress> <MACAddress> <hostName> [databasePath]')
-  .description(Utilities.format('Add a static IP IPAddress (static IP addresses do not appear from an import), database defaults to %s.', Path.trim(DATABASE_PATH)))
+  .description(Utilities.format('Add a static DHCP lease (static leases do not appear in an import), database defaults to %s.', Path.trim(DATABASE_PATH)))
   .option('--logPath', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
   .option('--enableTrace', 'Enable database tracing')
   .option('--enableProfile', 'Enable database profiling')
@@ -166,17 +166,17 @@ Command
     ], function (error) {
       if (error) {
         Log.error(error.message);
-        console.log(Utilities.format('An error occured adding the static IP address %j to the database at %s (%s).', IPAddress, Path.trim(databasePath || DATABASE_PATH), error.message));
+        console.log(Utilities.format('An error occured adding the static DHCP lease %j to the database at %s (%s).', IPAddress, Path.trim(databasePath || DATABASE_PATH), error.message));
       }
       else
-        console.log(Utilities.format('Successfully added the static IP address %j to the database at %s.', IPAddress, Path.trim(databasePath || DATABASE_PATH)));
+        console.log(Utilities.format('Successfully added the static DHCP lease %j to the database at %s.', IPAddress, Path.trim(databasePath || DATABASE_PATH)));
     });
 
   });
 
 Command
   .command('remove <IPAddress> [databasePath]')
-  .description(Utilities.format('Remove a static IP IPAddress, database defaults to %s.', Path.trim(DATABASE_PATH)))
+  .description(Utilities.format('Remove a static DHCP lease, database defaults to %s.', Path.trim(DATABASE_PATH)))
   .option('--logPath', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
   .option('--enableTrace', 'Enable database tracing')
   .option('--enableProfile', 'Enable database profiling')
@@ -202,10 +202,10 @@ Command
     ], function (error) {
       if (error) {
         Log.error(error.message);
-        console.log(Utilities.format('An error occured removing the static IP address %j from the database at %s (%s).', IPAddress, Path.trim(databasePath || DATABASE_PATH), error.message));
+        console.log(Utilities.format('An error occured removing the static DHCP lease %j from the database at %s (%s).', IPAddress, Path.trim(databasePath || DATABASE_PATH), error.message));
       }
       else
-        console.log(Utilities.format('Successfully removed the static IP address %j from the database at %s.', IPAddress, Path.trim(databasePath || DATABASE_PATH)));
+        console.log(Utilities.format('Successfully removed the static DHCP lease %j from the database at %s.', IPAddress, Path.trim(databasePath || DATABASE_PATH)));
     });
 
   });
