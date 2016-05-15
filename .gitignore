@@ -2,5 +2,5 @@ data
 dhcpd.leases
 node_modules
 sandbox
-process/valacar.pid
+process/data/*.db
 process/log/*.log

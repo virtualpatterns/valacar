@@ -6,9 +6,9 @@ const FileSystem = require('fs');
 const Package = require('package.json');
 const Utilities = require('util');
 
-const Database = require('lib/database');
-const Log = require('lib/log');
-const Path = require('lib/path');
+const Database = require('library/database');
+const Log = require('library/log');
+const Path = require('library/path');
 
 const RESOURCES_PATH = Path.join(__dirname, 'resources');
 const MIGRATIONS_PATH = Path.join(__dirname, 'migrations');

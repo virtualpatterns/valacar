@@ -1,6 +1,6 @@
 SELECT  tLease.*
 FROM    tLease
-WHERE   tLease.cTo IS NULL OR
+WHERE   tLease.cFrom = tLease.cTo OR
         ( tLease.cFrom <= datetime('now') AND
           tLease.cTo > datetime('now') )
 ORDER

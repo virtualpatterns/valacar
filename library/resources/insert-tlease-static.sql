@@ -5,8 +5,8 @@ INSERT OR REPLACE INTO tLease ( cAddress,
                                 cHost,
                                 cInserted )
 VALUES (                        $Address,
-                                NULL,
-                                NULL,
+                                datetime($From),
+                                datetime($To),
                                 $Device,
                                 $Host,
                                 datetime('now') );

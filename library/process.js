@@ -4,7 +4,7 @@ const Asynchronous = require('async');
 const FileSystem = require('fs');
 const Utilities = require('util');
 
-const Log = require('lib/log');
+const Log = require('library/log');
 
 const Process = Object.create(process);
 

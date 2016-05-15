@@ -17,15 +17,18 @@ Log.removeConsole = function() {
 
 Log.addFile = function (path) {
   this.add(Winston.transports.File, {
+    'name': path,
     'filename': path,
     'json': false,
     'level': 'debug',
     'timestamp': true
-    });
+  });
+  this.info('< Log.add(Winston.transports.File, { name: %j, ...})', path);
 };
 
-Log.removeFile = function() {
-  this.remove(Winston.transports.File);
+Log.removeFile = function(path) {
+  this.info('> Log.remove(%j)', path);
+  this.remove(path);
 };
 
 Log.removeConsole();

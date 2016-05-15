@@ -6,7 +6,9 @@ const SQLite = require('sqlite3');
 const Utilities = require('util');
 
 const Database = Object.create(SQLite);
-const Log = require('lib/log');
+const Log = require('library/log');
+
+Database.MINIMUM_DATE = new Date(0);
 
 Database.createConnection = function(path, callback) {
 

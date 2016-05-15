@@ -4,9 +4,9 @@
                       cDevice,
                       cHost,
                       cInserted )
-VALUES (              '192.168.2.101',
-                      NULL,
-                      NULL,
-                      'c8:2a:14:57:bb:1b',
-                      'BUCKBEAK',
+VALUES (              '192.168.2.100',
+                      datetime($From),
+                      datetime($To),
+                      '00:22:68:0e:3c:b3',
+                      'LOVEGOOD',
                       datetime('now') );

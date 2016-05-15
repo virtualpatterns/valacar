@@ -3,9 +3,9 @@
 const Package = require('package.json');
 const Utilities = require('util');
 
-const Database = require('lib/database');
-const Migration = require('lib/migration');
-const Path = require('lib/path');
+const Database = require('library/database');
+const Migration = require('library/migration');
+const Path = require('library/path');
 
 const MIGRATION_NAME = Path.basename(__filename, '.js');
 const RESOURCES_PATH = Path.join(__dirname, MIGRATION_NAME, 'resources');
