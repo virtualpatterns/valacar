@@ -24,7 +24,7 @@ Command
 Command
   .command('install [databasePath]')
   .description(Utilities.format('Create (or migrate to the current version) the database, tables, and indexes, database defaults to %s.', Path.trim(DATABASE_PATH)))
-  .option('--logPath', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
+  .option('--logPath <path>', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
   .option('--enableTrace', 'Enable database tracing')
   .option('--enableProfile', 'Enable database profiling')
   .action(function (databasePath, options) {
@@ -53,7 +53,7 @@ Command
 Command
   .command('uninstall [databasePath]')
   .description(Utilities.format('Drop the tables and indexes, database defaults to %s.', Path.trim(DATABASE_PATH)))
-  .option('--logPath', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
+  .option('--logPath <path>', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
   .option('--enableTrace', 'Enable database tracing')
   .option('--enableProfile', 'Enable database profiling')
   .action(function (databasePath, options) {
@@ -82,7 +82,7 @@ Command
 Command
   .command('import [filePath] [databasePath]')
   .description(Utilities.format('Import DHCP leases from file, file defaults to %s and database defaults to %s.', Path.trim(LEASES_PATH), Path.trim(DATABASE_PATH)))
-  .option('--logPath', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
+  .option('--logPath <path>', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
   .option('--enableTrace', 'Enable database tracing')
   .option('--enableProfile', 'Enable database profiling')
   .action(function (filePath, databasePath, options) {
@@ -111,7 +111,7 @@ Command
 Command
   .command('clean [databasePath]')
   .description(Utilities.format('Remove all imported DHCP leases, database defaults to %s.', Path.trim(DATABASE_PATH)))
-  .option('--logPath', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
+  .option('--logPath <path>', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
   .option('--enableTrace', 'Enable database tracing')
   .option('--enableProfile', 'Enable database profiling')
   .action(function (databasePath, options) {
@@ -140,7 +140,7 @@ Command
 Command
   .command('add <IPAddress> <MACAddress> <hostName> [databasePath]')
   .description(Utilities.format('Add a static DHCP lease (static leases do not appear in an import), database defaults to %s.', Path.trim(DATABASE_PATH)))
-  .option('--logPath', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
+  .option('--logPath <path>', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
   .option('--enableTrace', 'Enable database tracing')
   .option('--enableProfile', 'Enable database profiling')
   .action(function (IPAddress, MACAddress, hostName, databasePath, options) {
@@ -176,7 +176,7 @@ Command
 Command
   .command('remove <IPAddress> [databasePath]')
   .description(Utilities.format('Remove a static DHCP lease, database defaults to %s.', Path.trim(DATABASE_PATH)))
-  .option('--logPath', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
+  .option('--logPath <path>', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
   .option('--enableTrace', 'Enable database tracing')
   .option('--enableProfile', 'Enable database profiling')
   .action(function (IPAddress, databasePath, options) {

@@ -5,8 +5,10 @@ const FileSystem = require('fs');
 const SQLite = require('sqlite3');
 const Utilities = require('util');
 
-const Database = Object.create(SQLite);
 const Log = require('library/log');
+const Path = require('library/path');
+
+const Database = Object.create(SQLite);
 
 Database.MINIMUM_DATE = new Date(0);
 
@@ -25,7 +27,7 @@ Database.openConnection = function(path, options, task, callback) {
 
   Asynchronous.waterfall([
     function(callback) {
-      Log.info('> OPEN %s', path, options);
+      Log.info('> OPEN %s', Path.trim(path), options);
       Database.createConnection(path, callback);
     },
     function(connection, callback) {
@@ -51,7 +53,7 @@ Database.openConnection = function(path, options, task, callback) {
       ], function(error) {
         connection.close(function(_error) {
           if (!_error)
-            Log.info('< CLOSE %s', path);
+            Log.info('< CLOSE %s', Path.trim(path));
           callback(error || _error);
         });
       });

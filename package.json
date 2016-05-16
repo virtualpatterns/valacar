@@ -15,7 +15,7 @@
     "select-tmigration": "sqlite3 -header -csv -nullvalue NULL ./process/data/valacar.db < resources/select-tmigration.sql",
     "select-tversion": "sqlite3 -header -csv -nullvalue NULL ./process/data/valacar.db < resources/select-tversion.sql",
     "select-tlease-active": "sqlite3 -header -csv -nullvalue NULL ./process/data/valacar.db < resources/select-tlease-active.sql",
-    "test": "./node_modules/.bin/mocha --require tests/library/setup.js tests"
+    "test": "./node_modules/.bin/mocha --require tests/library/setup.js"
   },
   "author": "code@virtualpatterns.com",
   "license": "ISC",

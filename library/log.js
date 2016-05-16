@@ -1,5 +1,6 @@
 'use strict';
 
+const Utilities = require('util');
 const Winston = require('winston');
 
 const Log = Object.create(Winston);

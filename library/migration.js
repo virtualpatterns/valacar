@@ -163,7 +163,7 @@ Migration.installAll = function(connection, callback) {
 
   Asynchronous.waterfall([
     function(callback) {
-      Log.info('> FileSystem.readdir(%j, callback)', Path.join(__dirname, 'migrations'));
+      Log.info('> FileSystem.readdir(%j, callback)', Path.trim(Path.join(__dirname, 'migrations')));
       FileSystem.readdir(Path.join(__dirname, 'migrations'), callback);
     },
     function(fileNames, callback) {
@@ -174,13 +174,13 @@ Migration.installAll = function(connection, callback) {
 
         Asynchronous.waterfall([
           function(callback) {
-            Log.info('> FileSystem.stat(%j, callback)', filePath);
+            Log.info('> FileSystem.stat(%j, callback)', Path.trim(filePath));
             FileSystem.stat(filePath, callback);
           },
           function(properties, callback) {
 
             if (properties.isFile()) {
-              Log.info('> Migration.install(connection, require(%j), callback)', filePath);
+              Log.info('> Migration.install(connection, require(%j), callback)', Path.trim(filePath));
               Migration.install(connection, require(filePath), callback);
             }
             else
@@ -209,7 +209,7 @@ Migration.uninstallAll = function(connection, callback) {
       },
       function(rows, callback) {
         Asynchronous.eachSeries(rows, function(row, callback) {
-          Log.info('> Migration.uninstall(connection, require(%j), callback)', Path.join(MIGRATIONS_PATH, row.cName));
+          Log.info('> Migration.uninstall(connection, require(%j), callback)', Path.trim(Path.join(MIGRATIONS_PATH, row.cName)));
           Migration.uninstall(connection, require(Path.join(MIGRATIONS_PATH, row.cName)), callback);
         }, callback);
       }

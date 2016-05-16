@@ -7,6 +7,8 @@ const Database = require('library/database');
 const Migration = require('library/migration');
 const Path = require('library/path');
 
+const MigrationError = require('library/errors/migration-error');
+
 const MIGRATION_NAME = Path.basename(__filename, '.js');
 const RESOURCES_PATH = Path.join(__dirname, MIGRATION_NAME, 'resources');
 
@@ -38,7 +40,7 @@ migration.uninstall = function(connection, callback) {
     if (error)
       callback(error);
     else if (row.cCountOfMigrations > 0)
-      callback(new Error('The tMigration table cannot be uninstalled until all migrations are uninstalled.'));
+      callback(new MigrationError('The tMigration table cannot be uninstalled until all migrations are uninstalled.'));
     else
       Database.runFile(connection, Path.join(RESOURCES_PATH, 'drop-tmigration.sql'), [], callback);
   });

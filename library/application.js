@@ -8,6 +8,8 @@ const Leases = require('library/leases');
 const Migration = require('library/migration');
 const Path = require('library/path');
 
+const ValidationError = require('library/errors/validation-error');
+
 const Application = Object.create({});
 
 const RESOURCES_PATH = Path.join(__dirname, 'resources');
@@ -54,11 +56,11 @@ Application.clean = function (databasePath, options, callback) {
 Application.validateAdd = function(address, device, host, callback) {
 
   if (!ADDRESS_REGEXP.test(address))
-    callback(new Error(Utilities.format('The IP address %j is invalid.', address)));
+    callback(new ValidationError(Utilities.format('The IP address %j is invalid.', address)));
   else if (!DEVICE_REGEXP.test(device))
-    callback(new Error(Utilities.format('The MAC address %j is invalid.', device)));
+    callback(new ValidationError(Utilities.format('The MAC address %j is invalid.', device)));
   else if (!HOST_REGEXP.test(host))
-    callback(new Error(Utilities.format('The host name %j is invalid.', host)));
+    callback(new ValidationError(Utilities.format('The host name %j is invalid.', host)));
   else
     callback(null);
 
@@ -79,7 +81,7 @@ Application.add = function (address, device, host, databasePath, options, callba
 Application.validateRemove = function(address, callback) {
 
   if (!ADDRESS_REGEXP.test(address))
-    callback(new Error(Utilities.format('The IP address %j is invalid.', address)));
+    callback(new ValidationError(Utilities.format('The IP address %j is invalid.', address)));
   else
     callback(null);
 
