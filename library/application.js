@@ -44,7 +44,17 @@ Application.uninstall = function (databasePath, options, callback) {
 
 Application.import = function (filePath, databasePath, options, callback) {
   this.executeTask(databasePath, options, function(connection, callback) {
-    Leases.import(connection, filePath, callback);
+    Asynchronous.waterfall([
+      function(callback) {
+        Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-tlease.sql'), {
+          $From: Database.MINIMUM_DATE.toISOString(),
+          $To: Database.MINIMUM_DATE.toISOString()
+        }, callback);
+      },
+      function(callback) {
+        Leases.import(connection, filePath, callback);
+      }
+    ], callback);
   }, callback);
 };
 
@@ -109,22 +119,19 @@ Application.dumpLeases = function (databasePath, options, callback) {
   this.executeTask(databasePath, options, function(connection, callback) {
     Asynchronous.waterfall([
       function(callback) {
-        Database.allFile(connection, Path.join(RESOURCES_PATH, 'select-tlease.sql'), {
-          $From: Database.MINIMUM_DATE.toISOString(),
-          $To: Database.MINIMUM_DATE.toISOString()
-        }, callback);
+        Database.allFile(connection, Path.join(RESOURCES_PATH, 'select-tlease.sql'), [], callback);
       },
       function(rows, callback) {
 
         let table = new Table({
           head: [
             'IP Address',
-            'Lease Expires',
+            'From/To',
             'Device'
           ],
           colWidths: [
-            20,
-            30,
+            15,
+            45,
             30
           ]
         });
@@ -133,10 +140,11 @@ Application.dumpLeases = function (databasePath, options, callback) {
 
           let cFrom = new Date(row.cFrom);
           let cTo = new Date(row.cTo);
+          let isStatic = cFrom.getTime() == cTo.getTime();
 
           table.push([
             row.cAddress,
-            cFrom.getTime() == cTo.getTime() ? 'never' : Utilities.format('%s', Moment(cTo).fromNow()),
+            isStatic ? '' : Utilities.format('%s\n%s', cFrom, cTo),
             row.cHost ? row.cHost : row.cDevice
           ]);
 
