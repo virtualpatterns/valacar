@@ -1,12 +1,9 @@
 'use strict';
 
-const Asynchronous = require('async');
-const ChildProcess = require('child_process');
 const Utilities = require('util');
 
-const Application = require('library/application');
+const Application = require('tests/library/application');
 const Database = require('tests/library/database');
-const Log = require('library/log');
 const Package = require('package.json');
 const Path = require('library/path');
 const Process = require('library/process');
@@ -17,26 +14,10 @@ const DATABASE_OPTIONS = {
   'enableProfile': false
 };
 
-// describe('Application.install', function() {
-//
-//   before(function(callback) {
-//     Application.install(DATABASE_PATH, DATABASE_OPTIONS, callback);
-//   });
-//
-//   after(function(callback) {
-//     Application.uninstall(DATABASE_PATH, DATABASE_OPTIONS, callback);
-//   });
-//
-// });
-
 describe('Command.command("install [databasePath]")', function() {
 
   before(function(callback) {
-    Log.info('> node index.js install --enableTrace %j', Path.trim(DATABASE_PATH));
-    ChildProcess.exec(Utilities.format('node index.js install --enableTrace %j', DATABASE_PATH), {
-      'cwd': Process.cwd(),
-      'env': Process.env
-    }, callback);
+    Application.executeInstall(DATABASE_PATH, callback);
   });
 
   it('should have created the tMigration table', function (callback) {
@@ -76,11 +57,7 @@ describe('Command.command("install [databasePath]")', function() {
   });
 
   after(function(callback) {
-    Log.info('> node index.js uninstall --enableTrace %j', Path.trim(DATABASE_PATH));
-    ChildProcess.exec(Utilities.format('node index.js uninstall --enableTrace %j', DATABASE_PATH), {
-      'cwd': Process.cwd(),
-      'env': Process.env
-    }, callback);
+    Application.executeUninstall(DATABASE_PATH, callback);
   });
 
 });

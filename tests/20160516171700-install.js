@@ -1,10 +1,9 @@
 'use strict';
 
 const Asynchronous = require('async');
-const ChildProcess = require('child_process');
 const Utilities = require('util');
 
-const Application = require('library/application');
+const Application = require('tests/library/application');
 const Database = require('tests/library/database');
 const Log = require('library/log');
 const Package = require('package.json');
@@ -17,26 +16,10 @@ const DATABASE_OPTIONS = {
   'enableProfile': false
 };
 
-// describe('Application.install', function() {
-//
-//   before(function(callback) {
-//     Application.install(DATABASE_PATH, DATABASE_OPTIONS, callback);
-//   });
-//
-//   after(function(callback) {
-//     Application.uninstall(DATABASE_PATH, DATABASE_OPTIONS, callback);
-//   });
-//
-// });
-
 describe('20160516171700-tlease.install', function() {
 
   before(function(callback) {
-    Log.info('> node index.js install --enableTrace %j', Path.trim(DATABASE_PATH));
-    ChildProcess.exec(Utilities.format('node index.js install --enableTrace %j', DATABASE_PATH), {
-      'cwd': Process.cwd(),
-      'env': Process.env
-    }, callback);
+    Application.executeInstall(DATABASE_PATH, callback);
   });
 
   it('should have added a static lease for JORKINS', function (callback) {
@@ -52,11 +35,7 @@ describe('20160516171700-tlease.install', function() {
   });
 
   after(function(callback) {
-    Log.info('> node index.js uninstall --enableTrace %j', Path.trim(DATABASE_PATH));
-    ChildProcess.exec(Utilities.format('node index.js uninstall --enableTrace %j', DATABASE_PATH), {
-      'cwd': Process.cwd(),
-      'env': Process.env
-    }, callback);
+    Application.executeUninstall(DATABASE_PATH, callback);
   });
 
 });

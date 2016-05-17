@@ -1,12 +1,10 @@
 'use strict';
 
 const Asynchronous = require('async');
-const ChildProcess = require('child_process');
 const Utilities = require('util');
 
-const Application = require('library/application');
+const Application = require('tests/library/application');
 const Database = require('tests/library/database');
-const Log = require('library/log');
 const Package = require('package.json');
 const Path = require('library/path');
 const Process = require('library/process');
@@ -19,38 +17,15 @@ const DATABASE_OPTIONS = {
   'enableProfile': false
 };
 
-// describe('Application.uninstall', function() {
-//
-//   before(function(callback) {
-//     Asynchronous.series([
-//       function(callback) {
-//         Application.install(DATABASE_PATH, DATABASE_OPTIONS, callback);
-//       },
-//       function(callback) {
-//         Application.uninstall(DATABASE_PATH, DATABASE_OPTIONS, callback);
-//       }
-//     ], callback);
-//   });
-//
-// });
-
 describe('Command.command("uninstall [databasePath]")', function() {
 
   before(function(callback) {
     Asynchronous.series([
       function(callback) {
-        Log.info('> node index.js install --enableTrace %j', Path.trim(DATABASE_PATH));
-        ChildProcess.exec(Utilities.format('node index.js install --enableTrace %j', DATABASE_PATH), {
-          'cwd': Process.cwd(),
-          'env': Process.env
-        }, callback);
+        Application.executeInstall(DATABASE_PATH, callback);
       },
       function(callback) {
-        Log.info('> node index.js uninstall --enableTrace %j', Path.trim(DATABASE_PATH));
-        ChildProcess.exec(Utilities.format('node index.js uninstall --enableTrace %j', DATABASE_PATH), {
-          'cwd': Process.cwd(),
-          'env': Process.env
-        }, callback);
+        Application.executeUninstall(DATABASE_PATH, callback);
       }
     ], callback);
   });
@@ -78,7 +53,7 @@ describe('Command.command("uninstall [databasePath]")', function() {
 describe('Migration.uninstall', function() {
 
   before(function(callback) {
-    Application.install(DATABASE_PATH, DATABASE_OPTIONS, callback);
+    Application.executeInstall(DATABASE_PATH, callback);
   });
 
   it('should generate a MigrationError if 00000000000000-tmigration alone is uninstalled', function (callback) {
@@ -99,7 +74,7 @@ describe('Migration.uninstall', function() {
   });
 
   after(function(callback) {
-    Application.uninstall(DATABASE_PATH, DATABASE_OPTIONS, callback);
+    Application.executeUninstall(DATABASE_PATH, callback);
   });
 
 });
