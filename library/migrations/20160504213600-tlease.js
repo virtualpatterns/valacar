@@ -33,7 +33,7 @@ migration.install = function(connection, callback) {
         $From: Database.MINIMUM_DATE.toISOString(),
         $To: Database.MINIMUM_DATE.toISOString()
       }, callback);
-    },
+    }
   ], callback);
 };
 

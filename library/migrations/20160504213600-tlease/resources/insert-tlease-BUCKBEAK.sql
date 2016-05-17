@@ -1,4 +1,4 @@
- INSERT INTO tLease ( cAddress,
+INSERT INTO tLease (  cAddress,
                       cFrom,
                       cTo,
                       cDevice,

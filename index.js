@@ -138,7 +138,106 @@ Command
   });
 
 Command
-  .command('add <IPAddress> <MACAddress> <hostName> [databasePath]')
+  .command('addTranslation <from> <to> [databasePath]')
+  .description(Utilities.format('Add a translation for a MAC address or host name, database defaults to %s.', Path.trim(DATABASE_PATH)))
+  .option('--logPath <path>', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
+  .option('--enableTrace', 'Enable database tracing')
+  .option('--enableProfile', 'Enable database profiling')
+  .action(function (_from, _to, databasePath, options) {
+
+    Log.addFile(options.logPath || LOG_PATH);
+
+    Log.info('--------------------------------------------------------------------------------');
+    Log.info('= Command.command("addTranslation <from> <to> [databasePath]")');
+    Log.info('= Command.action(function (%j, %j, %j, options) { ... }', _from, _to, databasePath);
+    Log.info('--------------------------------------------------------------------------------');
+
+    Asynchronous.series([
+      function(callback) {
+        Application.validateAddTranslation(_from);
+      },
+      function(callback) {
+        Application.addTranslation(_from, _to, databasePath || DATABASE_PATH, {
+          'enableTrace': !!options.enableTrace,
+          'enableProfile': !!options.enableProfile
+        }, callback);
+      }
+    ], function (error) {
+      if (error) {
+        Log.error(error.message);
+        console.log(Utilities.format('An error occured adding the translation for %j to the database at %s (%s).', _from, Path.trim(databasePath || DATABASE_PATH), error.message));
+      }
+      else
+        console.log(Utilities.format('Successfully added the translation for %j to the database at %s.', _from, Path.trim(databasePath || DATABASE_PATH)));
+    });
+
+  });
+
+Command
+  .command('removeTranslation <from> [databasePath]')
+  .description(Utilities.format('Remove a translation for a MAC address or host name, database defaults to %s.', Path.trim(DATABASE_PATH)))
+  .option('--logPath <path>', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
+  .option('--enableTrace', 'Enable database tracing')
+  .option('--enableProfile', 'Enable database profiling')
+  .action(function (_from, databasePath, options) {
+
+    Log.addFile(options.logPath || LOG_PATH);
+
+    Log.info('--------------------------------------------------------------------------------');
+    Log.info('= Command.command("removeTranslation <from> [databasePath]")');
+    Log.info('= Command.action(function (%j, %j, options) { ... }', _from, databasePath);
+    Log.info('--------------------------------------------------------------------------------');
+
+    Asynchronous.series([
+      function(callback) {
+        Application.validateRemoveTranslation(_from);
+      },
+      function(callback) {
+        Application.removeTranslation(_from, _to, databasePath || DATABASE_PATH, {
+          'enableTrace': !!options.enableTrace,
+          'enableProfile': !!options.enableProfile
+        }, callback);
+      }
+    ], function (error) {
+      if (error) {
+        Log.error(error.message);
+        console.log(Utilities.format('An error occured removing the translation for %j to the database at %s (%s).', _from, Path.trim(databasePath || DATABASE_PATH), error.message));
+      }
+      else
+        console.log(Utilities.format('Successfully removed the translation for %j to the database at %s.', _from, Path.trim(databasePath || DATABASE_PATH)));
+    });
+
+  });
+
+Command
+  .command('dumpTranslations [databasePath]')
+  .description(Utilities.format('Output a table of active leases, database defaults to %s.', Path.trim(DATABASE_PATH)))
+  .option('--logPath <path>', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
+  .option('--enableTrace', 'Enable database tracing')
+  .option('--enableProfile', 'Enable database profiling')
+  .action(function (databasePath, options) {
+
+    Log.addFile(options.logPath || LOG_PATH);
+
+    Log.info('--------------------------------------------------------------------------------');
+    Log.info('= Command.command("dumpTranslations [databasePath]")');
+    Log.info('= Command.action(function (%j, options) { ... }', databasePath);
+    Log.info('--------------------------------------------------------------------------------');
+
+    Application.dumpTranslations(databasePath || DATABASE_PATH, {
+      'enableTrace': !!options.enableTrace,
+      'enableProfile': !!options.enableProfile
+    }, function (error) {
+      if (error) {
+        Log.error(error.message);
+        console.log(Utilities.format('An error occured outputting a table of translations from the database at %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message));
+      }
+    });
+
+  });
+
+Command
+  .command('addLease <IPAddress> <MACAddress> <hostName> [databasePath]')
   .description(Utilities.format('Add a static DHCP lease (static leases do not appear in an import), database defaults to %s.', Path.trim(DATABASE_PATH)))
   .option('--logPath <path>', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
   .option('--enableTrace', 'Enable database tracing')
@@ -148,16 +247,16 @@ Command
     Log.addFile(options.logPath || LOG_PATH);
 
     Log.info('--------------------------------------------------------------------------------');
-    Log.info('= Command.command("add <IPAddress> <MACAddress> <hostName> [databasePath]")');
+    Log.info('= Command.command("addLease <IPAddress> <MACAddress> <hostName> [databasePath]")');
     Log.info('= Command.action(function (%j, %j, %j, %j, options) { ... }', IPAddress, MACAddress, hostName, databasePath);
     Log.info('--------------------------------------------------------------------------------');
 
     Asynchronous.series([
       function(callback) {
-        Application.validateAdd(IPAddress, MACAddress, hostName, callback);
+        Application.validateAddLease(IPAddress, MACAddress, hostName, callback);
       },
       function(callback) {
-        Application.add(IPAddress, MACAddress, hostName, databasePath || DATABASE_PATH, {
+        Application.addLease(IPAddress, MACAddress, hostName, databasePath || DATABASE_PATH, {
           'enableTrace': !!options.enableTrace,
           'enableProfile': !!options.enableProfile
         }, callback);
@@ -174,7 +273,7 @@ Command
   });
 
 Command
-  .command('remove <IPAddress> [databasePath]')
+  .command('removeLease <IPAddress> [databasePath]')
   .description(Utilities.format('Remove a static DHCP lease, database defaults to %s.', Path.trim(DATABASE_PATH)))
   .option('--logPath <path>', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
   .option('--enableTrace', 'Enable database tracing')
@@ -184,16 +283,16 @@ Command
     Log.addFile(options.logPath || LOG_PATH);
 
     Log.info('--------------------------------------------------------------------------------');
-    Log.info('= Command.command("add <IPAddress> [databasePath]")');
+    Log.info('= Command.command("addLease <IPAddress> [databasePath]")');
     Log.info('= Command.action(function (%j, %j, options) { ... }', IPAddress, databasePath);
     Log.info('--------------------------------------------------------------------------------');
 
     Asynchronous.series([
       function(callback) {
-        Application.validateRemove(IPAddress, callback);
+        Application.validateRemoveLease(IPAddress, callback);
       },
       function(callback) {
-        Application.remove(IPAddress, databasePath || DATABASE_PATH, {
+        Application.removeLease(IPAddress, databasePath || DATABASE_PATH, {
           'enableTrace': !!options.enableTrace,
           'enableProfile': !!options.enableProfile
         }, callback);

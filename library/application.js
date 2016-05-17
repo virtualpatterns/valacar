@@ -67,7 +67,79 @@ Application.clean = function (databasePath, options, callback) {
   }, callback);
 };
 
-Application.validateAdd = function(address, device, host, callback) {
+Application.validateAddTranslation = function(_from, callback) {
+
+  if (!DEVICE_REGEXP.test(_from) &&
+      !HOST_REGEXP.test(_from))
+    callback(new ValidationError(Utilities.format('The translation from %j is invalid.', _from)));
+  else
+    callback(null);
+
+};
+
+Application.addTranslation = function (_from, _to, databasePath, options, callback) {
+  this.executeTask(databasePath, options, function(connection, callback) {
+    Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-ttranslation.sql'), {
+      $From: _from,
+      $To: _to
+    }, callback);
+  }, callback);
+};
+
+Application.validateRemoveTranslation = function(_from, callback) {
+  this.validateAddTranslation(_from, callback);
+};
+
+Application.removeTranslation = function (_from, databasePath, options, callback) {
+  this.executeTask(databasePath, options, function(connection, callback) {
+    Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-ttranslation.sql'), {
+      $From: _from
+    }, function(error) {
+      if (!error)
+        Assert.ok(this.changes <= 1, Utilities.format('The number of rows deleted from tTranslation should be 0 or 1 but is instead %d.', this.changes));
+      callback(error);
+    });
+  }, callback);
+};
+
+Application.dumpTranslations = function (databasePath, options, callback) {
+  this.executeTask(databasePath, options, function(connection, callback) {
+    Asynchronous.waterfall([
+      function(callback) {
+        Database.allFile(connection, Path.join(RESOURCES_PATH, 'select-ttranslation.sql'), [], callback);
+      },
+      function(rows, callback) {
+
+        let table = new Table({
+          head: [
+            'From',
+            'To'
+          ],
+          colWidths: [
+            30,
+            30
+          ]
+        });
+
+        rows.forEach(function(row) {
+
+          table.push([
+            row.cFrom,
+            row.cTo
+          ]);
+
+        });
+
+        console.log(table.toString());
+
+        callback(null);
+
+      }
+    ], callback);
+  }, callback);
+};
+
+Application.validateAddLease = function(address, device, host, callback) {
 
   if (!ADDRESS_REGEXP.test(address))
     callback(new ValidationError(Utilities.format('The IP address %j is invalid.', address)));
@@ -80,7 +152,7 @@ Application.validateAdd = function(address, device, host, callback) {
 
 };
 
-Application.add = function (address, device, host, databasePath, options, callback) {
+Application.addLease = function (address, device, host, databasePath, options, callback) {
   this.executeTask(databasePath, options, function(connection, callback) {
     Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-tlease-static.sql'), {
       $Address: address,
@@ -92,7 +164,7 @@ Application.add = function (address, device, host, databasePath, options, callba
   }, callback);
 };
 
-Application.validateRemove = function(address, callback) {
+Application.validateRemoveLease = function(address, callback) {
 
   if (!ADDRESS_REGEXP.test(address))
     callback(new ValidationError(Utilities.format('The IP address %j is invalid.', address)));
@@ -101,7 +173,7 @@ Application.validateRemove = function(address, callback) {
 
 };
 
-Application.remove = function (address, databasePath, options, callback) {
+Application.removeLease = function (address, databasePath, options, callback) {
   this.executeTask(databasePath, options, function(connection, callback) {
     Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-tlease-static.sql'), {
       $Address: address,

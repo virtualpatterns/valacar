@@ -43,17 +43,17 @@ Application.executeClean = function(databasePath, callback) {
   }, callback);
 };
 
-Application.executeAdd = function(address, device, host, databasePath, callback) {
-  Log.info('> node index.js add --enableTrace %j %j %j %j', address, device, host, Path.trim(databasePath));
-  ChildProcess.exec(Utilities.format('node index.js add --enableTrace %j %j %j %j', address, device, host, databasePath), {
+Application.executeAddLease = function(address, device, host, databasePath, callback) {
+  Log.info('> node index.js addLease --enableTrace %j %j %j %j', address, device, host, Path.trim(databasePath));
+  ChildProcess.exec(Utilities.format('node index.js addLease --enableTrace %j %j %j %j', address, device, host, databasePath), {
     'cwd': Process.cwd(),
     'env': Process.env
   }, callback);
 };
 
-Application.executeRemove = function(address, databasePath, callback) {
-  Log.info('> node index.js remove --enableTrace %j %j', address, Path.trim(databasePath));
-  ChildProcess.exec(Utilities.format('node index.js remove --enableTrace %j %j', address, databasePath), {
+Application.executeRemoveLease = function(address, databasePath, callback) {
+  Log.info('> node index.js removeLease --enableTrace %j %j', address, Path.trim(databasePath));
+  ChildProcess.exec(Utilities.format('node index.js removeLease --enableTrace %j %j', address, databasePath), {
     'cwd': Process.cwd(),
     'env': Process.env
   }, callback);

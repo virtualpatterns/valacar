@@ -12,7 +12,7 @@ const Process = require('library/process');
 
 const ValidationError = require('library/errors/validation-error');
 
-const DATABASE_PATH = Path.join(Process.cwd(), 'process', 'data', Utilities.format('%s.%s.%s', Package.name, 'remove', 'db'));
+const DATABASE_PATH = Path.join(Process.cwd(), 'process', 'data', Utilities.format('%s.%s.%s', Package.name, 'removeLease', 'db'));
 const DATABASE_OPTIONS = {
   'enableTrace': true,
   'enableProfile': false
@@ -23,14 +23,14 @@ const INVALID_ADDRESS = 'a.b.c.d';
 const VALID_DEVICE = '01:ab:23:cd:45:ef';
 const VALID_HOST = 'ABC';
 
-describe('Application.validateRemove', function() {
+describe('Application.validateRemoveLease', function() {
 
   it('should not generate an error for a valid address', function (callback) {
-    Application.validateRemove(VALID_ADDRESS, callback);
+    Application.validateRemoveLease(VALID_ADDRESS, callback);
   });
 
   it('should generate a ValidationError for an invalid address', function (callback) {
-    Application.validateRemove(INVALID_ADDRESS, function(error) {
+    Application.validateRemoveLease(INVALID_ADDRESS, function(error) {
       if (!error)
         callback(new Error(Utilities.format('The address %j is invalid but did not generate a ValidationError.', INVALID_ADDRESS)));
       else if (!(error instanceof ValidationError))
@@ -43,7 +43,7 @@ describe('Application.validateRemove', function() {
 
 });
 
-describe('Command.command("remove <IPAddress> [databasePath]")', function() {
+describe('Command.command("removeLease <IPAddress> [databasePath]")', function() {
 
   before(function(callback) {
     Asynchronous.series([
@@ -51,10 +51,10 @@ describe('Command.command("remove <IPAddress> [databasePath]")', function() {
         Application.executeInstall(DATABASE_PATH, callback);
       },
       function(callback) {
-        Application.executeAdd(VALID_ADDRESS, VALID_DEVICE, VALID_HOST, DATABASE_PATH, callback);
+        Application.executeAddLease(VALID_ADDRESS, VALID_DEVICE, VALID_HOST, DATABASE_PATH, callback);
       },
       function(callback) {
-        Application.executeRemove(VALID_ADDRESS, DATABASE_PATH, callback);
+        Application.executeRemoveLease(VALID_ADDRESS, DATABASE_PATH, callback);
       }
     ], callback);
   });
