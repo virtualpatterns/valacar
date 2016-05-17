@@ -96,7 +96,6 @@ describe('Migration.uninstall', function() {
       });
     }, callback);
 
-
   });
 
   after(function(callback) {

@@ -80,7 +80,7 @@ Command
   });
 
 Command
-  .command('import [filePath] [databasePath]')
+  .command('import <filePath> [databasePath]')
   .description(Utilities.format('Import DHCP leases from file, file defaults to %s and database defaults to %s.', Path.trim(LEASES_PATH), Path.trim(DATABASE_PATH)))
   .option('--logPath <path>', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
   .option('--enableTrace', 'Enable database tracing')
@@ -205,6 +205,33 @@ Command
       }
       else
         console.log(Utilities.format('Successfully removed the static DHCP lease %j from the database at %s.', IPAddress, Path.trim(databasePath || DATABASE_PATH)));
+    });
+
+  });
+
+Command
+  .command('dumpLeases [databasePath]')
+  .description(Utilities.format('Output a table of active leases, database defaults to %s.', Path.trim(DATABASE_PATH)))
+  .option('--logPath <path>', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
+  .option('--enableTrace', 'Enable database tracing')
+  .option('--enableProfile', 'Enable database profiling')
+  .action(function (databasePath, options) {
+
+    Log.addFile(options.logPath || LOG_PATH);
+
+    Log.info('--------------------------------------------------------------------------------');
+    Log.info('= Command.command("dumpLeases [databasePath]")');
+    Log.info('= Command.action(function (%j, options) { ... }', databasePath);
+    Log.info('--------------------------------------------------------------------------------');
+
+    Application.dumpLeases(databasePath || DATABASE_PATH, {
+      'enableTrace': !!options.enableTrace,
+      'enableProfile': !!options.enableProfile
+    }, function (error) {
+      if (error) {
+        Log.error(error.message);
+        console.log(Utilities.format('An error occured outputting a table of active leases from the database at %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message));
+      }
     });
 
   });

@@ -24,7 +24,8 @@ migrationPrototype.preInstall = function(connection, callback) {
       Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-tmigration.sql'), {
         $Name: _this.name
       }, function(error) {
-        Assert.ok(this.changes <= 1, Utilities.format('The number of rows deleted from tMigration should be 0 or 1 but is instead %d.', this.changes));
+        if (!error)
+          Assert.ok(this.changes <= 1, Utilities.format('The number of rows deleted from tMigration should be 0 or 1 but is instead %d.', this.changes));
         callback(error);
       });
     },
@@ -33,7 +34,7 @@ migrationPrototype.preInstall = function(connection, callback) {
         $Name: _this.name,
         $Version: Package.version
       }, callback);
-    },
+    }
   ], callback);
 
 };
@@ -205,7 +206,7 @@ Migration.uninstallAll = function(connection, callback) {
 
     Asynchronous.waterfall([
       function(callback) {
-          Database.allFile(connection, Path.join(RESOURCES_PATH, 'select-tmigration-all.sql'), [], callback);
+        Database.allFile(connection, Path.join(RESOURCES_PATH, 'select-tmigration-all.sql'), [], callback);
       },
       function(rows, callback) {
         Asynchronous.eachSeries(rows, function(row, callback) {

@@ -8,13 +8,14 @@
     "url": "https://github.com/virtualpatterns/valacar"
   },
   "scripts": {
-    "_install": "node index.js install --enableTrace",
-    "_uninstall": "node index.js uninstall --enableTrace",
-    "_import": "scp PIGWIDGEON.local:/var/lib/dhcp/dhcpd.leases ./process/data; node index.js import ./process/data/dhcpd.leases --enableTrace",
-    "_clean": "node index.js clean --enableTrace",
+    "setup": "node index.js install --enableTrace",
+    "teardown": "node index.js uninstall --enableTrace",
+    "import": "scp PIGWIDGEON.local:/var/lib/dhcp/dhcpd.leases ./process/data; node index.js import ./process/data/dhcpd.leases --enableTrace",
+    "clean": "node index.js clean --enableTrace",
+    "dump-leases": "node index.js dump leases --enableTrace",
     "select-tmigration": "sqlite3 -header -csv -nullvalue NULL ./process/data/valacar.db < resources/select-tmigration.sql",
     "select-tversion": "sqlite3 -header -csv -nullvalue NULL ./process/data/valacar.db < resources/select-tversion.sql",
-    "select-tlease-active": "sqlite3 -header -csv -nullvalue NULL ./process/data/valacar.db < resources/select-tlease-active.sql",
+    "select-tlease": "sqlite3 -header -csv -nullvalue NULL ./process/data/valacar.db < resources/select-tlease.sql",
     "test": "./node_modules/.bin/mocha --require tests/library/setup.js"
   },
   "author": "code@virtualpatterns.com",
@@ -22,8 +23,10 @@
   "dependencies": {
     "app-module-path": "^1.0.6",
     "async": "^2.0.0-rc.3",
+    "cli-table": "^0.3.1",
     "commander": "^2.9.0",
     "dhcpd-leases": "0.0.1",
+    "moment": "^2.13.0",
     "sqlite3": "^3.1.3",
     "winston": "^2.2.0"
   },

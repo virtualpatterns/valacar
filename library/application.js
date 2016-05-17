@@ -1,10 +1,14 @@
 'use strict';
 
+const Asynchronous = require('async');
 const Assert = require('assert');
+const Moment = require('moment');
+const Table = require('cli-table');
 const Utilities = require('util');
 
 const Database = require('library/database');
 const Leases = require('library/leases');
+const Log = require('library/log');
 const Migration = require('library/migration');
 const Path = require('library/path');
 
@@ -94,9 +98,56 @@ Application.remove = function (address, databasePath, options, callback) {
       $From: Database.MINIMUM_DATE.toISOString(),
       $To: Database.MINIMUM_DATE.toISOString()
     }, function(error) {
-      Assert.ok(this.changes <= 1, Utilities.format('The number of rows deleted from tLease should be 0 or 1 but is instead %d.', this.changes));
+      if (!error)
+        Assert.ok(this.changes <= 1, Utilities.format('The number of rows deleted from tLease should be 0 or 1 but is instead %d.', this.changes));
       callback(error);
     });
+  }, callback);
+};
+
+Application.dumpLeases = function (databasePath, options, callback) {
+  this.executeTask(databasePath, options, function(connection, callback) {
+    Asynchronous.waterfall([
+      function(callback) {
+        Database.allFile(connection, Path.join(RESOURCES_PATH, 'select-tlease.sql'), {
+          $From: Database.MINIMUM_DATE.toISOString(),
+          $To: Database.MINIMUM_DATE.toISOString()
+        }, callback);
+      },
+      function(rows, callback) {
+
+        let table = new Table({
+          head: [
+            'IP Address',
+            'Lease Expires',
+            'Device'
+          ],
+          colWidths: [
+            20,
+            30,
+            30
+          ]
+        });
+
+        rows.forEach(function(row) {
+
+          let cFrom = new Date(row.cFrom);
+          let cTo = new Date(row.cTo);
+
+          table.push([
+            row.cAddress,
+            cFrom.getTime() == cTo.getTime() ? 'never' : Utilities.format('%s', Moment(cTo).fromNow()),
+            row.cHost ? row.cHost : row.cDevice
+          ]);
+
+        });
+
+        console.log(table.toString());
+
+        callback(null);
+
+      }
+    ], callback);
   }, callback);
 };
 
