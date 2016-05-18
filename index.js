@@ -154,7 +154,7 @@ Command
 
     Asynchronous.series([
       function(callback) {
-        Application.validateAddTranslation(_from);
+        Application.validateAddTranslation(_from, callback);
       },
       function(callback) {
         Application.addTranslation(_from, _to, databasePath || DATABASE_PATH, {
@@ -190,10 +190,10 @@ Command
 
     Asynchronous.series([
       function(callback) {
-        Application.validateRemoveTranslation(_from);
+        Application.validateRemoveTranslation(_from, callback);
       },
       function(callback) {
-        Application.removeTranslation(_from, _to, databasePath || DATABASE_PATH, {
+        Application.removeTranslation(_from, databasePath || DATABASE_PATH, {
           'enableTrace': !!options.enableTrace,
           'enableProfile': !!options.enableProfile
         }, callback);

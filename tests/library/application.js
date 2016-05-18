@@ -59,4 +59,20 @@ Application.executeRemoveLease = function(address, databasePath, callback) {
   }, callback);
 };
 
+Application.executeAddTranslation = function(_from, _to, databasePath, callback) {
+  Log.info('> node index.js addTranslation --enableTrace %j %j %j %j', _from, _to, Path.trim(databasePath));
+  ChildProcess.exec(Utilities.format('node index.js addTranslation --enableTrace %j %j %j %j', _from, _to, databasePath), {
+    'cwd': Process.cwd(),
+    'env': Process.env
+  }, callback);
+};
+
+Application.executeRemoveTranslation = function(_from, databasePath, callback) {
+  Log.info('> node index.js removeTranslation --enableTrace %j %j', _from, Path.trim(databasePath));
+  ChildProcess.exec(Utilities.format('node index.js removeTranslation --enableTrace %j %j', _from, databasePath), {
+    'cwd': Process.cwd(),
+    'env': Process.env
+  }, callback);
+};
+
 module.exports = Application;

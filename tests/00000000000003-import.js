@@ -32,7 +32,7 @@ describe('Command.command("import [filePath] [databasePath]")', function() {
     ], callback);
   });
 
-  it('should have added a lease for HOST1', function (callback) {
+  it('should have added the lease for HOST1', function (callback) {
     Database.openConnection(DATABASE_PATH, DATABASE_OPTIONS, function(connection, callback) {
       Database.existsLease(connection, '192.168.2.29', new Date('2016/04/13 22:25:07 +0000'), new Date('2016/04/14 10:25:07 +0000'), '9c:35:eb:4e:73:4f', 'HOST1', callback);
     }, callback);

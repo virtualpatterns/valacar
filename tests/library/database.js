@@ -69,4 +69,29 @@ Database.notExistsStaticLease = function(connection, address, device, host, call
   this.notExistsLease(connection, address, this.MINIMUM_DATE, this.MINIMUM_DATE, device, host, callback);
 };
 
+Database.existsTranslation = function(connection, _from, _to, callback) {
+  this.getFile(connection, Path.join(RESOURCES_PATH, 'exists-ttranslation.sql'), {
+    $From: _from,
+    $To: _to
+  }, function(error, row) {
+    if (error)
+      callback(error);
+    else if (!row)
+      callback(new Error(Utilities.format('The translation from %j to %j does not exist.', _from, _to)), false);
+    else
+      callback(null, true);
+  });
+};
+
+Database.notExistsTranslation = function(connection, _from, _to, callback) {
+  this.existsTranslation(connection, _from, _to, function(error, exists) {
+    if (exists)
+      callback(new Error(Utilities.format('The translation from %j to %j exists.', _from, _to))), false;
+    else if (exists == undefined)
+      callback(error);
+    else
+      callback(null, true);
+  });
+};
+
 module.exports = Database;
