@@ -15,9 +15,18 @@ FROM    tLease
             tLease.cDevice = tDeviceTranslation.cFrom
           LEFT OUTER JOIN tTranslation AS tHostTranslation ON
             tLease.cHost = tHostTranslation.cFrom
-WHERE   tLease.cFrom = tLease.cTo OR
-        ( tLease.cFrom <= datetime('now') AND
-          tLease.cTo > datetime('now') )
+WHERE   tLease.cDevice LIKE $Filter OR
+        tDeviceTranslation.cTo LIKE $Filter OR
+        tLease.cHost LIKE $Filter OR
+        tHostTranslation.cTo LIKE $Filter
 ORDER
-BY      tLease.cTo ASC,
-        tLease.cHost;
+BY      tLease.cDevice,
+        CASE
+          WHEN NOT tDeviceTranslation.cTo IS NULL THEN
+            tDeviceTranslation.cTo
+          WHEN NOT tHostTranslation.cTo IS NULL THEN
+            tHostTranslation.cTo
+          ELSE
+            tLease.cHost
+        END,
+        tLease.cTo ASC;

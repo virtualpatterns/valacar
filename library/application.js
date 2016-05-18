@@ -45,12 +45,12 @@ Application.uninstall = function (databasePath, options, callback) {
 Application.import = function (filePath, databasePath, options, callback) {
   this.executeTask(databasePath, options, function(connection, callback) {
     Asynchronous.waterfall([
-      function(callback) {
-        Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-tlease.sql'), {
-          $From: Database.MINIMUM_DATE.toISOString(),
-          $To: Database.MINIMUM_DATE.toISOString()
-        }, callback);
-      },
+      // function(callback) {
+      //   Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-tlease.sql'), {
+      //     $From: Database.MINIMUM_DATE.toISOString(),
+      //     $To: Database.MINIMUM_DATE.toISOString()
+      //   }, callback);
+      // },
       function(callback) {
         Leases.import(connection, filePath, callback);
       }
@@ -192,6 +192,52 @@ Application.dumpLeases = function (databasePath, options, callback) {
     Asynchronous.waterfall([
       function(callback) {
         Database.allFile(connection, Path.join(RESOURCES_PATH, 'select-tlease.sql'), [], callback);
+      },
+      function(rows, callback) {
+
+        let table = new Table({
+          head: [
+            'IP Address',
+            'From/To',
+            'Device'
+          ],
+          colWidths: [
+            15,
+            45,
+            30
+          ]
+        });
+
+        rows.forEach(function(row) {
+
+          let cFrom = new Date(row.cFrom);
+          let cTo = new Date(row.cTo);
+          let isStatic = cFrom.getTime() == cTo.getTime();
+
+          table.push([
+            row.cAddress,
+            isStatic ? '' : Utilities.format('%s\n%s', cFrom, cTo),
+            row.cHost ? row.cHost : row.cDevice
+          ]);
+
+        });
+
+        console.log(table.toString());
+
+        callback(null);
+
+      }
+    ], callback);
+  }, callback);
+};
+
+Application.dumpLeasesWhere = function (filter, databasePath, options, callback) {
+  this.executeTask(databasePath, options, function(connection, callback) {
+    Asynchronous.waterfall([
+      function(callback) {
+        Database.allFile(connection, Path.join(RESOURCES_PATH, 'select-tlease-where.sql'), {
+          $Filter: Utilities.format('%%%s%%', filter)
+        }, callback);
       },
       function(rows, callback) {
 

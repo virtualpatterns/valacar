@@ -247,7 +247,7 @@ Command
     Log.addFile(options.logPath || LOG_PATH);
 
     Log.info('--------------------------------------------------------------------------------');
-    Log.info('= Command.command("addLease <IPAddress> <MACAddress> <hostName> [databasePath]")');
+    Log.info('= Command.command("addLease <IPAddress> <r> [databasePath]")');
     Log.info('= Command.action(function (%j, %j, %j, %j, options) { ... }', IPAddress, MACAddress, hostName, databasePath);
     Log.info('--------------------------------------------------------------------------------');
 
@@ -283,7 +283,7 @@ Command
     Log.addFile(options.logPath || LOG_PATH);
 
     Log.info('--------------------------------------------------------------------------------');
-    Log.info('= Command.command("addLease <IPAddress> [databasePath]")');
+    Log.info('= Command.command("removeLease <IPAddress> [databasePath]")');
     Log.info('= Command.action(function (%j, %j, options) { ... }', IPAddress, databasePath);
     Log.info('--------------------------------------------------------------------------------');
 
@@ -330,6 +330,33 @@ Command
       if (error) {
         Log.error(error.message);
         console.log(Utilities.format('An error occured outputting a table of active leases from the database at %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message));
+      }
+    });
+
+  });
+
+Command
+  .command('dumpLeasesWhere <filter> [databasePath]')
+  .description(Utilities.format('Output one or more leases whose MAC address or host name, direct or translated, match the filter, database defaults to %s.', Path.trim(DATABASE_PATH)))
+  .option('--logPath <path>', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
+  .option('--enableTrace', 'Enable database tracing')
+  .option('--enableProfile', 'Enable database profiling')
+  .action(function (filter, databasePath, options) {
+
+    Log.addFile(options.logPath || LOG_PATH);
+
+    Log.info('--------------------------------------------------------------------------------');
+    Log.info('= Command.command("dumpLeasesWhere <filter> [databasePath]")');
+    Log.info('= Command.action(function (%j, %j, options) { ... }', filter, databasePath);
+    Log.info('--------------------------------------------------------------------------------');
+
+    Application.dumpLeasesWhere(filter, databasePath || DATABASE_PATH, {
+      'enableTrace': !!options.enableTrace,
+      'enableProfile': !!options.enableProfile
+    }, function (error) {
+      if (error) {
+        Log.error(error.message);
+        console.log(Utilities.format('An error occured outputting one or more matching leases from the database at %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message));
       }
     });
 

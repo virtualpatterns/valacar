@@ -13,6 +13,8 @@
     "import": "scp PIGWIDGEON.local:/var/lib/dhcp/dhcpd.leases ./process/data; node index.js import ./process/data/dhcpd.leases --enableTrace",
     "clean": "node index.js clean --enableTrace",
     "dumpLeases": "node index.js dumpLeases --enableTrace",
+    "dumpLeasesWhere": "node index.js dumpLeasesWhere --enableTrace",
+    "dumpTranslations": "node index.js dumpTranslations --enableTrace",
     "select-tmigration": "sqlite3 -header -csv -nullvalue NULL ./process/data/valacar.db < resources/select-tmigration.sql",
     "select-tversion": "sqlite3 -header -csv -nullvalue NULL ./process/data/valacar.db < resources/select-tversion.sql",
     "select-tlease": "sqlite3 -header -csv -nullvalue NULL ./process/data/valacar.db < resources/select-tlease.sql",
