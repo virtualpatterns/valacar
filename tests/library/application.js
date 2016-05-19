@@ -59,6 +59,14 @@ Application.executeRemoveLease = function(address, databasePath, callback) {
   }, callback);
 };
 
+Application.executeDumpLeases = function(databasePath, callback) {
+  Log.info('> node index.js dumpLeases --enableTrace %j', Path.trim(databasePath));
+  ChildProcess.exec(Utilities.format('node index.js dumpLeases --enableTrace %j', databasePath), {
+    'cwd': Process.cwd(),
+    'env': Process.env
+  }, callback);
+};
+
 Application.executeAddTranslation = function(_from, _to, databasePath, callback) {
   Log.info('> node index.js addTranslation --enableTrace %j %j %j %j', _from, _to, Path.trim(databasePath));
   ChildProcess.exec(Utilities.format('node index.js addTranslation --enableTrace %j %j %j %j', _from, _to, databasePath), {
@@ -70,6 +78,14 @@ Application.executeAddTranslation = function(_from, _to, databasePath, callback)
 Application.executeRemoveTranslation = function(_from, databasePath, callback) {
   Log.info('> node index.js removeTranslation --enableTrace %j %j', _from, Path.trim(databasePath));
   ChildProcess.exec(Utilities.format('node index.js removeTranslation --enableTrace %j %j', _from, databasePath), {
+    'cwd': Process.cwd(),
+    'env': Process.env
+  }, callback);
+};
+
+Application.executeDumpTranslations = function(databasePath, callback) {
+  Log.info('> node index.js dumpTranslations --enableTrace %j', Path.trim(databasePath));
+  ChildProcess.exec(Utilities.format('node index.js dumpTranslations --enableTrace %j', databasePath), {
     'cwd': Process.cwd(),
     'env': Process.env
   }, callback);
