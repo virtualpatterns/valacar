@@ -35,17 +35,17 @@ describe('Command.command("dumpLeases [databasePath]")', function() {
       },
       function(callback) {
         Database.openConnection(DATABASE_PATH, DATABASE_OPTIONS, function(connection, callback) {
-          Database.runFile(connection, Path.join(RESOURCES_PATH, 'update-tlease-HOST1.sql'), [], callback);
-        }, callback);
-      },
-      function(callback) {
-        Database.openConnection(DATABASE_PATH, DATABASE_OPTIONS, function(connection, callback) {
-          Database.runFile(connection, Path.join(RESOURCES_PATH, 'update-tlease-HOST2.sql'), [], callback);
-        }, callback);
-      },
-      function(callback) {
-        Database.openConnection(DATABASE_PATH, DATABASE_OPTIONS, function(connection, callback) {
-          Database.runFile(connection, Path.join(RESOURCES_PATH, 'update-tlease-HOST3.sql'), [], callback);
+          Asynchronous.series([
+            function(callback) {
+              Database.runFile(connection, Path.join(RESOURCES_PATH, 'update-tlease-HOST1.sql'), [], callback);
+            },
+            function(callback) {
+              Database.runFile(connection, Path.join(RESOURCES_PATH, 'update-tlease-HOST2.sql'), [], callback);
+            },
+            function(callback) {
+              Database.runFile(connection, Path.join(RESOURCES_PATH, 'update-tlease-HOST3.sql'), [], callback);
+            }
+          ], callback);
         }, callback);
       }
     ], callback);
