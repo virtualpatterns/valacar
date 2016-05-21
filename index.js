@@ -31,21 +31,32 @@ Command
 
     Log.addFile(options.logPath || LOG_PATH);
 
-    Log.info('--------------------------------------------------------------------------------');
-    Log.info('= Command.command("install [databasePath]")');
-    Log.info('= Command.action(function (%j, options) { ... }', databasePath);
-    Log.info('--------------------------------------------------------------------------------');
+    Log.info('> Command.command("install [databasePath]")');
+    Log.info('> Command.action(function (%j, options) { ... }', databasePath);
 
     Application.install(databasePath || DATABASE_PATH, {
       'enableTrace': !!options.enableTrace,
       'enableProfile': !!options.enableProfile
     }, function(error) {
+
       if (error) {
-        Log.error(error.message);
+
+        Log.error(Utilities.format('= %s', error.message));
+
+        Process.exitCode = 1;
+        console.error(error.message);
         console.log(Utilities.format('An error occured installing the database to %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message));
+
       }
-      else
+      else {
+
+        Process.exitCode = 0;
         console.log(Utilities.format('Successfully installed the database to (or updated the database at) %s.', Path.trim(databasePath || DATABASE_PATH)));
+
+      }
+
+      Log.info('< Command.command("install [databasePath]")');
+
     });
 
   });
@@ -60,21 +71,31 @@ Command
 
     Log.addFile(options.logPath || LOG_PATH);
 
-    Log.info('--------------------------------------------------------------------------------');
-    Log.info('= Command.command("uninstall [databasePath]")');
-    Log.info('= Command.action(function (%j, options) { ... }', databasePath);
-    Log.info('--------------------------------------------------------------------------------');
+    Log.info('> Command.command("uninstall [databasePath]")');
+    Log.info('> Command.action(function (%j, options) { ... }', databasePath);
 
     Application.uninstall(databasePath || DATABASE_PATH, {
       'enableTrace': !!options.enableTrace,
       'enableProfile': !!options.enableProfile
     }, function(error) {
       if (error) {
-        Log.error(error.message);
+
+        Log.error(Utilities.format('= %s', error.message));
+
+        Process.exitCode = 1;
+        console.error(error.message);
         console.log(Utilities.format('An error occured uninstalling the database at %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message));
+
       }
-      else
+      else {
+
+        Process.exitCode = 0;
         console.log(Utilities.format('Successfully uninstalled the database at %s.', Path.trim(databasePath || DATABASE_PATH)));
+
+      }
+
+      Log.info('< Command.command("uninstall [databasePath]")');
+
     });
 
   });
@@ -89,21 +110,31 @@ Command
 
     Log.addFile(options.logPath || LOG_PATH);
 
-    Log.info('--------------------------------------------------------------------------------');
-    Log.info('= Command.command("import <filePath> [databasePath]")');
-    Log.info('= Command.action(function (%j, %j, options) { ... }', filePath, databasePath);
-    Log.info('--------------------------------------------------------------------------------');
+    Log.info('> Command.command("import <filePath> [databasePath]")');
+    Log.info('> Command.action(function (%j, %j, options) { ... }', filePath, databasePath);
 
     Application.import(filePath, databasePath || DATABASE_PATH, {
       'enableTrace': !!options.enableTrace,
       'enableProfile': !!options.enableProfile
     }, function(error) {
       if (error) {
-        Log.error(error.message);
+
+        Log.error(Utilities.format('= %s', error.message));
+
+        Process.exitCode = 1;
+        console.error(error.message);
         console.log(Utilities.format('An error occured importing to the database at %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message));
+
       }
-      else
+      else {
+
+        Process.exitCode = 0;
         console.log(Utilities.format('Successfully imported to the database %s.', Path.trim(databasePath || DATABASE_PATH)));
+
+      }
+
+      Log.info('< Command.command("import <filePath> [databasePath]")');
+
     });
 
   });
@@ -118,21 +149,31 @@ Command
 
     Log.addFile(options.logPath || LOG_PATH);
 
-    Log.info('--------------------------------------------------------------------------------');
-    Log.info('= Command.command("clean [databasePath]")');
-    Log.info('= Command.action(function (%j, options) { ... }', databasePath);
-    Log.info('--------------------------------------------------------------------------------');
+    Log.info('> Command.command("clean [databasePath]")');
+    Log.info('> Command.action(function (%j, options) { ... }', databasePath);
 
     Application.clean(databasePath || DATABASE_PATH, {
       'enableTrace': !!options.enableTrace,
       'enableProfile': !!options.enableProfile
     }, function(error) {
       if (error) {
-        Log.error(error.message);
+
+        Log.error(Utilities.format('= %s', error.message));
+
+        Process.exitCode = 1;
+        console.error(error.message);
         console.log(Utilities.format('An error occured cleaning the database at %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message));
+
       }
-      else
+      else {
+
+        Process.exitCode = 0;
         console.log(Utilities.format('Successfully cleaned the database at %s.', Path.trim(databasePath || DATABASE_PATH)));
+
+      }
+
+      Log.info('< Command.command("clean [databasePath]")');
+
     });
 
   });
@@ -147,10 +188,8 @@ Command
 
     Log.addFile(options.logPath || LOG_PATH);
 
-    Log.info('--------------------------------------------------------------------------------');
-    Log.info('= Command.command("addTranslation <from> <to> [databasePath]")');
-    Log.info('= Command.action(function (%j, %j, %j, options) { ... }', _from, _to, databasePath);
-    Log.info('--------------------------------------------------------------------------------');
+    Log.info('> Command.command("addTranslation <from> <to> [databasePath]")');
+    Log.info('> Command.action(function (%j, %j, %j, options) { ... }', _from, _to, databasePath);
 
     Asynchronous.series([
       function(callback) {
@@ -164,11 +203,23 @@ Command
       }
     ], function (error) {
       if (error) {
-        Log.error(error.message);
+
+        Log.error(Utilities.format('= %s', error.message));
+
+        Process.exitCode = 1;
+        console.error(error.message);
         console.log(Utilities.format('An error occured adding the translation for %j to the database at %s (%s).', _from, Path.trim(databasePath || DATABASE_PATH), error.message));
+
       }
-      else
+      else {
+
+        Process.exitCode = 0;
         console.log(Utilities.format('Successfully added the translation for %j to the database at %s.', _from, Path.trim(databasePath || DATABASE_PATH)));
+
+      }
+
+      Log.info('< Command.command("addTranslation <from> <to> [databasePath]")');
+
     });
 
   });
@@ -183,10 +234,8 @@ Command
 
     Log.addFile(options.logPath || LOG_PATH);
 
-    Log.info('--------------------------------------------------------------------------------');
-    Log.info('= Command.command("removeTranslation <from> [databasePath]")');
-    Log.info('= Command.action(function (%j, %j, options) { ... }', _from, databasePath);
-    Log.info('--------------------------------------------------------------------------------');
+    Log.info('> Command.command("removeTranslation <from> [databasePath]")');
+    Log.info('> Command.action(function (%j, %j, options) { ... }', _from, databasePath);
 
     Asynchronous.series([
       function(callback) {
@@ -200,11 +249,23 @@ Command
       }
     ], function (error) {
       if (error) {
-        Log.error(error.message);
+
+        Log.error(Utilities.format('= %s', error.message));
+
+        Process.exitCode = 1;
+        console.error(error.message);
         console.log(Utilities.format('An error occured removing the translation for %j to the database at %s (%s).', _from, Path.trim(databasePath || DATABASE_PATH), error.message));
+
       }
-      else
+      else {
+
+        Process.exitCode = 0;
         console.log(Utilities.format('Successfully removed the translation for %j to the database at %s.', _from, Path.trim(databasePath || DATABASE_PATH)));
+
+      }
+
+      Log.info('< Command.command("removeTranslation <from> [databasePath]")');
+
     });
 
   });
@@ -219,19 +280,27 @@ Command
 
     Log.addFile(options.logPath || LOG_PATH);
 
-    Log.info('--------------------------------------------------------------------------------');
-    Log.info('= Command.command("dumpTranslations [databasePath]")');
-    Log.info('= Command.action(function (%j, options) { ... }', databasePath);
-    Log.info('--------------------------------------------------------------------------------');
+    Log.info('> Command.command("dumpTranslations [databasePath]")');
+    Log.info('> Command.action(function (%j, options) { ... }', databasePath);
 
     Application.dumpTranslations(databasePath || DATABASE_PATH, {
       'enableTrace': !!options.enableTrace,
       'enableProfile': !!options.enableProfile
     }, function (error) {
       if (error) {
-        Log.error(error.message);
+
+        Log.error(Utilities.format('= %s', error.message));
+
+        Process.exitCode = 1;
+        console.error(error.message);
         console.log(Utilities.format('An error occured outputting a table of translations from the database at %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message));
+
       }
+      else
+        Process.exitCode = 0;
+
+      Log.info('< Command.command("dumpTranslations [databasePath]")');
+
     });
 
   });
@@ -246,10 +315,7 @@ Command
 
     Log.addFile(options.logPath || LOG_PATH);
 
-    Log.info('--------------------------------------------------------------------------------');
-    Log.info('= Command.command("addLease <IPAddress> <r> [databasePath]")');
-    Log.info('= Command.action(function (%j, %j, %j, %j, options) { ... }', IPAddress, MACAddress, hostName, databasePath);
-    Log.info('--------------------------------------------------------------------------------');
+    Log.info('> Command.action(function (%j, %j, %j, %j, options) { ... }', IPAddress, MACAddress, hostName, databasePath);
 
     Asynchronous.series([
       function(callback) {
@@ -263,11 +329,23 @@ Command
       }
     ], function (error) {
       if (error) {
-        Log.error(error.message);
+
+        Log.error(Utilities.format('= %s', error.message));
+
+        Process.exitCode = 1;
+        console.error(error.message);
         console.log(Utilities.format('An error occured adding the static DHCP lease %j to the database at %s (%s).', IPAddress, Path.trim(databasePath || DATABASE_PATH), error.message));
+
       }
-      else
+      else {
+
+        Process.exitCode = 0;
         console.log(Utilities.format('Successfully added the static DHCP lease %j to the database at %s.', IPAddress, Path.trim(databasePath || DATABASE_PATH)));
+
+      }
+
+      Log.info('< Command.command("addLease <IPAddress> <r> [databasePath]")');
+
     });
 
   });
@@ -282,10 +360,8 @@ Command
 
     Log.addFile(options.logPath || LOG_PATH);
 
-    Log.info('--------------------------------------------------------------------------------');
-    Log.info('= Command.command("removeLease <IPAddress> [databasePath]")');
-    Log.info('= Command.action(function (%j, %j, options) { ... }', IPAddress, databasePath);
-    Log.info('--------------------------------------------------------------------------------');
+    Log.info('> Command.command("removeLease <IPAddress> [databasePath]")');
+    Log.info('> Command.action(function (%j, %j, options) { ... }', IPAddress, databasePath);
 
     Asynchronous.series([
       function(callback) {
@@ -299,11 +375,23 @@ Command
       }
     ], function (error) {
       if (error) {
-        Log.error(error.message);
+
+        Log.error(Utilities.format('= %s', error.message));
+
+        Process.exitCode = 1;
+        console.error(error.message);
         console.log(Utilities.format('An error occured removing the static DHCP lease %j from the database at %s (%s).', IPAddress, Path.trim(databasePath || DATABASE_PATH), error.message));
+
       }
-      else
+      else {
+
+        Process.exitCode = 0;
         console.log(Utilities.format('Successfully removed the static DHCP lease %j from the database at %s.', IPAddress, Path.trim(databasePath || DATABASE_PATH)));
+
+      }
+
+      Log.info('< Command.command("removeLease <IPAddress> [databasePath]")');
+
     });
 
   });
@@ -318,19 +406,27 @@ Command
 
     Log.addFile(options.logPath || LOG_PATH);
 
-    Log.info('--------------------------------------------------------------------------------');
-    Log.info('= Command.command("dumpLeases [databasePath]")');
-    Log.info('= Command.action(function (%j, options) { ... }', databasePath);
-    Log.info('--------------------------------------------------------------------------------');
+    Log.info('> Command.command("dumpLeases [databasePath]")');
+    Log.info('> Command.action(function (%j, options) { ... }', databasePath);
 
     Application.dumpLeases(databasePath || DATABASE_PATH, {
       'enableTrace': !!options.enableTrace,
       'enableProfile': !!options.enableProfile
     }, function (error) {
       if (error) {
-        Log.error(error.message);
+
+        Log.error(Utilities.format('= %s', error.message));
+
+        Process.exitCode = 1;
+        console.error(error.message);
         console.log(Utilities.format('An error occured outputting a table of active leases from the database at %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message));
+
       }
+      else
+        Process.exitCode = 0;
+
+      Log.info('< Command.command("dumpLeases [databasePath]")');
+
     });
 
   });
@@ -345,19 +441,27 @@ Command
 
     Log.addFile(options.logPath || LOG_PATH);
 
-    Log.info('--------------------------------------------------------------------------------');
-    Log.info('= Command.command("dumpLeasesWhere <filter> [databasePath]")');
-    Log.info('= Command.action(function (%j, %j, options) { ... }', filter, databasePath);
-    Log.info('--------------------------------------------------------------------------------');
+    Log.info('> Command.command("dumpLeasesWhere <filter> [databasePath]")');
+    Log.info('> Command.action(function (%j, %j, options) { ... }', filter, databasePath);
 
     Application.dumpLeasesWhere(filter, databasePath || DATABASE_PATH, {
       'enableTrace': !!options.enableTrace,
       'enableProfile': !!options.enableProfile
     }, function (error) {
       if (error) {
-        Log.error(error.message);
+
+        Log.error(Utilities.format('= %s', error.message));
+
+        Process.exitCode = 1;
+        console.error(error.message);
         console.log(Utilities.format('An error occured outputting one or more matching leases from the database at %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message));
+
       }
+      else
+        Process.exitCode = 0;
+
+      Log.info('< Command.command("dumpLeasesWhere <filter> [databasePath]")');
+
     });
 
   });

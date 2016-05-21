@@ -8,6 +8,16 @@ const Log = require('library/log');
 
 const Process = Object.create(process);
 
+Object.defineProperty(Process, 'exitCode', {
+  get: function() {
+    return Object.getPrototypeOf(this).exitCode;
+  },
+  set: function(value) {
+    Object.getPrototypeOf(this).exitCode = value;
+  },
+  enumerable: true
+});
+
 Process.createPID = function(path, callback) {
 
   let _this = this;

@@ -1,13 +1,18 @@
 'use strict';
 
-const _Database = require('library/database');
-const Log = require('library/log');
-const Path = require('library/path');
 const Utilities = require('util');
+
+const _Database = require('library/database');
+const Path = require('library/path');
+const Test = require('test');
 
 const RESOURCES_PATH = Path.join(__dirname, 'resources');
 
 const Database = Object.create(_Database);
+
+Database.openConnection = function(task, callback) {
+  Object.getPrototypeOf(this).openConnection.call(this, Test.DATABASE_PATH, Test.DATABASE_OPTIONS, task, callback);
+}
 
 Database.existsTable = function(connection, tableName, callback) {
   this.getFile(connection, Path.join(RESOURCES_PATH, 'exists-table.sql'), {

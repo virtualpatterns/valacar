@@ -46,7 +46,7 @@ Database.openConnection = function(path, options, task, callback) {
           });
       }
 
-      Asynchronous.waterfall([
+      Asynchronous.series([
         function(callback) {
           task(connection, callback);
         }

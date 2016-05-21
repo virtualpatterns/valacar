@@ -5,18 +5,10 @@ const Utilities = require('util');
 
 const Application = require('tests/library/application');
 const Database = require('tests/library/database');
-const Package = require('package.json');
 const Path = require('library/path');
-const Process = require('library/process');
+const Test = require('test');
 
-const DATABASE_PATH = Path.join(Process.cwd(), 'process', 'data', Utilities.format('%s.%s.%s', Package.name, 'dumpLeases', 'db'));
-const DATABASE_OPTIONS = {
-  'enableTrace': true,
-  'enableProfile': false
-};
-
-const TEST_NAME = Path.basename(__filename, '.js');
-const RESOURCES_PATH = Path.join(__dirname, TEST_NAME, 'resources');
+const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
 const LEASES_PATH = Path.join(RESOURCES_PATH, 'dhcpd.leases');
 
 const HOST1_REGEXP = new RegExp('^.*HOST1.*$', 'm');
@@ -24,17 +16,18 @@ const HOST2_REGEXP = new RegExp('^.*HOST2.*$', 'm');
 const HOST3_REGEXP = new RegExp('^.*HOST3.*$', 'm');
 
 describe('Command.command("dumpLeases [databasePath]")', function() {
+  this.timeout(Test.TIMEOUT);
 
   before(function(callback) {
     Asynchronous.series([
       function(callback) {
-        Application.executeInstall(DATABASE_PATH, callback);
+        Application.executeInstall(callback);
       },
       function(callback) {
-        Application.executeImport(LEASES_PATH, DATABASE_PATH, callback);
+        Application.executeImport(LEASES_PATH, callback);
       },
       function(callback) {
-        Database.openConnection(DATABASE_PATH, DATABASE_OPTIONS, function(connection, callback) {
+        Database.openConnection(function(connection, callback) {
           Asynchronous.series([
             function(callback) {
               Database.runFile(connection, Path.join(RESOURCES_PATH, 'update-tlease-HOST1.sql'), [], callback);
@@ -52,7 +45,7 @@ describe('Command.command("dumpLeases [databasePath]")', function() {
   });
 
   it('should output the lease for HOST1', function (callback) {
-    Application.executeDumpLeases(DATABASE_PATH, function(error, stdout, stderr) {
+    Application.executeDumpLeases(function(error, stdout, stderr) {
       if (error)
         callback(error);
       else if (!HOST1_REGEXP.test(stdout))
@@ -63,7 +56,7 @@ describe('Command.command("dumpLeases [databasePath]")', function() {
   });
 
   it('should not output the lease for HOST2', function (callback) {
-    Application.executeDumpLeases(DATABASE_PATH, function(error, stdout, stderr) {
+    Application.executeDumpLeases(function(error, stdout, stderr) {
       if (error)
         callback(error);
       else if (HOST2_REGEXP.test(stdout))
@@ -74,7 +67,7 @@ describe('Command.command("dumpLeases [databasePath]")', function() {
   });
 
   it('should not output the lease for HOST3', function (callback) {
-    Application.executeDumpLeases(DATABASE_PATH, function(error, stdout, stderr) {
+    Application.executeDumpLeases(function(error, stdout, stderr) {
       if (error)
         callback(error);
       else if (HOST3_REGEXP.test(stdout))
@@ -85,7 +78,7 @@ describe('Command.command("dumpLeases [databasePath]")', function() {
   });
 
   after(function(callback) {
-    Application.executeUninstall(DATABASE_PATH, callback);
+    Application.executeUninstall(callback);
   });
 
 });
