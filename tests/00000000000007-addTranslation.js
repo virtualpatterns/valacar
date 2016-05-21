@@ -14,7 +14,6 @@ const INVALID_FROM = '@1:ab:23:cd:45:ef';
 const VALID_TO = '(ABC)';
 
 describe('Application.validateAddTranslation', function() {
-  this.timeout(Test.TIMEOUT);
 
   it('should not generate an error for a valid translation', function (callback) {
     Application.validateAddTranslation(VALID_FROM, callback);
@@ -34,7 +33,6 @@ describe('Application.validateAddTranslation', function() {
 });
 
 describe('Command.command("addTranslation <from> <to> [databasePath]")', function() {
-  this.timeout(Test.TIMEOUT);
 
   before(function(callback) {
     Asynchronous.series([

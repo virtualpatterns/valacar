@@ -9,18 +9,15 @@ const Path = require('library/path');
 const Test = require('test');
 
 before(function() {
-  // Log.addConsole();
-  Log.addFile(Test.LOG_PATH);
+  Log.addFile(Test.TEST_LOG_PATH);
 });
 
 after(function() {
-  Log.removeFile(Test.LOG_PATH);
-  // Log.removeConsole();
+  Log.removeFile(Test.TEST_LOG_PATH);
 });
 
 describe('Log', function() {
-  this.timeout(Test.TIMEOUT);
-
+  
   it('should add a log entry', function () {
     Log.info('--------------------------------------------------------------------------------');
     Log.info(' %s', new Date());

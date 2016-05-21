@@ -10,7 +10,6 @@ const Test = require('test');
 const MigrationError = require('library/errors/migration-error');
 
 describe('Command.command("uninstall [databasePath]")', function() {
-  this.timeout(Test.TIMEOUT);
 
   before(function(callback) {
     Asynchronous.series([
@@ -50,7 +49,6 @@ describe('Command.command("uninstall [databasePath]")', function() {
 });
 
 describe('00000000000000-tmigration.uninstall', function() {
-  this.timeout(Test.TIMEOUT);
 
   before(function(callback) {
     Application.executeInstall(callback);
@@ -80,7 +78,6 @@ describe('00000000000000-tmigration.uninstall', function() {
 });
 
 describe('20160516171700-tlease.uninstall', function() {
-  this.timeout(Test.TIMEOUT);
 
   before(function(callback) {
     Asynchronous.series([

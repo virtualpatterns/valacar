@@ -12,7 +12,6 @@ const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'r
 const LEASES_PATH = Path.join(RESOURCES_PATH, 'dhcpd.leases');
 
 describe('Command.command("clean [databasePath]")', function() {
-  this.timeout(Test.TIMEOUT);
 
   before(function(callback) {
     Asynchronous.series([

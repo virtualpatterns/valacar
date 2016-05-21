@@ -31,8 +31,10 @@ Command
 
     Log.addFile(options.logPath || LOG_PATH);
 
+    Log.info('--------------------------------------------------------------------------------');
     Log.info('> Command.command("install [databasePath]")');
     Log.info('> Command.action(function (%j, options) { ... }', databasePath);
+    Log.info('--------------------------------------------------------------------------------');
 
     Application.install(databasePath || DATABASE_PATH, {
       'enableTrace': !!options.enableTrace,
@@ -56,6 +58,7 @@ Command
       }
 
       Log.info('< Command.command("install [databasePath]")');
+      Log.info('--------------------------------------------------------------------------------');
 
     });
 
@@ -71,8 +74,10 @@ Command
 
     Log.addFile(options.logPath || LOG_PATH);
 
+    Log.info('--------------------------------------------------------------------------------');
     Log.info('> Command.command("uninstall [databasePath]")');
     Log.info('> Command.action(function (%j, options) { ... }', databasePath);
+    Log.info('--------------------------------------------------------------------------------');
 
     Application.uninstall(databasePath || DATABASE_PATH, {
       'enableTrace': !!options.enableTrace,
@@ -95,6 +100,7 @@ Command
       }
 
       Log.info('< Command.command("uninstall [databasePath]")');
+      Log.info('--------------------------------------------------------------------------------');
 
     });
 
@@ -110,8 +116,10 @@ Command
 
     Log.addFile(options.logPath || LOG_PATH);
 
+    Log.info('--------------------------------------------------------------------------------');
     Log.info('> Command.command("import <filePath> [databasePath]")');
     Log.info('> Command.action(function (%j, %j, options) { ... }', filePath, databasePath);
+    Log.info('--------------------------------------------------------------------------------');
 
     Application.import(filePath, databasePath || DATABASE_PATH, {
       'enableTrace': !!options.enableTrace,
@@ -134,6 +142,7 @@ Command
       }
 
       Log.info('< Command.command("import <filePath> [databasePath]")');
+      Log.info('--------------------------------------------------------------------------------');
 
     });
 
@@ -149,8 +158,10 @@ Command
 
     Log.addFile(options.logPath || LOG_PATH);
 
+    Log.info('--------------------------------------------------------------------------------');
     Log.info('> Command.command("clean [databasePath]")');
     Log.info('> Command.action(function (%j, options) { ... }', databasePath);
+    Log.info('--------------------------------------------------------------------------------');
 
     Application.clean(databasePath || DATABASE_PATH, {
       'enableTrace': !!options.enableTrace,
@@ -173,6 +184,7 @@ Command
       }
 
       Log.info('< Command.command("clean [databasePath]")');
+      Log.info('--------------------------------------------------------------------------------');
 
     });
 
@@ -188,8 +200,10 @@ Command
 
     Log.addFile(options.logPath || LOG_PATH);
 
+    Log.info('--------------------------------------------------------------------------------');
     Log.info('> Command.command("addTranslation <from> <to> [databasePath]")');
     Log.info('> Command.action(function (%j, %j, %j, options) { ... }', _from, _to, databasePath);
+    Log.info('--------------------------------------------------------------------------------');
 
     Asynchronous.series([
       function(callback) {
@@ -219,6 +233,7 @@ Command
       }
 
       Log.info('< Command.command("addTranslation <from> <to> [databasePath]")');
+      Log.info('--------------------------------------------------------------------------------');
 
     });
 
@@ -234,8 +249,10 @@ Command
 
     Log.addFile(options.logPath || LOG_PATH);
 
+    Log.info('--------------------------------------------------------------------------------');
     Log.info('> Command.command("removeTranslation <from> [databasePath]")');
     Log.info('> Command.action(function (%j, %j, options) { ... }', _from, databasePath);
+    Log.info('--------------------------------------------------------------------------------');
 
     Asynchronous.series([
       function(callback) {
@@ -265,6 +282,7 @@ Command
       }
 
       Log.info('< Command.command("removeTranslation <from> [databasePath]")');
+      Log.info('--------------------------------------------------------------------------------');
 
     });
 
@@ -280,8 +298,10 @@ Command
 
     Log.addFile(options.logPath || LOG_PATH);
 
+    Log.info('--------------------------------------------------------------------------------');
     Log.info('> Command.command("dumpTranslations [databasePath]")');
     Log.info('> Command.action(function (%j, options) { ... }', databasePath);
+    Log.info('--------------------------------------------------------------------------------');
 
     Application.dumpTranslations(databasePath || DATABASE_PATH, {
       'enableTrace': !!options.enableTrace,
@@ -300,6 +320,7 @@ Command
         Process.exitCode = 0;
 
       Log.info('< Command.command("dumpTranslations [databasePath]")');
+      Log.info('--------------------------------------------------------------------------------');
 
     });
 
@@ -315,7 +336,10 @@ Command
 
     Log.addFile(options.logPath || LOG_PATH);
 
+    Log.info('--------------------------------------------------------------------------------');
+    Log.info('> Command.command("addLease <IPAddress> <MACAddress> <hostName> [databasePath]")');
     Log.info('> Command.action(function (%j, %j, %j, %j, options) { ... }', IPAddress, MACAddress, hostName, databasePath);
+    Log.info('--------------------------------------------------------------------------------');
 
     Asynchronous.series([
       function(callback) {
@@ -345,6 +369,7 @@ Command
       }
 
       Log.info('< Command.command("addLease <IPAddress> <r> [databasePath]")');
+      Log.info('--------------------------------------------------------------------------------');
 
     });
 
@@ -360,8 +385,10 @@ Command
 
     Log.addFile(options.logPath || LOG_PATH);
 
+    Log.info('--------------------------------------------------------------------------------');
     Log.info('> Command.command("removeLease <IPAddress> [databasePath]")');
     Log.info('> Command.action(function (%j, %j, options) { ... }', IPAddress, databasePath);
+    Log.info('--------------------------------------------------------------------------------');
 
     Asynchronous.series([
       function(callback) {
@@ -391,6 +418,7 @@ Command
       }
 
       Log.info('< Command.command("removeLease <IPAddress> [databasePath]")');
+      Log.info('--------------------------------------------------------------------------------');
 
     });
 
@@ -406,8 +434,10 @@ Command
 
     Log.addFile(options.logPath || LOG_PATH);
 
+    Log.info('--------------------------------------------------------------------------------');
     Log.info('> Command.command("dumpLeases [databasePath]")');
     Log.info('> Command.action(function (%j, options) { ... }', databasePath);
+    Log.info('--------------------------------------------------------------------------------');
 
     Application.dumpLeases(databasePath || DATABASE_PATH, {
       'enableTrace': !!options.enableTrace,
@@ -426,6 +456,7 @@ Command
         Process.exitCode = 0;
 
       Log.info('< Command.command("dumpLeases [databasePath]")');
+      Log.info('--------------------------------------------------------------------------------');
 
     });
 
@@ -441,8 +472,10 @@ Command
 
     Log.addFile(options.logPath || LOG_PATH);
 
+    Log.info('--------------------------------------------------------------------------------');
     Log.info('> Command.command("dumpLeasesWhere <filter> [databasePath]")');
     Log.info('> Command.action(function (%j, %j, options) { ... }', filter, databasePath);
+    Log.info('--------------------------------------------------------------------------------');
 
     Application.dumpLeasesWhere(filter, databasePath || DATABASE_PATH, {
       'enableTrace': !!options.enableTrace,
@@ -461,6 +494,7 @@ Command
         Process.exitCode = 0;
 
       Log.info('< Command.command("dumpLeasesWhere <filter> [databasePath]")');
+      Log.info('--------------------------------------------------------------------------------');
 
     });
 

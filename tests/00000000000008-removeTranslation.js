@@ -14,7 +14,6 @@ const INVALID_FROM = '@1:ab:23:cd:45:ef';
 const VALID_TO = '(ABC)';
 
 describe('Application.validateRemoveTranslation', function() {
-  this.timeout(Test.TIMEOUT);
 
   it('should not generate an error for a valid translation', function (callback) {
     Application.validateRemoveTranslation(VALID_FROM, callback);
@@ -35,7 +34,6 @@ describe('Application.validateRemoveTranslation', function() {
 });
 
 describe('Command.command("removeTranslation <from> [databasePath]")', function() {
-  this.timeout(Test.TIMEOUT);
 
   before(function(callback) {
     Asynchronous.series([

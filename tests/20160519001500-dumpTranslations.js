@@ -8,7 +8,6 @@ const Database = require('tests/library/database');
 const Test = require('test');
 
 describe('Command.command("dumpTranslations [databasePath]")', function() {
-  this.timeout(Test.TIMEOUT);
 
   before(function(callback) {
     Application.executeInstall(callback);

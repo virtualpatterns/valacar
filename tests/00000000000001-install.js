@@ -5,11 +5,9 @@ const Database = require('tests/library/database');
 const Test = require('test');
 
 describe('Command.command("install [databasePath]")', function() {
-  this.timeout(Test.TIMEOUT);
 
   before(function(callback) {
     Application.executeInstall(callback);
-    // callback(null);
   });
 
   it('should have created the tMigration table', function (callback) {

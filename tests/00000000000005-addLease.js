@@ -17,7 +17,6 @@ const VALID_HOST = 'ABC';
 const INVALID_HOST = '@ABC';
 
 describe('Application.validateAddLease', function() {
-  this.timeout(Test.TIMEOUT);
 
   it('should not generate an error for a valid address, device, and host', function (callback) {
     Application.validateAddLease(VALID_ADDRESS, VALID_DEVICE, VALID_HOST, callback);
@@ -59,7 +58,6 @@ describe('Application.validateAddLease', function() {
 });
 
 describe('Command.command("addLease <IPAddress> <MACAddress> <hostName> [databasePath]")', function() {
-  this.timeout(Test.TIMEOUT);
 
   before(function(callback) {
     Asynchronous.series([

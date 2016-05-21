@@ -17,9 +17,8 @@ const Application = Object.create(_Application);
 
 Application.execute = function(command, callback) {
   Log.info('> node index.js %s', command);
-  ChildProcess.exec(Utilities.format('node index.js %s', command), Test.PROCESS_OPTIONS, function(error, stdout, stderr) {
+  ChildProcess.exec(Utilities.format('node index.js %s --logPath %j', command, Test.LOG_PATH), Test.PROCESS_OPTIONS, function(error, stdout, stderr) {
       Log.info('< node index.js %s', command);
-      Log.info('        stdout=%j', stdout);
       if (error) {
         Log.info('        stderr=%j', stderr);
         Log.info('    error.code=%j', stderr);
@@ -68,6 +67,10 @@ Application.executeRemoveLease = function(address, callback) {
 
 Application.executeDumpLeases = function(callback) {
   this.execute(Utilities.format('dumpLeases %j', Test.DATABASE_PATH), callback);
+};
+
+Application.executeDumpLeasesWhere = function(Filter, callback) {
+  this.execute(Utilities.format('dumpLeasesWhere %j %j', Filter, Test.DATABASE_PATH), callback);
 };
 
 module.exports = Application;

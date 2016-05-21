@@ -16,6 +16,7 @@ Test.DATABASE_OPTIONS = {
   'enableProfile': false
 };
 Test.LOG_PATH = Path.join(Process.cwd(), 'process', 'log', Utilities.format('%s.test.log', Package.name));
-Test.TIMEOUT = 5000000;
+
+Test.TEST_LOG_PATH = Path.join(Process.cwd(), 'process', 'log', Utilities.format('%s.mocha.log', Package.name));
 
 module.exports = Test;

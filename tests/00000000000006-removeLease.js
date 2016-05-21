@@ -15,7 +15,6 @@ const VALID_DEVICE = '01:ab:23:cd:45:ef';
 const VALID_HOST = 'ABC';
 
 describe('Application.validateRemoveLease', function() {
-  this.timeout(Test.TIMEOUT);
 
   it('should not generate an error for a valid address', function (callback) {
     Application.validateRemoveLease(VALID_ADDRESS, callback);
@@ -36,7 +35,6 @@ describe('Application.validateRemoveLease', function() {
 });
 
 describe('Command.command("removeLease <IPAddress> [databasePath]")', function() {
-  this.timeout(Test.TIMEOUT);
 
   before(function(callback) {
     Asynchronous.series([
