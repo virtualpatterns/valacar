@@ -20,8 +20,10 @@ Application.execute = function(command, callback) {
   ChildProcess.exec(Utilities.format('node index.js %s --logPath %j', command, Test.LOG_PATH), Test.PROCESS_OPTIONS, function(error, stdout, stderr) {
       Log.info('< node index.js %s', command);
       if (error) {
-        Log.info('        stderr=%j', stderr);
-        Log.info('    error.code=%j', stderr);
+        Log.info('       error.code=%j', error.code);
+        Log.info('    error.message=%j', error.message);
+        Log.info('       error.name=%j', error.name);
+        Log.info('           stderr=%j', stderr);
         callback(new Error(Utilities.format('An error occurred executing the command %j (%s).', command, stderr)), stdout, stderr);
       }
       else

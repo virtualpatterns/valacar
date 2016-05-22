@@ -100,9 +100,14 @@ describe('Command.command("install [databasePath]")', function() {
     }, callback);
   });
 
+  it('should have added the translation for tv4622148de6a5', function (callback) {
+    Database.openConnection(function(connection, callback) {
+      Database.existsTranslation(connection, 'tv4622148de6a5', '(TV)', callback);
+    }, callback);
+  });
+
   after(function(callback) {
     Application.executeUninstall(callback);
-    // callback(null);
   });
 
 });

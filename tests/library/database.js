@@ -1,8 +1,10 @@
 'use strict';
 
+const FileSystem = require('fs');
 const Utilities = require('util');
 
 const _Database = require('library/database');
+const Log = require('library/log');
 const Path = require('library/path');
 const Test = require('test');
 
@@ -12,7 +14,7 @@ const Database = Object.create(_Database);
 
 Database.openConnection = function(task, callback) {
   Object.getPrototypeOf(this).openConnection.call(this, Test.DATABASE_PATH, Test.DATABASE_OPTIONS, task, callback);
-}
+};
 
 Database.existsTable = function(connection, tableName, callback) {
   this.getFile(connection, Path.join(RESOURCES_PATH, 'exists-table.sql'), {
@@ -96,6 +98,20 @@ Database.notExistsTranslation = function(connection, _from, _to, callback) {
       callback(error);
     else
       callback(null, true);
+  });
+};
+
+Database.delete = function(callback) {
+  Log.info('> FileSystem.access(%j, FileSystem.F_OK, callback)', Path.trim(Test.DATABASE_PATH));
+  FileSystem.access(Test.DATABASE_PATH, FileSystem.F_OK, function(error) {
+    Log.info('< FileSystem.access(%j, FileSystem.F_OK, callback)', Path.trim(Test.DATABASE_PATH));
+    if (error) {
+      Log.info('    error.message=%j', error.message);
+      Log.info('       error.name=%j', error.name);
+      callback(null);
+    }
+    else
+      FileSystem.unlink(Test.DATABASE_PATH, callback);
   });
 };
 

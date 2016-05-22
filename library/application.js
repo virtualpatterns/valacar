@@ -2,7 +2,6 @@
 
 const Asynchronous = require('async');
 const Assert = require('assert');
-const Moment = require('moment');
 const Table = require('cli-table');
 const Utilities = require('util');
 

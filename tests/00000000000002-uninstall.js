@@ -168,3 +168,34 @@ describe('20160517132700-ttranslation.uninstall', function() {
   });
 
 });
+
+describe('20160521182200-ttranslation.uninstall', function() {
+
+  before(function(callback) {
+    Asynchronous.series([
+      function(callback) {
+        Application.executeInstall(callback);
+      },
+      function(callback) {
+
+        let migration = require('library/migrations/20160521182200-ttranslation');
+
+        Database.openConnection(function(connection, callback) {
+          migration.uninstall(connection, callback);
+        }, callback);
+
+      }
+    ], callback);
+  });
+
+  it('should have removed the translation for tv4622148de6a5', function (callback) {
+    Database.openConnection(function(connection, callback) {
+      Database.notExistsTranslation(connection, 'tv4622148de6a5', '(TV)', callback);
+    }, callback);
+  });
+
+  after(function(callback) {
+    Application.executeUninstall(callback);
+  });
+
+});
