@@ -6,7 +6,7 @@ const Utilities = require('util');
 const _Database = require('library/database');
 const Log = require('library/log');
 const Path = require('library/path');
-const Test = require('test');
+const Test = require('tests/library/test');
 
 const RESOURCES_PATH = Path.join(__dirname, 'resources');
 

@@ -27,7 +27,7 @@ Database.openConnection = function(path, options, task, callback) {
 
   Asynchronous.waterfall([
     function(callback) {
-      Log.info('> OPEN %s', Path.trim(path), options);
+      Log.info('> OPEN %s', Path.trim(path), options, {});
       Database.createConnection(path, callback);
     },
     function(connection, callback) {
@@ -53,7 +53,7 @@ Database.openConnection = function(path, options, task, callback) {
       ], function(error) {
         connection.close(function(_error) {
           if (!_error)
-            Log.info('< CLOSE %s', Path.trim(path));
+            Log.info('< CLOSE %s', Path.trim(path), options, {});
           callback(error || _error);
         });
       });

@@ -5,7 +5,6 @@ const Utilities = require('util');
 
 const Application = require('tests/library/application');
 const Database = require('tests/library/database');
-const Test = require('test');
 
 const ValidationError = require('library/errors/validation-error');
 

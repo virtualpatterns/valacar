@@ -2,7 +2,6 @@
 
 const Application = require('tests/library/application');
 const Database = require('tests/library/database');
-const Test = require('test');
 
 describe('Command.command("install [databasePath]")', function() {
 

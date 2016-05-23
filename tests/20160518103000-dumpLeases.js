@@ -6,7 +6,6 @@ const Utilities = require('util');
 const Application = require('tests/library/application');
 const Database = require('tests/library/database');
 const Path = require('library/path');
-const Test = require('test');
 
 const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
 const LEASES_PATH = Path.join(RESOURCES_PATH, 'dhcpd.leases');

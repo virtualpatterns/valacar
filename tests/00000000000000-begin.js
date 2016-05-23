@@ -1,17 +1,21 @@
 'use strict';
 
+const Utilities = require('util');
 const Asynchronous = require('async');
 
-const Application = require('tests/library/application');
 const Database = require('tests/library/database');
 const Log = require('library/log');
-const Test = require('test');
+const Package = require('package.json');
+const Path = require('library/path');
+const Process = require('library/process');
+
+const LOG_PATH = Path.join(Process.cwd(), 'process', 'log', Utilities.format('%s.mocha.log', Package.name));
 
 before(function(callback) {
   Asynchronous.series([
     function(callback) {
 
-      Log.addFile(Test.TEST_LOG_PATH);
+      Log.addFile(LOG_PATH);
       Log.info('--------------------------------------------------------------------------------');
       Log.info('> %s', new Date());
       Log.info('--------------------------------------------------------------------------------');
@@ -33,7 +37,7 @@ after(function(callback) {
     function(callback) {
 
       Log.info('--------------------------------------------------------------------------------');
-      Log.removeFile(Test.TEST_LOG_PATH);
+      Log.removeFile(LOG_PATH);
 
       callback(null);
 

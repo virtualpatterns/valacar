@@ -1,41 +1,60 @@
 'use strict';
 
+const Index = require('./index');
+
 const Asynchronous = require('async');
 const ChildProcess = require('child_process');
 const Utilities = require('util');
 
-const Modules = require('app-module-path/register');
-
 const Log = require('library/log');
+const Package = require('package.json');
+const Path = require('library/path');
+const Process = require('library/process');
+const Task = require('tasks/library/task');
 
-// desc('This is the default task.');
-// task('default', function (params) {
-//   console.log('This is the default task.');
-// });
-//
-// desc('This task has prerequisites.');
-// task('hasPrereqs', ['foo', 'bar', 'baz'], function (params) {
-//   console.log('Ran some prereqs first.');
-// });
-//
-// desc('This is an asynchronous task.');
-// task('asyncTask', {async: true}, function () {
-//   setTimeout(complete, 1000);
-// });
+const LOG_PATH = Path.join(Process.cwd(), 'process', 'log', Utilities.format('%s.jake.log', Package.name));
+
+desc(Utilities.format('Log.addFile(%j)', Path.trim(LOG_PATH)));
+task('Log.addFile', function () {
+  Log.addFile(LOG_PATH);
+});
+
+task('default', ['Log.addFile'], function () {
+  complete();
+});
 
 desc('Push to development');
-task('push', {
-  'async': true
-}, function () {
-  Asynchronous.series([
-    function(callback) {
-      ChildProcess.exec('git checkout development', callback);
-    },
-    function(callback) {
-      ChildProcess.exec('git pull origin development', callback);
-    },
-    function(callback) {
-      ChildProcess.exec('git push origin development', callback);
-    }
-  ], complete);
+task('push', ['Log.addFile'], function () {
+  Task.createTask(this.name)
+    // .add('git checkout development')
+    // .add('git pull origin development')
+    // .add('git push origin development')
+    .add('ls -al', Task.STDIO_INHERIT_OPTIONS)
+    .execute(complete, fail);
+});
+
+namespace('test', function() {
+
+  desc('Run all tests');
+  task('all', ['Log.addFile'], function () {
+    Task.createTask(this.name)
+      .add('mocha --require index.js tests', Task.STDIO_INHERIT_OPTIONS)
+      .execute(complete, fail);
+  });
+
+  desc('Run install tests');
+  task('install', ['Log.addFile'], function () {
+    Task.createTask(this.name)
+      .add('mocha --require index.js tests/00000000000000-begin.js tests/00000000000001-install.js', Task.STDIO_INHERIT_OPTIONS)
+      .execute(complete, fail);
+  });
+
+  desc('Run install/uninstall tests');
+  task('uninstall', ['Log.addFile'], function () {
+    Task.createTask(this.name)
+      .add('jake test:install', Task.STDIO_INHERIT_OPTIONS)
+      .add('mocha --require index.js tests/00000000000000-begin.js tests/00000000000002-uninstall.js', Task.STDIO_INHERIT_OPTIONS)
+      .execute(complete, fail);
+  });
+
 });

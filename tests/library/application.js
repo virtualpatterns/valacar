@@ -6,7 +6,7 @@ const Utilities = require('util');
 const _Application = require('library/application');
 const Log = require('library/log');
 const Process = require('library/process');
-const Test = require('test');
+const Test = require('tests/library/test');
 
 const PROCESS_OPTIONS = {
   'killSignal': 'SIGTERM',
@@ -17,7 +17,7 @@ const Application = Object.create(_Application);
 
 Application.executeCommand = function(command, callback) {
   Log.info('> node index.js %s', command);
-  ChildProcess.exec(Utilities.format('node index.js %s --logPath %j', command, Test.LOG_PATH), Test.PROCESS_OPTIONS, function(error, stdout, stderr) {
+  ChildProcess.exec(Utilities.format('node valacar.js %s --logPath %j', command, Test.LOG_PATH), Test.PROCESS_OPTIONS, function(error, stdout, stderr) {
       Log.info('< node index.js %s', command);
       if (error) {
         Log.info('       error.code=%j', error.code);
