@@ -26,10 +26,9 @@ task('default', ['Log.addFile'], function () {
 desc('Push to development');
 task('push', ['Log.addFile'], function () {
   Task.createTask(this.name)
-    // .add('git checkout development')
-    // .add('git pull origin development')
-    // .add('git push origin development')
-    .add('ls -al', Task.STDIO_INHERIT_OPTIONS)
+    .add('git checkout development')
+    .add('git pull origin development')
+    .add('git push origin development')
     .execute(complete, fail);
 });
 
