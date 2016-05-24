@@ -12,6 +12,8 @@ const Package = require('package.json');
 const Path = require('library/path');
 const Process = require('library/process');
 
+const ProcessError = require('library/errors/process-error');
+
 const LOG_PATH = Path.join(Process.cwd(), 'process', 'log', Utilities.format('%s.test.log', Package.name));
 const REGEXP_SPLIT = /(?:[^\s"]+|"[^"]*")+/g;
 const REGEXP_QUOTE = /^"|"$/g;
@@ -44,7 +46,7 @@ Application.executeCommand = function(command, callback) {
           Log.info('    error.message=%j', error.message);
           Log.info('       error.name=%j', error.name);
           Log.info('           stderr=%j', stderr);
-          callback(new Error(Utilities.format('An error occurred executing the command %j (%s).', command, stderr)), stdout, stderr);
+          callback(new ProcessError(Utilities.format('An error occurred executing the command %j (%s).', command, stderr)), stdout, stderr);
         }
         else
           callback(null, stdout, stderr);

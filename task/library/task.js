@@ -8,6 +8,9 @@ const Utilities = require('util');
 const Log = require('library/log');
 const Process = require('library/process');
 
+const ArgumentError = require('library/errors/argument-error');
+const ProcessError = require('library/errors/process-error');
+
 const REGEXP_SPLIT = /(?:[^\s"]+|"[^"]*")+/g;
 const REGEXP_QUOTE = /^"|"$/g;
 const TYPEOF_STRING = 'string';
@@ -52,9 +55,18 @@ taskPrototype.add = function(task, options) {
           })
           .on('close', function(code) {
             Log.info('< ChildProcess.spawn(%j, %j, %j)', command, _arguments, _options, {});
-            if (error)
+            if (error) {
+              Log.info('             code=%d', code);
               Log.info('    error.message=%s', error.message);
-            callback(error);
+              callback(error);
+            }
+            if (code > 0) {
+              Log.info('    code=%d', code);
+              callback(new ProcessError(Utilities.format('The task returned a non-zero result (code=%d).', code)), code);
+            }
+            else {
+              callback(null);
+            }
           });
 
         // Log.info('> ChildProcess.exec(%j, options, callback)', task, _options);
@@ -90,14 +102,14 @@ taskPrototype.add = function(task, options) {
           _task = task;
           break;
         default:
-          throw new TypeError('The given task takes too many arguments.');
+          throw new ArgumentError('The task takes too many arguments.');
       }
 
       this[tasksSymbol].push(_task);
 
       break;
     default:
-      throw new TypeError('The given task is invalid.');
+      throw new TypeError('The task is invalid.');
   }
 
   return this;

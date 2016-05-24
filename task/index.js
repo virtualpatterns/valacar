@@ -30,11 +30,10 @@ task('push', ['Log.addFile'], function (version) {
 
   Task.createTask(this.name)
     .add('mocha --require test/index.js test/tests', Task.OPTIONS_STDIO_INHERIT)
-    // .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
-    // .add('git pull origin development', Task.OPTIONS_STDIO_IGNORE)
-    // .add('git push origin development --tags', Task.OPTIONS_STDIO_IGNORE)
-    // .add(Utilities.format('npm version %s', _version))
-    .add('git status')
+    .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
+    .add('git pull origin development', Task.OPTIONS_STDIO_IGNORE)
+    .add('git push origin development --tags', Task.OPTIONS_STDIO_IGNORE)
+    .add(Utilities.format('npm version %s', _version))
     .execute(complete, fail);
 
 });
