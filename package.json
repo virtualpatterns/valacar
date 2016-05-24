@@ -15,9 +15,7 @@
     "dumpLeases": "node valacar.js dumpLeases",
     "dumpLeasesWhere": "node valacar.js dumpLeasesWhere",
     "dumpTranslations": "node valacar.js dumpTranslations",
-    "jake": "jake --jakefile task/index.js",
-    "jake-tasks": "jake --jakefile task/index.js --tasks",
-    "test": "jake --jakefile task/index.js test:all"
+    "test": "jake test:all"
   },
   "author": "code@virtualpatterns.com",
   "license": "ISC",

@@ -23,15 +23,21 @@ task('Log.addFile', function () {
   Log.addFile(LOG_PATH);
 });
 
-// desc('Push to development');
-// task('push', ['Log.addFile'], function () {
-//   Task.createTask(this.name)
-//     .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
-//     .add('git pull origin development', Task.OPTIONS_STDIO_IGNORE)
-//     .add('git push origin development', Task.OPTIONS_STDIO_IGNORE)
-//     .add('git status')
-//     .execute(complete, fail);
-// });
+desc('Push to development');
+task('push', ['Log.addFile'], function (version) {
+
+  let _version = version || 'patch';
+
+  Task.createTask(this.name)
+    .add('mocha --require test/index.js test/tests', Task.OPTIONS_STDIO_INHERIT)
+    // .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
+    // .add('git pull origin development', Task.OPTIONS_STDIO_IGNORE)
+    // .add('git push origin development --tags', Task.OPTIONS_STDIO_IGNORE)
+    // .add(Utilities.format('npm version %s', _version))
+    .add('git status')
+    .execute(complete, fail);
+
+});
 
 // desc 'Pull development, tag, push to development, and increment version'
 // task :push do |task|
