@@ -10,7 +10,11 @@ const Path = require('library/path');
 
 const Database = Object.create(SQLite);
 
-Database.MINIMUM_DATE = new Date(0);
+Object.defineProperty(Database, 'MINIMUM_DATE', {
+  'enumerable': true,
+  'writable': false,
+  'value': new Date(0)
+});
 
 Database.createConnection = function(path, callback) {
 

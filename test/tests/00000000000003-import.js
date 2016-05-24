@@ -3,8 +3,8 @@
 const Asynchronous = require('async');
 const Utilities = require('util');
 
-const Application = require('tests/library/application');
-const Database = require('tests/library/database');
+const Application = require('test/library/application');
+const Database = require('test/library/database');
 const Path = require('library/path');
 
 const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');

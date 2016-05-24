@@ -5,15 +5,31 @@ const Utilities = require('util');
 
 const _Database = require('library/database');
 const Log = require('library/log');
+const Package = require('package.json');
 const Path = require('library/path');
-const Test = require('tests/library/test');
+const Process = require('library/process');
 
 const RESOURCES_PATH = Path.join(__dirname, 'resources');
 
 const Database = Object.create(_Database);
 
+Object.defineProperty(Database, 'DATABASE_PATH', {
+  'enumerable': true,
+  'writable': false,
+  'value': Path.join(Process.cwd(), 'process', 'data', Utilities.format('%s.test.db', Package.name))
+});
+
+Object.defineProperty(Database, 'DATABASE_OPTIONS', {
+  'enumerable': true,
+  'writable': false,
+  'value': {
+    'enableTrace': true,
+    'enableProfile': false
+  }
+});
+
 Database.openConnection = function(task, callback) {
-  Object.getPrototypeOf(this).openConnection.call(this, Test.DATABASE_PATH, Test.DATABASE_OPTIONS, task, callback);
+  Object.getPrototypeOf(this).openConnection.call(this, this.DATABASE_PATH, this.DATABASE_OPTIONS, task, callback);
 };
 
 Database.existsTable = function(connection, tableName, callback) {
@@ -102,17 +118,21 @@ Database.notExistsTranslation = function(connection, _from, _to, callback) {
 };
 
 Database.delete = function(callback) {
-  Log.info('> FileSystem.access(%j, FileSystem.F_OK, callback)', Path.trim(Test.DATABASE_PATH));
-  FileSystem.access(Test.DATABASE_PATH, FileSystem.F_OK, function(error) {
-    Log.info('< FileSystem.access(%j, FileSystem.F_OK, callback)', Path.trim(Test.DATABASE_PATH));
+
+  let _this = this;
+
+  Log.info('> FileSystem.access(%j, FileSystem.F_OK, callback)', Path.trim(_this.DATABASE_PATH));
+  FileSystem.access(_this.DATABASE_PATH, FileSystem.F_OK, function(error) {
+    Log.info('< FileSystem.access(%j, FileSystem.F_OK, callback)', Path.trim(_this.DATABASE_PATH));
     if (error) {
       Log.info('    error.message=%j', error.message);
       Log.info('       error.name=%j', error.name);
       callback(null);
     }
     else
-      FileSystem.unlink(Test.DATABASE_PATH, callback);
+      FileSystem.unlink(_this.DATABASE_PATH, callback);
   });
+
 };
 
 module.exports = Database;

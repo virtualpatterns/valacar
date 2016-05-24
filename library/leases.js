@@ -2,7 +2,7 @@
 
 const Asynchronous = require('async');
 const FileSystem = require('fs');
-const Leases = require('dhcpd-leases');
+const _Leases = require('dhcpd-leases');
 const Path = require('path');
 
 const Database = require('library/database');
@@ -10,9 +10,9 @@ const Log = require('library/log');
 
 const RESOURCES_PATH = Path.join(__dirname, 'resources');
 
-const _Leases = Object.create({});
+const Leases = Object.create({});
 
-_Leases.import = function(connection, path, callback) {
+Leases.import = function(connection, path, callback) {
   Asynchronous.waterfall([
     function(callback) {
       Log.info('> FileSystem.readFile(%j, ...)', path);
@@ -22,16 +22,16 @@ _Leases.import = function(connection, path, callback) {
     },
     function(dataRaw, callback) {
 
-      let data = Leases(dataRaw);
+      let data = _Leases(dataRaw);
 
       Asynchronous.forEachOfSeries(data, function(lease, address, callback) {
 
-        Log.info('= Asynchronous.forEachOfSeries(data, function(lease, %j, callback) { ... }', address);
-        Log.info('    address=%j', address);
-        Log.info('       from=%j', lease['starts'].toISOString());
-        Log.info('         to=%j', lease['ends'].toISOString());
-        Log.info('     device=%j', lease['hardware ethernet']);
-        Log.info('       host=%j', lease['client-hostname']);
+        // Log.info('= Asynchronous.forEachOfSeries(data, function(lease, %j, callback) { ... }', address);
+        // Log.info('    address=%j', address);
+        // Log.info('       from=%j', lease['starts'].toISOString());
+        // Log.info('         to=%j', lease['ends'].toISOString());
+        // Log.info('     device=%j', lease['hardware ethernet']);
+        // Log.info('       host=%j', lease['client-hostname']);
 
         Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-tlease.sql'), {
           $Address: address,
@@ -47,4 +47,4 @@ _Leases.import = function(connection, path, callback) {
   ], callback);
 };
 
-module.exports = _Leases;
+module.exports = Leases;

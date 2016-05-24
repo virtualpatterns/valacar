@@ -1,3 +1,3 @@
 'use strict';
 
-const Modules = require('app-module-path/register');
+require('app-module-path/register');

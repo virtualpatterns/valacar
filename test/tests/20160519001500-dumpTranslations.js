@@ -3,8 +3,11 @@
 const Asynchronous = require('async');
 const Utilities = require('util');
 
-const Application = require('tests/library/application');
-const Database = require('tests/library/database');
+const Application = require('test/library/application');
+const Database = require('test/library/database');
+
+const REGEXP_02AA01AB44120TQ1 = /.*02AA01AB44120TQ1.*/m;
+const REGEXP_NEST = /.*\(Nest\).*/m;
 
 describe('Command.command("dumpTranslations [databasePath]")', function() {
 
@@ -16,8 +19,8 @@ describe('Command.command("dumpTranslations [databasePath]")', function() {
     Application.executeDumpTranslations(function(error, stdout, stderr) {
       if (error)
         callback(error);
-      else if (!(new RegExp('^.*02AA01AB44120TQ1.*$', 'm').test(stdout)) &&
-               !(new RegExp('^.*\(Nest\).*$', 'm').test(stdout)))
+      else if (!REGEXP_02AA01AB44120TQ1.test(stdout) &&
+               !REGEXP_NEST.test(stdout))
         callback(new Error('The translation for 02AA01AB44120TQ1 is not part of the output.'));
       else
         callback(null);

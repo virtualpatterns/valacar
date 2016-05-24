@@ -3,7 +3,7 @@
 const Utilities = require('util');
 const Asynchronous = require('async');
 
-const Database = require('tests/library/database');
+const Database = require('test/library/database');
 const Log = require('library/log');
 const Package = require('package.json');
 const Path = require('library/path');
@@ -46,7 +46,5 @@ after(function(callback) {
 });
 
 describe('Begin', function() {
-
   it('should do nothing', function () {});
-
 });

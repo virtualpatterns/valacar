@@ -21,7 +21,7 @@ taskPrototype[tasksSymbol] = [];
 taskPrototype.add = function(task, options) {
 
   let _task = task;
-  let _options = options || Task.STDIO_INHERIT_OPTIONS;
+  let _options = options || Task.OPTIONS_STDIO_INHERIT;
 
   switch (typeof task) {
     case TYPEOF_STRING:
@@ -51,7 +51,7 @@ taskPrototype.add = function(task, options) {
             error = _error;
           })
           .on('close', function(code) {
-            Log.info('= ChildProcess.on("close", ...)');
+            Log.info('< ChildProcess.spawn(%j, %j, %j)', command, _arguments, _options, {});
             if (error)
               Log.info('    error.message=%s', error.message);
             callback(error);
@@ -120,7 +120,7 @@ taskPrototype.execute = function(resolve, reject) {
 
 const Task = Object.create({});
 
-Object.defineProperty(Task, 'STDIO_INHERIT_OPTIONS', {
+Object.defineProperty(Task, 'OPTIONS_STDIO_INHERIT', {
   'enumerable': true,
   'writable': false,
   'value': {
@@ -132,7 +132,7 @@ Object.defineProperty(Task, 'STDIO_INHERIT_OPTIONS', {
   }
 });
 
-Object.defineProperty(Task, 'STDIO_IGNORE_OPTIONS', {
+Object.defineProperty(Task, 'OPTIONS_STDIO_IGNORE', {
   'enumerable': true,
   'writable': false,
   'value': {

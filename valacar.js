@@ -2,7 +2,7 @@
 
 'use strict';
 
-const Index = require('./index');
+require('./index');
 
 const Asynchronous = require('async');
 const Command = require('commander');

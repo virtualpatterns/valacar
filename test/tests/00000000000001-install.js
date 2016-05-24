@@ -1,7 +1,7 @@
 'use strict';
 
-const Application = require('tests/library/application');
-const Database = require('tests/library/database');
+const Application = require('test/library/application');
+const Database = require('test/library/database');
 
 describe('Command.command("install [databasePath]")', function() {
 
