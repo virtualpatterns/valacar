@@ -13,7 +13,9 @@ const Task = require('task/library/task');
 const LOG_PATH = Path.join(Process.cwd(), 'process', 'log', Utilities.format('%s.jake.log', Package.name));
 
 task('default', function () {
-  complete();
+  Task.createTask(this.name)
+    .add('jake --tasks')
+    .execute(complete, fail);
 });
 
 desc(Utilities.format('Log.addFile(%j)', Path.trim(LOG_PATH)));
@@ -30,6 +32,15 @@ task('Log.addFile', function () {
 //     .add('git status')
 //     .execute(complete, fail);
 // });
+
+// desc 'Pull development, tag, push to development, and increment version'
+// task :push do |task|
+//   system("git checkout development; git pull origin development; git tag -a -m 'Tag #{Pike::VERSION}' '#{Pike::VERSION}'; git push --tags origin development")
+//   version_file = File.join(Pike::ROOT, %w[lib pike version.rb])
+//   Pike::VERSION =~ /(\d+)\.(\d+)\.(\d+)/
+//   system("sed 's|[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*|#{$1}.#{$2}.#{$3.to_i + 1}|g' < '#{version_file}' > '#{version_file}.out'; rm '#{version_file}'; mv '#{version_file}.out' '#{version_file}'")
+//   system("git commit --all --message='Version #{$1}.#{$2}.#{$3.to_i + 1}'")
+// end
 
 // desc('Push to production, release, and increment version');
 // task('release', ['Log.addFile'], function () {
@@ -51,15 +62,6 @@ task('Log.addFile', function () {
 //     RubyApp::VERSION =~ /(\d+)\.(\d+)\.(\d+)/
 //     system("sed 's|[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*|#{$1}.#{$2}.#{$3.to_i + 1}|g' < '#{version_file}' > '#{version_file}.out'; rm '#{version_file}'; mv '#{version_file}.out' '#{version_file}'")
 //     system("git commit --all --message=\'Version #{$1}.#{$2}.#{$3.to_i + 1}\'")
-// end
-
-// desc 'Pull development, tag, push to development, and increment version'
-// task :push do |task|
-//   system("git checkout development; git pull origin development; git tag -a -m 'Tag #{Pike::VERSION}' '#{Pike::VERSION}'; git push --tags origin development")
-//   version_file = File.join(Pike::ROOT, %w[lib pike version.rb])
-//   Pike::VERSION =~ /(\d+)\.(\d+)\.(\d+)/
-//   system("sed 's|[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*|#{$1}.#{$2}.#{$3.to_i + 1}|g' < '#{version_file}' > '#{version_file}.out'; rm '#{version_file}'; mv '#{version_file}.out' '#{version_file}'")
-//   system("git commit --all --message='Version #{$1}.#{$2}.#{$3.to_i + 1}'")
 // end
 
 require('task/tasks/test')

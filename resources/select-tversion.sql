@@ -1,2 +1,0 @@
-SELECT  tVersion.*
-FROM    tVersion;
