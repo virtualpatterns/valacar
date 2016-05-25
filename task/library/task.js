@@ -11,6 +11,7 @@ const Process = require('library/process');
 const ArgumentError = require('library/errors/argument-error');
 const ProcessError = require('library/errors/process-error');
 
+const REGEXP_PLACEHOLDER = /%d|%j|%s/;
 const REGEXP_SPLIT = /(?:[^\s"]+|"[^"]*")+/g;
 const REGEXP_QUOTE = /^"|"$/g;
 const TYPEOF_STRING = 'string';
@@ -23,93 +24,59 @@ taskPrototype[tasksSymbol] = [];
 
 taskPrototype.add = function(task, options) {
 
+  let argumentsObject = Task.getAddArguments(task, options, arguments);
+
   let _task = task;
   let _options = options || Task.OPTIONS_STDIO_INHERIT;
 
-  switch (typeof task) {
-    case TYPEOF_STRING:
+  if (argumentsObject.isCommand) {
+    this[tasksSymbol].push(function(callback) {
 
-      _task = _task.match(REGEXP_SPLIT);
-      _task = _task.map(function(item) {
-        return item.replace(REGEXP_QUOTE, '');
-      });
+      let error = null;
 
-      let command = _task.shift();
-      let _arguments = _task;
-
-      // if (command != 'echo') {
-      //   this.addEcho('--------------------------------------------------------------------------------', _options);;
-      //   this.addEcho(Utilities.format(' ChildProcess.spawn(%j, %j, %j)', command, _arguments, _options), _options);;
-      //   this.addEcho('--------------------------------------------------------------------------------', _options);;
-      // }
-
-      this[tasksSymbol].push(function(callback) {
-
-        let error = null;
-
-        Log.info('> ChildProcess.spawn(%j, %j, %j)', command, _arguments, _options, {});
-        ChildProcess
-          .spawn(command, _arguments, _options)
-          .on('error', function(_error) {
-            error = _error;
-          })
-          .on('close', function(code) {
-            Log.info('< ChildProcess.spawn(%j, %j, %j)', command, _arguments, _options, {});
-            if (error) {
-              Log.info('             code=%d', code);
-              Log.info('    error.message=%s', error.message);
-              callback(error);
-            }
-            if (code > 0) {
-              Log.info('    code=%d', code);
-              callback(new ProcessError(Utilities.format('The task returned a non-zero result (code=%d).', code)), code);
-            }
-            else {
-              callback(null);
-            }
-          });
-
-        // Log.info('> ChildProcess.exec(%j, options, callback)', task, _options);
-        // ChildProcess.exec(task, _options, function(error, stdout, stderr) {
-        //   Log.info('< ChildProcess.exec(%j, options, callback)', task, _options);
-        //   if (error) {
-        //     Log.info('<   error.message=...\n\n%s', error.message);
-        //     Log.info('<          stderr=...\n\n%s', stderr);
-        //     Log.info('<          stdout=...\n\n%s', stdout);
-        //   }
-        //   callback(error, stdout, stderr);
-        // });
-
-      });
-
-      break;
-    case TYPEOF_FUNCTION:
-
-      switch (task.length) {
-        case 0:
-          _task = function(callback) {
-            try {
-              task();
-            }
-            catch (error) {
-              callback(error);
-              return;
-            }
+      Log.info('> ChildProcess.spawn(%j, %j, %j)', argumentsObject.command, argumentsObject.arguments, argumentsObject.options, {});
+      ChildProcess
+        .spawn(argumentsObject.command, argumentsObject.arguments, argumentsObject.options)
+        .on('error', function(_error) {
+          error = _error;
+        })
+        .on('close', function(code) {
+          Log.info('< ChildProcess.spawn(%j, %j, %j)', argumentsObject.command, argumentsObject.arguments, argumentsObject.options, {});
+          if (error) {
+            Log.info('             code=%d', code);
+            Log.info('    error.message=%s', error.message);
+            callback(error);
+          }
+          if (code > 0) {
+            Log.info('    code=%d', code);
+            callback(new ProcessError(Utilities.format('The command %j returned a non-zero result (code=%d).', Utilities.format('%s %s', argumentsObject.command, argumentsObject.arguments.join(' ')), code)), code);
+          }
+          else {
             callback(null);
-          };
-          break;
-        case 1:
-          _task = task;
-          break;
-        default:
-          throw new ArgumentError('The task takes too many arguments.');
-      }
+          }
+        });
 
-      this[tasksSymbol].push(_task);
+    });
+  }
+  else if (argumentsObject.isFunction) {
 
-      break;
-    default:
-      throw new TypeError('The task is invalid.');
+    let _function = argumentsObject.function;
+
+    if (argumentsObject.function.length == 0) {
+      argumentsObject.function = function(callback) {
+        try {
+          _function();
+        }
+        catch (error) {
+          callback(error);
+          return;
+        }
+        callback(null);
+      };
+    }
+
+    this[tasksSymbol].push(argumentsObject.function);
+
   }
 
   return this;
@@ -168,40 +135,45 @@ Task.getTaskPrototype = function() {
   return taskPrototype;
 };
 
-Task.getAddParameters = function(task, options, _arguments) {
+Task.getAddArguments = function(task, options, _arguments) {
 
-  let parameters = Array.prototype.slice.call(_arguments).slice(2);
+  let argumentsArray = Array.prototype.slice.call(_arguments).slice(2);
 
   switch (typeof task) {
     case TYPEOF_STRING:
 
-      if (!options ||
-          parameters.length == 0) {
+      let command = task;
+      let notOptions = options;
 
-        return {
-          'task': task,
-          'options': options
-        };
+      if (REGEXP_PLACEHOLDER.test(command)) {
 
-      }
-      else {
+        let format = command;
+        let formatArguments = [
+          notOptions
+        ].concat(argumentsArray.slice(0, argumentsArray.length - 1));
+        notOptions = argumentsArray[argumentsArray.length - 1];
 
-        let format = task;
-        let _arguments = [
-          options
-        ].concat(parameters.slice(0, parameters.length - 1));
-        let _options = parameters[parameters.length - 1];
-
-        let _task = Utilities.format.apply(Utilities.format, [format].concat(_arguments));
-
-        return {
-          'task': _task,
-          'options': _options
-        };
+        command = Utilities.format.apply(Utilities.format, [format].concat(formatArguments));
 
       }
 
-      break;
+      let commandArray = command;
+      commandArray = commandArray.match(REGEXP_SPLIT);
+      commandArray = commandArray.map(function(item) {
+        return item.replace(REGEXP_QUOTE, '');
+      });
+
+      command = commandArray.shift();
+      let commandArguments = commandArray;
+
+      return {
+        'isCommand': true,
+        'isFunction': false,
+        'command': command,
+        'arguments': commandArguments,
+        'options': notOptions || Task.OPTIONS_STDIO_INHERIT
+      };
+
     case TYPEOF_FUNCTION:
 
       switch (task.length) {
@@ -209,12 +181,13 @@ Task.getAddParameters = function(task, options, _arguments) {
         case 1:
 
           return {
-            'task': task,
-            'options': null
+            'isCommand': false,
+            'isFunction': true,
+            'function': task
           };
 
         default:
-          throw new ArgumentError('The task takes too many arguments.');
+          throw new ArgumentError('The function takes too many arguments.');
       }
 
       break;

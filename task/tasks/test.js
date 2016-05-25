@@ -4,6 +4,23 @@ const Task = require('task/library/task');
 
 namespace('test', function() {
 
+  desc('Task');
+  task('task', ['Log.addFile'], function (version) {
+    Task.createTask(this.name)
+      .add('ls -al')
+      .add('ls -al', Task.OPTIONS_STDIO_INHERIT)
+      .add('ls %s', '-al')
+      .add('ls %s', '-al', Task.OPTIONS_STDIO_INHERIT)
+      .add(function() {
+        console.log('function() { ... }');
+      })
+      .add(function(callback) {
+        console.log('function(callback) { ... }');
+        callback(null);
+      })
+      .execute(complete, fail);
+  });
+
   desc('Run all tests');
   task('all', ['Log.addFile'], function () {
     Task.createTask(this.name)
