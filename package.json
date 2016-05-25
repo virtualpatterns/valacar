@@ -1,6 +1,6 @@
 {
   "name": "valacar",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Import DHCP leases into a database",
   "bin": "valacar.js",
   "repository": {
