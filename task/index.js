@@ -28,12 +28,19 @@ task('push', ['Log.addFile'], function (version) {
 
   let _version = version || 'patch';
 
+  let _Package = require('package.json');
+
   Task.createTask(this.name)
-    .add('mocha --require test/index.js test/tests', Task.OPTIONS_STDIO_INHERIT)
+    .add('mocha --require test/index.js test/tests')
     .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
     .add('git pull origin development', Task.OPTIONS_STDIO_IGNORE)
     .add('git push origin development --tags', Task.OPTIONS_STDIO_IGNORE)
-    .add(Utilities.format('npm version %s', _version))
+    .add(Utilities.format('npm version %s', _version), Task.OPTIONS_STDIO_IGNORE)
+    .add(function() {
+      delete require.cache[require.resolve('package.json')];
+      _Package = require('package.json');
+    })
+    .addEcho(Utilities.format('Pushed from version %s to %s.', Package.version, _Package.version))
     .execute(complete, fail);
 
 });

@@ -48,7 +48,7 @@ Process.createPID = function(path, callback) {
           FileSystem.unlinkSync(path);
         }
         catch(error) {
-          console.log(Utilities.format('An error occured exiting the process (%s).', error.message));
+          console.log('An error occured exiting the process (%s).', error.message);
         }
 
       });

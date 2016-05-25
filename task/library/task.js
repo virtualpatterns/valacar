@@ -168,4 +168,60 @@ Task.getTaskPrototype = function() {
   return taskPrototype;
 };
 
+Task.getAddParameters = function(task, options, _arguments) {
+
+  let parameters = Array.prototype.slice.call(_arguments).slice(2);
+
+  switch (typeof task) {
+    case TYPEOF_STRING:
+
+      if (!options ||
+          parameters.length == 0) {
+
+        return {
+          'task': task,
+          'options': options
+        };
+
+      }
+      else {
+
+        let format = task;
+        let _arguments = [
+          options
+        ].concat(parameters.slice(0, parameters.length - 1));
+        let _options = parameters[parameters.length - 1];
+
+        let _task = Utilities.format.apply(Utilities.format, [format].concat(_arguments));
+
+        return {
+          'task': _task,
+          'options': _options
+        };
+
+      }
+
+      break;
+    case TYPEOF_FUNCTION:
+
+      switch (task.length) {
+        case 0:
+        case 1:
+
+          return {
+            'task': task,
+            'options': null
+          };
+
+        default:
+          throw new ArgumentError('The task takes too many arguments.');
+      }
+
+      break;
+    default:
+      throw new TypeError('The task is invalid.');
+  }
+
+}
+
 module.exports = Task;

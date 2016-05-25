@@ -47,13 +47,13 @@ Command
 
         Process.exitCode = 1;
         console.error(error.message);
-        console.log(Utilities.format('An error occured installing the database to %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message));
+        console.log('An error occured installing the database to %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message);
 
       }
       else {
 
         Process.exitCode = 0;
-        console.log(Utilities.format('Successfully installed the database to (or updated the database at) %s.', Path.trim(databasePath || DATABASE_PATH)));
+        console.log('Successfully installed the database to (or updated the database at) %s.', Path.trim(databasePath || DATABASE_PATH));
 
       }
 
@@ -89,13 +89,13 @@ Command
 
         Process.exitCode = 1;
         console.error(error.message);
-        console.log(Utilities.format('An error occured uninstalling the database at %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message));
+        console.log('An error occured uninstalling the database at %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message);
 
       }
       else {
 
         Process.exitCode = 0;
-        console.log(Utilities.format('Successfully uninstalled the database at %s.', Path.trim(databasePath || DATABASE_PATH)));
+        console.log('Successfully uninstalled the database at %s.', Path.trim(databasePath || DATABASE_PATH));
 
       }
 
@@ -131,13 +131,13 @@ Command
 
         Process.exitCode = 1;
         console.error(error.message);
-        console.log(Utilities.format('An error occured importing to the database at %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message));
+        console.log('An error occured importing to the database at %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message);
 
       }
       else {
 
         Process.exitCode = 0;
-        console.log(Utilities.format('Successfully imported to the database %s.', Path.trim(databasePath || DATABASE_PATH)));
+        console.log('Successfully imported to the database %s.', Path.trim(databasePath || DATABASE_PATH));
 
       }
 
@@ -173,13 +173,13 @@ Command
 
         Process.exitCode = 1;
         console.error(error.message);
-        console.log(Utilities.format('An error occured cleaning the database at %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message));
+        console.log('An error occured cleaning the database at %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message);
 
       }
       else {
 
         Process.exitCode = 0;
-        console.log(Utilities.format('Successfully cleaned the database at %s.', Path.trim(databasePath || DATABASE_PATH)));
+        console.log('Successfully cleaned the database at %s.', Path.trim(databasePath || DATABASE_PATH));
 
       }
 
@@ -222,13 +222,13 @@ Command
 
         Process.exitCode = 1;
         console.error(error.message);
-        console.log(Utilities.format('An error occured adding the translation for %j to the database at %s (%s).', _from, Path.trim(databasePath || DATABASE_PATH), error.message));
+        console.log('An error occured adding the translation for %j to the database at %s (%s).', _from, Path.trim(databasePath || DATABASE_PATH), error.message);
 
       }
       else {
 
         Process.exitCode = 0;
-        console.log(Utilities.format('Successfully added the translation for %j to the database at %s.', _from, Path.trim(databasePath || DATABASE_PATH)));
+        console.log('Successfully added the translation for %j to the database at %s.', _from, Path.trim(databasePath || DATABASE_PATH));
 
       }
 
@@ -271,13 +271,13 @@ Command
 
         Process.exitCode = 1;
         console.error(error.message);
-        console.log(Utilities.format('An error occured removing the translation for %j to the database at %s (%s).', _from, Path.trim(databasePath || DATABASE_PATH), error.message));
+        console.log('An error occured removing the translation for %j to the database at %s (%s).', _from, Path.trim(databasePath || DATABASE_PATH), error.message);
 
       }
       else {
 
         Process.exitCode = 0;
-        console.log(Utilities.format('Successfully removed the translation for %j to the database at %s.', _from, Path.trim(databasePath || DATABASE_PATH)));
+        console.log('Successfully removed the translation for %j to the database at %s.', _from, Path.trim(databasePath || DATABASE_PATH));
 
       }
 
@@ -313,7 +313,7 @@ Command
 
         Process.exitCode = 1;
         console.error(error.message);
-        console.log(Utilities.format('An error occured outputting a table of translations from the database at %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message));
+        console.log('An error occured outputting a table of translations from the database at %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message);
 
       }
       else
@@ -358,13 +358,13 @@ Command
 
         Process.exitCode = 1;
         console.error(error.message);
-        console.log(Utilities.format('An error occured adding the static DHCP lease %j to the database at %s (%s).', IPAddress, Path.trim(databasePath || DATABASE_PATH), error.message));
+        console.log('An error occured adding the static DHCP lease %j to the database at %s (%s).', IPAddress, Path.trim(databasePath || DATABASE_PATH), error.message);
 
       }
       else {
 
         Process.exitCode = 0;
-        console.log(Utilities.format('Successfully added the static DHCP lease %j to the database at %s.', IPAddress, Path.trim(databasePath || DATABASE_PATH)));
+        console.log('Successfully added the static DHCP lease %j to the database at %s.', IPAddress, Path.trim(databasePath || DATABASE_PATH));
 
       }
 
@@ -407,13 +407,13 @@ Command
 
         Process.exitCode = 1;
         console.error(error.message);
-        console.log(Utilities.format('An error occured removing the static DHCP lease %j from the database at %s (%s).', IPAddress, Path.trim(databasePath || DATABASE_PATH), error.message));
+        console.log('An error occured removing the static DHCP lease %j from the database at %s (%s).', IPAddress, Path.trim(databasePath || DATABASE_PATH), error.message);
 
       }
       else {
 
         Process.exitCode = 0;
-        console.log(Utilities.format('Successfully removed the static DHCP lease %j from the database at %s.', IPAddress, Path.trim(databasePath || DATABASE_PATH)));
+        console.log('Successfully removed the static DHCP lease %j from the database at %s.', IPAddress, Path.trim(databasePath || DATABASE_PATH));
 
       }
 
@@ -449,7 +449,7 @@ Command
 
         Process.exitCode = 1;
         console.error(error.message);
-        console.log(Utilities.format('An error occured outputting a table of active leases from the database at %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message));
+        console.log('An error occured outputting a table of active leases from the database at %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message);
 
       }
       else
@@ -487,7 +487,7 @@ Command
 
         Process.exitCode = 1;
         console.error(error.message);
-        console.log(Utilities.format('An error occured outputting one or more matching leases from the database at %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message));
+        console.log('An error occured outputting one or more matching leases from the database at %s (%s).', Path.trim(databasePath || DATABASE_PATH), error.message);
 
       }
       else
