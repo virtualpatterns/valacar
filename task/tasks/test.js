@@ -5,7 +5,7 @@ const Task = require('task/library/task');
 namespace('test', function() {
 
   desc('Run all tests');
-  task('all', ['Log.addFile'], function () {
+  task('all', ['log'], function () {
     Task.createTask(this.name)
       .add('mocha --require test/index.js \
                   test/tests')
@@ -13,7 +13,7 @@ namespace('test', function() {
   });
 
   desc('Run task tests');
-  task('task', ['Log.addFile'], function () {
+  task('task', ['log'], function () {
     Task.createTask(this.name)
       .add('mocha --require test/index.js \
                   test/tests/00000000000000-begin.js \
@@ -22,7 +22,7 @@ namespace('test', function() {
   });
 
   desc('Run install tests');
-  task('install', ['Log.addFile'], function () {
+  task('install', ['log'], function () {
     Task.createTask(this.name)
       .add('mocha --require test/index.js \
                   test/tests/00000000000000-begin.js \
@@ -31,7 +31,7 @@ namespace('test', function() {
   });
 
   desc('Run install/uninstall tests');
-  task('uninstall', ['Log.addFile'], function () {
+  task('uninstall', ['log'], function () {
     Task.createTask(this.name)
       .add('mocha --require test/index.js \
                   test/tests/00000000000000-begin.js \
@@ -41,7 +41,7 @@ namespace('test', function() {
   });
 
   desc('Run translation tests');
-  task('translation', ['Log.addFile'], function () {
+  task('translation', ['log'], function () {
     Task.createTask(this.name)
       .add('mocha --require test/index.js \
                   test/tests/00000000000000-begin.js \

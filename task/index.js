@@ -19,12 +19,12 @@ task('default', function () {
 });
 
 desc(Utilities.format('Log.addFile(%j)', Path.trim(LOG_PATH)));
-task('Log.addFile', function () {
+task('log', function () {
   Log.addFile(LOG_PATH);
 });
 
 desc('Push to development');
-task('push', ['Log.addFile'], function (version) {
+task('push', ['log'], function (version) {
   Task.createTask(this.name)
     .add('mocha --require test/index.js test/tests')
     .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
@@ -44,7 +44,7 @@ task('push', ['Log.addFile'], function (version) {
 // end
 
 // desc('Push to production, release, and increment version');
-// task('release', ['Log.addFile'], function () {
+// task('release', ['log'], function () {
 //   Task.createTask(this.name)
 //     .add('git checkout production')
 //     .add('git pull origin production')
