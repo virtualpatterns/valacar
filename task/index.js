@@ -27,10 +27,10 @@ desc('Push to development');
 task('push', ['log'], function (version) {
   Task.createTask(this.name)
     .add('mocha --require test/index.js test/tests')
+    .add('npm --no-git-tag-version version %s', version || 'prerelease', Task.OPTIONS_STDIO_IGNORE)
     .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
     .add('git pull origin development', Task.OPTIONS_STDIO_IGNORE)
     .add('git push origin development --tags', Task.OPTIONS_STDIO_IGNORE)
-    // .add('npm --no-git-tag-version version %s', version || 'prepatch', Task.OPTIONS_STDIO_IGNORE)
     .execute(complete, fail);
 });
 
