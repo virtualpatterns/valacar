@@ -30,7 +30,7 @@ task('push', ['log'], function (version) {
     .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
     .add('git pull origin development', Task.OPTIONS_STDIO_IGNORE)
     .add('git push origin development --tags', Task.OPTIONS_STDIO_IGNORE)
-    // .add('npm version %s', version || 'patch', Task.OPTIONS_STDIO_IGNORE)
+    // .add('npm --no-git-tag-version version %s', version || 'prepatch', Task.OPTIONS_STDIO_IGNORE)
     .execute(complete, fail);
 });
 
