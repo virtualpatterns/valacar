@@ -11,6 +11,7 @@ const Process = require('library/process');
 const Task = require('task/library/task');
 
 const LOG_PATH = Path.join(Process.cwd(), 'process', 'log', Utilities.format('%s.jake.log', Package.name));
+const RESOURCES_PATH = Path.join(__dirname, 'resources');
 
 task('default', function () {
   Task.createTask(this.name)
@@ -26,6 +27,7 @@ task('log', function () {
 desc('Push to development');
 task('push', ['log'], function (version) {
   Task.createTask(this.name)
+    .add('%j', Path.join(RESOURCES_PATH, 'git-is-dirty.sh'), Task.OPTIONS_STDIO_IGNORE)
     .add('mocha --require test/index.js test/tests')
     .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
     .add('git pull origin development', Task.OPTIONS_STDIO_IGNORE)
@@ -34,6 +36,20 @@ task('push', ['log'], function (version) {
     .add('echo "done"')
     .add('git push origin development --tags', Task.OPTIONS_STDIO_IGNORE)
     .add('npm version %s --no-git-tag-version', version || 'prerelease', Task.OPTIONS_STDIO_IGNORE)
+    .execute(complete, fail);
+});
+
+desc('Release production');
+task('release', ['log'], function (version) {
+  Task.createTask(this.name)
+    .add(Path.join(RESOURCES_PATH, 'git-is-dirty.sh'), Task.OPTIONS_STDIO_IGNORE)
+    // .add('mocha --require test/index.js test/tests')
+    // .add('git checkout production')
+    // .add('git pull origin production')
+    // .add('git merge origin development')
+    // .add('npm publish')
+    // .add('git push origin production --tags')
+    // .add('git checkout development')
     .execute(complete, fail);
 });
 
@@ -52,7 +68,7 @@ task('push', ['log'], function (version) {
 //     .add('git checkout production')
 //     .add('git pull origin production')
 //     .add('git merge origin development')
-//     .add('git push origin production')
+  //     .add('git push origin production')
 //     // .add('npm release')
 //     .add('git checkout development')
 //     .add('git status')
