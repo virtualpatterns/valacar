@@ -36,8 +36,8 @@ task('push', ['log'], function (version) {
     .add('git tag --annotate "v%s" --message "Pushing v%s"', Package.version, Package.version, Task.OPTIONS_STDIO_IGNORE)
     .add('git push origin development --tags', Task.OPTIONS_STDIO_IGNORE)
     .add('npm version %s --no-git-tag-version', version || 'prerelease', Task.OPTIONS_STDIO_IGNORE)
-    .add('git add package.json')
-    .add('git commit --message "Committing new version"')
+    .add('git add package.json', Task.OPTIONS_STDIO_IGNORE)
+    .add('git commit --message "Committing new version"', Task.OPTIONS_STDIO_IGNORE)
     .execute(complete, fail);
 });
 
