@@ -13,6 +13,8 @@ const Task = require('task/library/task');
 const LOG_PATH = Path.join(Process.cwd(), 'process', 'log', Utilities.format('%s.jake.log', Package.name));
 const RESOURCES_PATH = Path.join(__dirname, 'resources');
 
+const GIT_IS_DIRTY_PATH = Utilities.format('%j', Path.join(RESOURCES_PATH, 'git-is-dirty.sh'));
+
 task('default', function () {
   Task.createTask(this.name)
     .add('jake --tasks')
@@ -27,7 +29,7 @@ task('log', function () {
 desc('Push to development');
 task('push', ['log'], function (version) {
   Task.createTask(this.name)
-    .add('%j', Path.join(RESOURCES_PATH, 'git-is-dirty.sh'))
+    .add(GIT_IS_DIRTY_PATH)
     .add('mocha --require test/index.js test/tests')
     .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
     .add('git pull origin development', Task.OPTIONS_STDIO_IGNORE)
@@ -40,7 +42,7 @@ task('push', ['log'], function (version) {
 desc('Release production');
 task('release', ['log'], function () {
   Task.createTask(this.name)
-    // .add('%j', Path.join(RESOURCES_PATH, 'git-is-dirty.sh'))
+    // .add(GIT_IS_DIRTY_PATH)
     // .add('mocha --require test/index.js test/tests')
     // .add('git checkout production')
     // .add('git pull origin production')

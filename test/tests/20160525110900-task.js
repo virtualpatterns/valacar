@@ -20,19 +20,22 @@ const REGEXP_FILE = /^.*20160525110900-task\.js.*$/m;
 
 const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
 
+const NON_ZERO_RESULT_PATH = Utilities.format('%j', Path.join(RESOURCES_PATH, 'non-zero-result.sh'));
+const ZERO_RESULT_PATH = Utilities.format('%j', Path.join(RESOURCES_PATH, 'zero-result.sh'));
+
 describe('Task (without options)', function() {
 
-  // it('should execute a command without substitutions and without options', function (callback) {
-  //   Task.createTask()
-  //     .add('ls -al ./test/tests')
-  //     .execute(callback);
-  // });
-  
-  // it('should execute a command with substitutions and without options', function (callback) {
-  //   Task.createTask()
-  //     .add('ls -al %j', __dirname)
-  //     .execute(callback);
-  // });
+  it('should execute a command without substitutions and without options', function (callback) {
+    Task.createTask()
+      .add(ZERO_RESULT_PATH)
+      .execute(callback);
+  });
+
+  it('should execute a command with substitutions and without options', function (callback) {
+    Task.createTask()
+    .add('%s', ZERO_RESULT_PATH)
+      .execute(callback);
+  });
 
   it('should execute a function without arguments', function (callback) {
     Task.createTask()
@@ -145,7 +148,7 @@ describe('Task (with options)', function() {
 
   it('should generate a ProcessError on a command that returns a non-zero result', function (callback) {
     Task.createTask()
-      .add('%j', Path.join(RESOURCES_PATH, Utilities.format('%s.sh', Path.basename(__filename, '.js'))), options)
+      .add(NON_ZERO_RESULT_PATH, options)
       .execute(function(error) {
         if (!error)
           callback(new Error('The command returned a non-zero result but did not generate a ProcessError.'));
