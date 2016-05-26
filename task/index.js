@@ -26,11 +26,14 @@ task('log', function () {
 desc('Push to development');
 task('push', ['log'], function (version) {
   Task.createTask(this.name)
-    .add('npm version %s', version || 'prerelease', Task.OPTIONS_STDIO_INHERIT)
     .add('mocha --require test/index.js test/tests')
     .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
     .add('git pull origin development', Task.OPTIONS_STDIO_IGNORE)
-    .add('git push --tags origin development', Task.OPTIONS_STDIO_IGNORE)
+    .add('echo -n "Tagging v%s ..."', Package.version)
+    .add('git tag --annotate "v%s" --message "Pushing v%s"', Package.version, Package.version, Task.OPTIONS_STDIO_IGNORE)
+    .add('echo "done"', Package.version)
+    .add('git push origin development --tags', Task.OPTIONS_STDIO_IGNORE)
+    .add('npm version %s --no-git-tag-version', version || 'prerelease', Task.OPTIONS_STDIO_IGNORE)
     .execute(complete, fail);
 });
 
