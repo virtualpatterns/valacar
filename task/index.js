@@ -47,7 +47,7 @@ task('release', ['log'], function () {
     .add(GIT_IS_DIRTY_PATH)
     .add('git checkout production')
     .add('git pull origin production')
-    .add('git merge origin development')
+    .add('git merge development')
     .add('mocha --require test/index.js test/tests')
     .add('git push origin production --tags')
     .add('npm publish')
