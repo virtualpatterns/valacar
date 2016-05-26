@@ -30,7 +30,7 @@ task('push', ['log'], function (version) {
     .add('mocha --require test/index.js test/tests')
     .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
     .add('git pull origin development', Task.OPTIONS_STDIO_IGNORE)
-    .add('git push origin development', Task.OPTIONS_STDIO_IGNORE)
+    .add('git push --tags origin development', Task.OPTIONS_STDIO_IGNORE)
     .execute(complete, fail);
 });
 
