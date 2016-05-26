@@ -22,17 +22,17 @@ const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'r
 
 describe('Task (without options)', function() {
 
-  it('should execute a command without substitutions and without options', function (callback) {
-    Task.createTask()
-      .add('ls -al ./test/tests')
-      .execute(callback);
-  });
-
-  it('should execute a command with substitutions and without options', function (callback) {
-    Task.createTask()
-      .add('ls -al %j', __dirname)
-      .execute(callback);
-  });
+  // it('should execute a command without substitutions and without options', function (callback) {
+  //   Task.createTask()
+  //     .add('ls -al ./test/tests')
+  //     .execute(callback);
+  // });
+  
+  // it('should execute a command with substitutions and without options', function (callback) {
+  //   Task.createTask()
+  //     .add('ls -al %j', __dirname)
+  //     .execute(callback);
+  // });
 
   it('should execute a function without arguments', function (callback) {
     Task.createTask()
