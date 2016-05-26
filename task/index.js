@@ -45,13 +45,13 @@ desc('Release production');
 task('release', ['log'], function () {
   Task.createTask(this.name)
     .add(GIT_IS_DIRTY_PATH)
-    .add('git checkout production')
-    .add('git pull origin production')
-    .add('git merge development')
+    .add('git checkout production', Task.OPTIONS_STDIO_IGNORE)
+    .add('git pull origin production', Task.OPTIONS_STDIO_IGNORE)
+    .add('git merge development', Task.OPTIONS_STDIO_IGNORE)
     .add('mocha --require test/index.js test/tests')
-    .add('git push origin production --tags')
-    .add('npm publish')
-    .add('git checkout development')
+    .add('git push origin production --tags', Task.OPTIONS_STDIO_IGNORE)
+    .add('npm publish', Task.OPTIONS_STDIO_IGNORE)
+    .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
     .execute(complete, fail);
 });
 
