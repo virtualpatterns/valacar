@@ -42,14 +42,14 @@ task('push', ['log'], function (version) {
 desc('Release production');
 task('release', ['log'], function () {
   Task.createTask(this.name)
-    // .add(GIT_IS_DIRTY_PATH)
-    // .add('mocha --require test/index.js test/tests')
-    // .add('git checkout production')
-    // .add('git pull origin production')
-    // .add('git merge origin development')
-    // .add('git push origin production --tags')
-    // .add('npm publish')
-    // .add('git checkout development')
+    .add(GIT_IS_DIRTY_PATH)
+    .add('git checkout production')
+    .add('git pull origin production')
+    .add('git merge origin development')
+    .add('mocha --require test/index.js test/tests')
+    .add('git push origin production --tags')
+    .add('npm publish')
+    .add('git checkout development')
     .execute(complete, fail);
 });
 
