@@ -40,7 +40,7 @@ task('push', ['log'], function (version) {
 });
 
 desc('Release production');
-task('release', ['log'], function (version) {
+task('release', ['log'], function () {
   Task.createTask(this.name)
     .add('%j', Path.join(RESOURCES_PATH, 'git-is-dirty.sh'))
     .add('mocha --require test/index.js test/tests')
