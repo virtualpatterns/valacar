@@ -144,7 +144,6 @@ describe('Task (with options)', function() {
   });
 
   it('should generate a ProcessError on a command that returns a non-zero result', function (callback) {
-    const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
     Task.createTask()
       .add('%j', Path.join(RESOURCES_PATH, Utilities.format('%s.sh', Path.basename(__filename, '.js'))), options)
       .execute(function(error) {

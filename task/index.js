@@ -27,7 +27,7 @@ task('log', function () {
 desc('Push to development');
 task('push', ['log'], function (version) {
   Task.createTask(this.name)
-    .add('%j', Path.join(RESOURCES_PATH, 'git-is-dirty.sh'), Task.OPTIONS_STDIO_IGNORE)
+    .add('%j', Path.join(RESOURCES_PATH, 'git-is-dirty.sh'))
     .add('mocha --require test/index.js test/tests')
     .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
     .add('git pull origin development', Task.OPTIONS_STDIO_IGNORE)
@@ -42,7 +42,7 @@ task('push', ['log'], function (version) {
 desc('Release production');
 task('release', ['log'], function (version) {
   Task.createTask(this.name)
-    .add(Path.join(RESOURCES_PATH, 'git-is-dirty.sh'), Task.OPTIONS_STDIO_IGNORE)
+    .add('%j', Path.join(RESOURCES_PATH, 'git-is-dirty.sh'))
     // .add('mocha --require test/index.js test/tests')
     // .add('git checkout production')
     // .add('git pull origin production')

@@ -16,7 +16,9 @@ git \
 
 if [ -s "$SCRIPT_OUT" ];
 then
+  echo "There are changes not staged for commit or changes to be committed."
   exit 1
 else
+  echo "There is nothing to commit, the working directory clean."
   exit 0
 fi
