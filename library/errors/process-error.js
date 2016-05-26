@@ -1,10 +1,11 @@
 'use strict';
 
-function ProcessError(message) {
+function ProcessError(message, code) {
   Error.call(this);
   Error.captureStackTrace(this, ProcessError);
 
   this.message = message;
+  this.code = code;
 
 }
 

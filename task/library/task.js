@@ -3,6 +3,7 @@
 const Asynchronous = require('async');
 const ChildProcess = require('child_process');
 const FileSystem = require('fs');
+const Path = require('library/path');
 const Utilities = require('util');
 
 const Log = require('library/log');
@@ -34,14 +35,14 @@ taskPrototype.add = function(task, options) {
 
       let error = null;
 
-      Log.info('> ChildProcess.spawn(%j, %j, %j)', argumentsObject.command, argumentsObject.arguments, argumentsObject.options, {});
+      Log.info('> ChildProcess.spawn(%j, %j, options)', argumentsObject.command, argumentsObject.arguments);
       ChildProcess
         .spawn(argumentsObject.command, argumentsObject.arguments, argumentsObject.options)
         .on('error', function(_error) {
           error = _error;
         })
         .on('close', function(code) {
-          Log.info('< ChildProcess.spawn(%j, %j, %j)', argumentsObject.command, argumentsObject.arguments, argumentsObject.options, {});
+          Log.info('< ChildProcess.spawn(%j, %j, options)', argumentsObject.command, argumentsObject.arguments);
           if (error) {
             Log.info('             code=%d', code);
             Log.info('    error.message=%s', error.message);
@@ -49,7 +50,7 @@ taskPrototype.add = function(task, options) {
           }
           if (code > 0) {
             Log.info('    code=%d', code);
-            callback(new ProcessError(Utilities.format('The command %j returned a non-zero result (code=%d).', Utilities.format('%s %s', argumentsObject.command, argumentsObject.arguments.join(' ')), code)), code);
+            callback(new ProcessError(Utilities.format('The command %j returned a non-zero result (code=%d).', Utilities.format('%s %s', argumentsObject.command, argumentsObject.arguments.join(' ')), code), code));
           }
           else {
             callback(null);
@@ -83,11 +84,6 @@ taskPrototype.add = function(task, options) {
 
 };
 
-taskPrototype.addEcho = function(message, options) {
-  this.add(Utilities.format('echo "%s"', message), options);
-  return this;
-};
-
 taskPrototype.execute = function(resolve, reject) {
   Asynchronous.series(this[tasksSymbol], function(error) {
     if (error)
@@ -99,14 +95,26 @@ taskPrototype.execute = function(resolve, reject) {
 
 const Task = Object.create({});
 
+Object.defineProperty(Task, 'IGNORE', {
+  'enumerable': true,
+  'writable': false,
+  'value': 'ignore'
+});
+
+Object.defineProperty(Task, 'INHERIT', {
+  'enumerable': true,
+  'writable': false,
+  'value': 'inherit'
+});
+
 Object.defineProperty(Task, 'OPTIONS_STDIO_INHERIT', {
   'enumerable': true,
   'writable': false,
   'value': {
     'stdio': [
-      'inherit',
-      'inherit',
-      'inherit'
+      Task.INHERIT,
+      Task.INHERIT,
+      Task.INHERIT
     ]
   }
 });
@@ -116,15 +124,20 @@ Object.defineProperty(Task, 'OPTIONS_STDIO_IGNORE', {
   'writable': false,
   'value': {
     'stdio': [
-      'ignore',
-      'ignore',
-      'ignore'
+      Task.IGNORE,
+      Task.IGNORE,
+      Task.IGNORE
     ]
   }
 });
 
 Task.createTask = function() {
-  return Object.create(taskPrototype);
+
+  let task = Object.create(taskPrototype);
+  task[tasksSymbol] = [];
+
+  return task;
+
 };
 
 Task.isTask = function(task) {

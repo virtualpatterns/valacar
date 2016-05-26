@@ -126,11 +126,12 @@ Database.delete = function(callback) {
     Log.info('< FileSystem.access(%j, FileSystem.F_OK, callback)', Path.trim(_this.DATABASE_PATH));
     if (error) {
       Log.info('    error.message=%j', error.message);
-      Log.info('       error.name=%j', error.name);
       callback(null);
     }
-    else
+    else {
+      Log.info('> FileSystem.unlink(%j, callback)', Path.trim(_this.DATABASE_PATH));
       FileSystem.unlink(_this.DATABASE_PATH, callback);
+    }
   });
 
 };
