@@ -26,28 +26,39 @@ task('log', function () {
   Log.addFile(LOG_PATH);
 });
 
-desc('Push to development');
+desc('Merge origin, tag, push, increment version');
 task('push', ['log'], function (version) {
   Task.createTask(this.name)
     .add(GIT_IS_DIRTY_PATH)
     .add('mocha --require test/index.js test/tests')
     .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
     .add('git pull origin development', Task.OPTIONS_STDIO_IGNORE)
-    .add('git tag --annotate "v%s" --message "Pushing v%s"', Package.version, Package.version, Task.OPTIONS_STDIO_IGNORE)
+    .add('git tag --annotate "v%s" --message "v%s"', Package.version, Package.version, Task.OPTIONS_STDIO_IGNORE)
     .add('git push origin development --tags', Task.OPTIONS_STDIO_IGNORE)
     .add('npm version %s --no-git-tag-version', version || 'prerelease', Task.OPTIONS_STDIO_IGNORE)
-    .add('git add package.json', Task.OPTIONS_STDIO_IGNORE)
-    .add('git commit --message "Committing new version"', Task.OPTIONS_STDIO_IGNORE)
     .execute(complete, fail);
 });
 
-desc('Release production');
+desc('Stage development');
+task('stage', ['log'], function () {
+  Task.createTask(this.name)
+    .add(GIT_IS_DIRTY_PATH)
+    .add('git checkout staging', Task.OPTIONS_STDIO_IGNORE)
+    .add('git pull origin staging', Task.OPTIONS_STDIO_IGNORE)
+    .add('git merge development', Task.OPTIONS_STDIO_IGNORE)
+    .add('mocha --require test/index.js test/tests')
+    .add('git push origin staging --tags', Task.OPTIONS_STDIO_IGNORE)
+    .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
+    .execute(complete, fail);
+});
+
+desc('Release staging');
 task('release', ['log'], function () {
   Task.createTask(this.name)
     .add(GIT_IS_DIRTY_PATH)
     .add('git checkout production', Task.OPTIONS_STDIO_IGNORE)
     .add('git pull origin production', Task.OPTIONS_STDIO_IGNORE)
-    .add('git merge development', Task.OPTIONS_STDIO_IGNORE)
+    .add('git merge staging', Task.OPTIONS_STDIO_IGNORE)
     .add('mocha --require test/index.js test/tests')
     .add('git push origin production --tags', Task.OPTIONS_STDIO_IGNORE)
     .add('npm publish', Task.OPTIONS_STDIO_IGNORE)
