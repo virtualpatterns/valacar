@@ -1,12 +1,8 @@
-#!/usr/bin/env node
-
 'use strict';
 
-require('./index');
+require('library/errors/libraries');
 
-require('library/libraries');
-
-console.log('--- . --------------------------------------------------------------------------')
+console.log('--- ./library ------------------------------------------------------------------')
 console.log(require.resolve('library/errors/argument-error'));
 console.log(require.resolve('library/errors/migration-error'));
 console.log(require.resolve('library/errors/process-error'));
