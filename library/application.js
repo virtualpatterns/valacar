@@ -43,17 +43,7 @@ Application.uninstall = function (databasePath, options, callback) {
 
 Application.import = function (filePath, databasePath, options, callback) {
   this.executeTask(databasePath, options, function(connection, callback) {
-    Asynchronous.waterfall([
-      // function(callback) {
-      //   Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-tlease.sql'), {
-      //     $From: Database.MINIMUM_DATE.toISOString(),
-      //     $To: Database.MINIMUM_DATE.toISOString()
-      //   }, callback);
-      // },
-      function(callback) {
-        Leases.import(connection, filePath, callback);
-      }
-    ], callback);
+    Leases.import(connection, filePath, callback);
   }, callback);
 };
 

@@ -1,8 +1,11 @@
 {
   "name": "valacar",
-  "version": "0.0.2-11",
+  "version": "0.0.2-12",
   "description": "Import DHCP leases into a database",
-  "bin": "valacar.js",
+  "bin": {
+    "valacar": "./valacar.js",
+    "valacar-libraries": "./libraries.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/virtualpatterns/valacar"
