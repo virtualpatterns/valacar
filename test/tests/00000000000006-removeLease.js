@@ -3,10 +3,10 @@
 const Asynchronous = require('async');
 const Utilities = require('util');
 
-const Application = require('test/library/application');
-const Database = require('test/library/database');
+const Application = require('../library/application');
+const Database = require('../library/database');
 
-const ValidationError = require('library/errors/validation-error');
+const ValidationError = require('../../library/errors/validation-error');
 
 const VALID_ADDRESS = '1.2.3.4';
 const INVALID_ADDRESS = 'a.b.c.d';

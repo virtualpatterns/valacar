@@ -5,8 +5,8 @@ const FileSystem = require('fs');
 const SQLite = require('sqlite3');
 const Utilities = require('util');
 
-const Log = require('library/log');
-const Path = require('library/path');
+const Log = require('./log');
+const Path = require('./path');
 
 const Database = Object.create(SQLite);
 

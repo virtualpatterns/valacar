@@ -5,13 +5,13 @@ const FileSystem = require('fs');
 const Stream = require('stream');
 const Utilities = require('util');
 
-const Log = require('library/log');
-const Path = require('library/path');
-const Process = require('library/process');
-const Task = require('task/library/task');
+const Log = require('../../library/log');
+const Path = require('../../library/path');
+const Process = require('../../library/process');
+const Task = require('../../task/library/task');
 
-const ArgumentError = require('library/errors/argument-error');
-const ProcessError = require('library/errors/process-error');
+const ArgumentError = require('../../library/errors/argument-error');
+const ProcessError = require('../../library/errors/process-error');
 
 const OPTIONS_STDIO_STDOUT_PATH = Path.join(Process.cwd(), 'process', 'output', 'task.out');
 const OPTIONS_STDIO_STDERR_PATH = Path.join(Process.cwd(), 'process', 'output', 'task.err');

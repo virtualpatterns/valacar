@@ -3,8 +3,8 @@
 const Asynchronous = require('async');
 const Utilities = require('util');
 
-const Application = require('test/library/application');
-const Database = require('test/library/database');
+const Application = require('../library/application');
+const Database = require('../library/database');
 
 const REGEXP_02AA01AB44120TQ1 = /.*02AA01AB44120TQ1.*/m;
 const REGEXP_NEST = /.*\(Nest\).*/m;

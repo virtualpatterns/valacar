@@ -1,6 +1,6 @@
 'use strict';
 
-const Task = require('task/library/task');
+const Task = require('../library/task');
 
 namespace('test', function() {
 

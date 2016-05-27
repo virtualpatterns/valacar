@@ -5,13 +5,13 @@ const Assert = require('assert');
 const Table = require('cli-table');
 const Utilities = require('util');
 
-const Database = require('library/database');
-const Leases = require('library/leases');
-const Log = require('library/log');
-const Migration = require('library/migration');
-const Path = require('library/path');
+const Database = require('./database');
+const Leases = require('./leases');
+const Log = require('./log');
+const Migration = require('./migration');
+const Path = require('./path');
 
-const ValidationError = require('library/errors/validation-error');
+const ValidationError = require('./errors/validation-error');
 
 const Application = Object.create({});
 

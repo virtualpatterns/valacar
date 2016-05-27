@@ -23,7 +23,6 @@
   "author": "code@virtualpatterns.com",
   "license": "ISC",
   "dependencies": {
-    "app-module-path": "^1.0.6",
     "async": "^2.0.0-rc.3",
     "cli-table": "^0.3.1",
     "commander": "^2.9.0",

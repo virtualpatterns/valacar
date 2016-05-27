@@ -1,11 +1,11 @@
 'use strict';
 
 const Asynchronous = require('async');
-const Package = require('package.json');
+const Package = require('../../package.json');
 
-const Database = require('library/database');
-const Migration = require('library/migration');
-const Path = require('library/path');
+const Database = require('..//database');
+const Migration = require('..//migration');
+const Path = require('..//path');
 
 const MIGRATION_NAME = Path.basename(__filename, '.js');
 const RESOURCES_PATH = Path.join(__dirname, MIGRATION_NAME, 'resources');

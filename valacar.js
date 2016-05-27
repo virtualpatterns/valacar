@@ -8,11 +8,11 @@ const Asynchronous = require('async');
 const Command = require('commander');
 const Utilities = require('util');
 
-const Application = require('library/application');
-const Log = require('library/log');
-const Package = require('package.json');
-const Path = require('library/path');
-const Process = require('library/process');
+const Application = require('./library/application');
+const Log = require('./library/log');
+const Package = require('./package.json');
+const Path = require('./library/path');
+const Process = require('./library/process');
 
 const DATABASE_PATH = Path.join(Process.cwd(), 'process', 'data', Utilities.format('%s.%s', Package.name, 'db'));
 const LEASES_PATH = Path.join(Process.cwd(), 'dhcpd.leases');

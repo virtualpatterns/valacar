@@ -4,11 +4,11 @@ require('../index');
 
 const Utilities = require('util');
 
-const Log = require('library/log');
-const Package = require('package.json');
-const Path = require('library/path');
-const Process = require('library/process');
-const Task = require('task/library/task');
+const Log = require('../library/log');
+const Package = require('../package.json');
+const Path = require('../library/path');
+const Process = require('../library/process');
+const Task = require('./library/task');
 
 const LOG_PATH = Path.join(Process.cwd(), 'process', 'log', Utilities.format('%s.jake.log', Package.name));
 const RESOURCES_PATH = Path.join(__dirname, 'resources');
@@ -97,4 +97,4 @@ task('release', ['log'], function () {
 //     system("git commit --all --message=\'Version #{$1}.#{$2}.#{$3.to_i + 1}\'")
 // end
 
-require('task/tasks/test')
+require('./tasks/test')

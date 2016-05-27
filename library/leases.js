@@ -5,8 +5,8 @@ const FileSystem = require('fs');
 const _Leases = require('dhcpd-leases');
 const Path = require('path');
 
-const Database = require('library/database');
-const Log = require('library/log');
+const Database = require('./database');
+const Log = require('./log');
 
 const RESOURCES_PATH = Path.join(__dirname, 'resources');
 

@@ -3,10 +3,10 @@
 const Asynchronous = require('async');
 const Utilities = require('util');
 
-const Application = require('test/library/application');
-const Database = require('test/library/database');
+const Application = require('../library/application');
+const Database = require('../library/database');
 
-const ValidationError = require('library/errors/validation-error');
+const ValidationError = require('../../library/errors/validation-error');
 
 const VALID_FROM = '01:ab:23:cd:45:ef';
 const INVALID_FROM = '@1:ab:23:cd:45:ef';

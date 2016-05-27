@@ -3,12 +3,12 @@
 const Assert = require('assert');
 const Asynchronous = require('async');
 const FileSystem = require('fs');
-const Package = require('package.json');
+const Package = require('../package.json');
 const Utilities = require('util');
 
-const Database = require('library/database');
-const Log = require('library/log');
-const Path = require('library/path');
+const Database = require('./database');
+const Log = require('./log');
+const Path = require('./path');
 
 const RESOURCES_PATH = Path.join(__dirname, 'resources');
 const MIGRATIONS_PATH = Path.join(__dirname, 'migrations');

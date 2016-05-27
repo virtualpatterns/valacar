@@ -3,11 +3,11 @@
 const FileSystem = require('fs');
 const Utilities = require('util');
 
-const _Database = require('library/database');
-const Log = require('library/log');
-const Package = require('package.json');
-const Path = require('library/path');
-const Process = require('library/process');
+const _Database = require('../../library/database');
+const Log = require('../../library/log');
+const Package = require('../../package.json');
+const Path = require('../../library/path');
+const Process = require('../../library/process');
 
 const RESOURCES_PATH = Path.join(__dirname, 'resources');
 

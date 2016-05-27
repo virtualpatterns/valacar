@@ -3,14 +3,14 @@
 const Asynchronous = require('async');
 const ChildProcess = require('child_process');
 const FileSystem = require('fs');
-const Path = require('library/path');
 const Utilities = require('util');
 
-const Log = require('library/log');
-const Process = require('library/process');
+const Log = require('../../library/log');
+const Path = require('../../library/path');
+const Process = require('../../library/process');
 
-const ArgumentError = require('library/errors/argument-error');
-const ProcessError = require('library/errors/process-error');
+const ArgumentError = require('../../library/errors/argument-error');
+const ProcessError = require('../../library/errors/process-error');
 
 const REGEXP_PLACEHOLDER = /%d|%j|%s/;
 const REGEXP_SPLIT = /(?:[^\s"]+|"[^"]*")+/g;

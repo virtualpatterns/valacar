@@ -5,14 +5,14 @@ const ChildProcess = require('child_process');
 const FileSystem = require('fs');
 const Utilities = require('util');
 
-const _Application = require('library/application');
-const Database = require('test/library/database');
-const Log = require('library/log');
-const Package = require('package.json');
-const Path = require('library/path');
-const Process = require('library/process');
+const _Application = require('../../library/application');
+const Database = require('./database');
+const Log = require('../../library/log');
+const Package = require('../../package.json');
+const Path = require('../../library/path');
+const Process = require('../../library/process');
 
-const ProcessError = require('library/errors/process-error');
+const ProcessError = require('../../library/errors/process-error');
 
 const LOG_PATH = Path.join(Process.cwd(), 'process', 'log', Utilities.format('%s.test.log', Package.name));
 const REGEXP_SPLIT = /(?:[^\s"]+|"[^"]*")+/g;

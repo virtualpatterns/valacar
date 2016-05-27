@@ -3,7 +3,7 @@
 const Utilities = require('util');
 const Winston = require('winston');
 
-const Path = require('library/path');
+const Path = require('./path');
 
 const Log = Object.create(Winston);
 

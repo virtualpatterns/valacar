@@ -3,9 +3,9 @@
 const Asynchronous = require('async');
 const Utilities = require('util');
 
-const Application = require('test/library/application');
-const Database = require('test/library/database');
-const Path = require('library/path');
+const Application = require('../library/application');
+const Database = require('../library/database');
+const Path = require('../../library/path');
 
 const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
 const LEASES_PATH = Path.join(RESOURCES_PATH, 'dhcpd.leases');
