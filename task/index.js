@@ -51,8 +51,8 @@ task('stage', ['log'], function () {
 
 desc('Release staging');
 task('release', ['log'], function () {
-  Task.createTask(this.fullName)
-    .add(GIT_IS_DIRTY_PATH)
+  GitTask.createTask(this.fullName)
+    .addIsDirty()
     .add('git checkout staging', Task.OPTIONS_STDIO_IGNORE)
     .add('git pull origin staging')
     .add('git checkout production', Task.OPTIONS_STDIO_IGNORE)
