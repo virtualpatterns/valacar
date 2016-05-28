@@ -97,4 +97,5 @@ task('release', ['log'], function () {
 //     system("git commit --all --message=\'Version #{$1}.#{$2}.#{$3.to_i + 1}\'")
 // end
 
+require('task/tasks/run')
 require('task/tasks/test')

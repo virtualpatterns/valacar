@@ -3,16 +3,16 @@
 const Asynchronous = require('async');
 const ChildProcess = require('child_process');
 const FileSystem = require('fs');
-const Path = require('library/path');
 const Utilities = require('util');
 
 const Log = require('library/log');
+const Path = require('library/path');
 const Process = require('library/process');
 
 const ArgumentError = require('library/errors/argument-error');
 const ProcessError = require('library/errors/process-error');
 
-const REGEXP_PLACEHOLDER = /%d|%j|%s/;
+const REGEXP_PLACEHOLDER = /%d|%j|%s/g;
 const REGEXP_SPLIT = /(?:[^\s"]+|"[^"]*")+/g;
 const REGEXP_QUOTE = /^"|"$/g;
 const TYPEOF_STRING = 'string';
@@ -161,10 +161,12 @@ Task.getAddArguments = function(task, options, _arguments) {
       if (REGEXP_PLACEHOLDER.test(command)) {
 
         let format = command;
+        let numberOfPlaceholders = format.match(REGEXP_PLACEHOLDER).length;
+
         let formatArguments = [
           notOptions
-        ].concat(argumentsArray.slice(0, argumentsArray.length - 1));
-        notOptions = argumentsArray[argumentsArray.length - 1];
+        ].concat(argumentsArray.slice(0, numberOfPlaceholders - 1));
+        notOptions = argumentsArray[numberOfPlaceholders - 1];
 
         command = Utilities.format.apply(Utilities.format, [format].concat(formatArguments));
 

@@ -11,13 +11,6 @@
     "url": "https://github.com/virtualpatterns/valacar"
   },
   "scripts": {
-    "setup": "node valacar.js install",
-    "teardown": "node valacar.js uninstall",
-    "import": "scp PIGWIDGEON.local:/var/lib/dhcp/dhcpd.leases ./process/data && node valacar.js import ./process/data/dhcpd.leases",
-    "clean": "node valacar.js clean",
-    "dumpLeases": "node valacar.js dumpLeases",
-    "dumpLeasesWhere": "node valacar.js dumpLeasesWhere",
-    "dumpTranslations": "node valacar.js dumpTranslations",
     "test": "jake test:all"
   },
   "author": "code@virtualpatterns.com",
