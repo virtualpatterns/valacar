@@ -31,24 +31,27 @@ taskPrototype.add = function(task, options) {
   let _options = options || Task.OPTIONS_STDIO_INHERIT;
 
   if (argumentsObject.isCommand) {
+
+    let _this = this;
+
     this[tasksSymbol].push(function(callback) {
 
       let error = null;
 
-      Log.info('> ChildProcess.spawn(%j, %j, options)', argumentsObject.command, argumentsObject.arguments);
+      Log.info('> [%s] ChildProcess.spawn(%j, %j, options)', _this.name, argumentsObject.command, argumentsObject.arguments);
       ChildProcess
         .spawn(argumentsObject.command, argumentsObject.arguments, argumentsObject.options)
         .on('error', function(_error) {
           error = _error;
         })
         .on('close', function(code) {
-          Log.info('< ChildProcess.spawn(%j, %j, options)', argumentsObject.command, argumentsObject.arguments);
+          Log.info('< [%s] ChildProcess.spawn(%j, %j, options)', _this.name, argumentsObject.command, argumentsObject.arguments);
           if (error) {
             Log.info('             code=%d', code);
             Log.info('    error.message=%s', error.message);
             callback(error);
           }
-          if (code > 0) {
+          else if (code > 0) {
             Log.info('    code=%d', code);
             callback(new ProcessError(Utilities.format('The command %j returned a non-zero result (code=%d).', Utilities.format('%s %s', argumentsObject.command, argumentsObject.arguments.join(' ')), code), code));
           }
@@ -58,15 +61,16 @@ taskPrototype.add = function(task, options) {
         });
 
     });
+
   }
   else if (argumentsObject.isFunction) {
 
-    let _function = argumentsObject.function;
+    let argumentsFunction = argumentsObject.function;
 
     if (argumentsObject.function.length == 0) {
       argumentsObject.function = function(callback) {
         try {
-          _function();
+          argumentsFunction();
         }
         catch (error) {
           callback(error);
@@ -91,6 +95,30 @@ taskPrototype.execute = function(resolve, reject) {
     else
       resolve(null);
   });
+};
+
+taskPrototype.executeToLog = function() {
+
+  let _this = this;
+
+  this.execute(function(error) {
+    if (error) {
+      Log.info('= [%s] Task.logError(%j) { ... }', _this.name, error.message);
+    }
+  });
+
+};
+
+taskPrototype.executeToConsole = function() {
+
+  let _this = this;
+
+  this.execute(function(error) {
+    if (error) {
+      console.log('= [%s] Task.logError(%j) { ... }', _this.name, error.message);
+    }
+  });
+
 };
 
 const Task = Object.create({});
@@ -131,9 +159,16 @@ Object.defineProperty(Task, 'OPTIONS_STDIO_IGNORE', {
   }
 });
 
-Task.createTask = function() {
+Task.createTask = function(name) {
 
   let task = Object.create(taskPrototype);
+
+  Object.defineProperty(task, 'name', {
+    'enumerable': true,
+    'writable': false,
+    'value': name || 'Task'
+  });
+
   task[tasksSymbol] = [];
 
   return task;
