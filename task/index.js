@@ -15,27 +15,27 @@ const RESOURCES_PATH = Path.join(__dirname, 'resources');
 
 const GIT_IS_DIRTY_PATH = Utilities.format('%j', Path.join(RESOURCES_PATH, 'git-is-dirty.sh'));
 
-task('default', function () {
+task('log', function () {
+  Log.addFile(LOG_PATH);
+});
+
+task('default', ['log'], function () {
   Task.createTask(this.name)
     .add('jake --tasks')
     .execute(complete, fail);
-});
-
-desc(Utilities.format('Log.addFile(%j)', Path.trim(LOG_PATH)));
-task('log', function () {
-  Log.addFile(LOG_PATH);
 });
 
 desc('Merge origin, tag, push, increment version');
 task('push', ['log'], function (version) {
   Task.createTask(this.name)
     .add(GIT_IS_DIRTY_PATH)
-    .add('mocha --require test/index.js test/tests')
     .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
-    .add('git pull origin development', Task.OPTIONS_STDIO_IGNORE)
-    .add('git tag --annotate "v%s" --message "v%s"', Package.version, Package.version, Task.OPTIONS_STDIO_IGNORE)
+    .add('git pull origin development')
+    .add('mocha --require test/index.js test/tests')
+    // .add('git tag --annotate "v%s" --message "v%s"', Package.version, Package.version, Task.OPTIONS_STDIO_IGNORE)
+    .add('npm version %s', version || 'prerelease', Task.OPTIONS_STDIO_IGNORE)
     .add('git push origin development --tags', Task.OPTIONS_STDIO_IGNORE)
-    .add('npm version %s --no-git-tag-version', version || 'prerelease', Task.OPTIONS_STDIO_IGNORE)
+    // .add('npm version %s --no-git-tag-version', version || 'prerelease', Task.OPTIONS_STDIO_IGNORE)
     .execute(complete, fail);
 });
 
@@ -44,8 +44,8 @@ task('stage', ['log'], function () {
   Task.createTask(this.name)
     .add(GIT_IS_DIRTY_PATH)
     .add('git checkout staging', Task.OPTIONS_STDIO_IGNORE)
-    .add('git pull origin staging', Task.OPTIONS_STDIO_IGNORE)
-    .add('git merge development', Task.OPTIONS_STDIO_IGNORE)
+    .add('git pull origin staging')
+    .add('git merge development')
     .add('mocha --require test/index.js test/tests')
     .add('git push origin staging --tags', Task.OPTIONS_STDIO_IGNORE)
     .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
@@ -56,9 +56,11 @@ desc('Release staging');
 task('release', ['log'], function () {
   Task.createTask(this.name)
     .add(GIT_IS_DIRTY_PATH)
+    .add('git checkout staging', Task.OPTIONS_STDIO_IGNORE)
+    .add('git pull origin staging')
     .add('git checkout production', Task.OPTIONS_STDIO_IGNORE)
-    .add('git pull origin production', Task.OPTIONS_STDIO_IGNORE)
-    .add('git merge staging', Task.OPTIONS_STDIO_IGNORE)
+    .add('git pull origin production')
+    .add('git merge staging')
     .add('mocha --require test/index.js test/tests')
     .add('git push origin production --tags', Task.OPTIONS_STDIO_IGNORE)
     .add('npm publish', Task.OPTIONS_STDIO_IGNORE)
@@ -97,4 +99,5 @@ task('release', ['log'], function () {
 //     system("git commit --all --message=\'Version #{$1}.#{$2}.#{$3.to_i + 1}\'")
 // end
 
+require('./tasks/run')
 require('./tasks/test')

@@ -37,6 +37,12 @@ describe('Task (without options)', function() {
       .execute(callback);
   });
 
+  it('should execute a command with two substitutions and without options', function (callback) {
+    Task.createTask()
+    .add('%s %d', ZERO_RESULT_PATH, 123)
+      .execute(callback);
+  });
+
   it('should execute a function without arguments', function (callback) {
     Task.createTask()
       .add(function() {
