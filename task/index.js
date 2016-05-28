@@ -4,6 +4,7 @@ require('../index');
 
 const Utilities = require('util');
 
+const GitTask = require('task/library/git-task');
 const Log = require('library/log');
 const Package = require('package.json');
 const Path = require('library/path');
@@ -12,8 +13,6 @@ const Task = require('task/library/task');
 
 const LOG_PATH = Path.join(Process.cwd(), 'process', 'log', Utilities.format('%s.jake.log', Package.name));
 const RESOURCES_PATH = Path.join(__dirname, 'resources');
-
-const GIT_IS_DIRTY_PATH = Utilities.format('%j', Path.join(RESOURCES_PATH, 'git-is-dirty.sh'));
 
 task('log', function () {
   Log.addFile(LOG_PATH);
@@ -27,8 +26,8 @@ task('default', ['log'], function () {
 
 desc('Merge origin, tag, push, increment version');
 task('push', ['log'], function (version) {
-  Task.createTask(this.fullName)
-    .add(GIT_IS_DIRTY_PATH)
+  GitTask.createTask(this.fullName)
+    .addIsDirty()
     .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
     .add('git pull origin development')
     .add('mocha --require test/index.js test/tests')
@@ -41,8 +40,8 @@ task('push', ['log'], function (version) {
 
 desc('Stage development');
 task('stage', ['log'], function () {
-  Task.createTask(this.fullName)
-    .add(GIT_IS_DIRTY_PATH)
+  GitTask.createTask(this.fullName)
+    .addIsDirty()
     .add('git checkout staging', Task.OPTIONS_STDIO_IGNORE)
     .add('git pull origin staging')
     .add('git merge development')

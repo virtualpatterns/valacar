@@ -82,9 +82,9 @@ migrationPrototype.isInstalled = function(connection, callback) {
 
 const Migration = Object.create({});
 
-Migration.createMigration = function(name) {
+Migration.createMigration = function(name, prototype) {
 
-  let migration = Object.create(migrationPrototype);
+  let migration = Object.create(prototype || migrationPrototype);
 
   Object.defineProperty(migration, 'name', {
     'enumerable': true,
