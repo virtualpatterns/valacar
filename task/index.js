@@ -32,7 +32,7 @@ task('push', ['log'], function (version) {
     .add('git pull origin development')
     .add('mocha --require test/index.js test/tests')
     // .add('git tag --annotate "v%s" --message "v%s"', Package.version, Package.version, Task.OPTIONS_STDIO_IGNORE)
-    .add('npm version %s --message "Creating/tagging new version"', version || 'prerelease', Task.OPTIONS_STDIO_IGNORE)
+    .add('npm version %s --message "Creating v%s"', version || 'prerelease', '%s', Task.OPTIONS_STDIO_IGNORE)
     .add('git push origin development --tags', Task.OPTIONS_STDIO_IGNORE)
     // .add('npm version %s --no-git-tag-version', version || 'prerelease', Task.OPTIONS_STDIO_IGNORE)
     .execute(complete, fail);
