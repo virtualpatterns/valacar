@@ -100,3 +100,4 @@ task('release', ['log'], function () {
 
 require('task/tasks/run')
 require('task/tasks/test')
+require('task/tasks/git')
