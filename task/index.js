@@ -20,14 +20,14 @@ task('log', function () {
 });
 
 task('default', ['log'], function () {
-  Task.createTask(this.name)
+  Task.createTask(this.fullName)
     .add('jake --tasks')
     .execute(complete, fail);
 });
 
 desc('Merge origin, tag, push, increment version');
 task('push', ['log'], function (version) {
-  Task.createTask(this.name)
+  Task.createTask(this.fullName)
     .add(GIT_IS_DIRTY_PATH)
     .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
     .add('git pull origin development')
@@ -41,7 +41,7 @@ task('push', ['log'], function (version) {
 
 desc('Stage development');
 task('stage', ['log'], function () {
-  Task.createTask(this.name)
+  Task.createTask(this.fullName)
     .add(GIT_IS_DIRTY_PATH)
     .add('git checkout staging', Task.OPTIONS_STDIO_IGNORE)
     .add('git pull origin staging')
@@ -54,7 +54,7 @@ task('stage', ['log'], function () {
 
 desc('Release staging');
 task('release', ['log'], function () {
-  Task.createTask(this.name)
+  Task.createTask(this.fullName)
     .add(GIT_IS_DIRTY_PATH)
     .add('git checkout staging', Task.OPTIONS_STDIO_IGNORE)
     .add('git pull origin staging')
@@ -79,7 +79,7 @@ task('release', ['log'], function () {
 
 // desc('Push to production, release, and increment version');
 // task('release', ['log'], function () {
-//   Task.createTask(this.name)
+//   Task.createTask(this.fullName)
 //     .add('git checkout production')
 //     .add('git pull origin production')
 //     .add('git merge origin development')
