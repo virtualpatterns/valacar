@@ -159,9 +159,9 @@ Object.defineProperty(Task, 'OPTIONS_STDIO_IGNORE', {
   }
 });
 
-Task.createTask = function(name) {
+Task.createTask = function(name, prototype) {
 
-  let task = Object.create(taskPrototype);
+  let task = Object.create(prototype || taskPrototype);
 
   Object.defineProperty(task, 'name', {
     'enumerable': true,

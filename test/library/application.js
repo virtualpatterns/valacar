@@ -21,8 +21,8 @@ const REGEXP_QUOTE = /^"|"$/g;
 const Application = Object.create(_Application);
 
 Application.executeCommand = function(command, callback) {
-  Log.info('> node valacar.js %s %j --logPath %j', command, Database.DATABASE_PATH, LOG_PATH);
-  ChildProcess.exec(Utilities.format('node valacar.js %s %j --logPath %j', command, Database.DATABASE_PATH, LOG_PATH), function(error, stdout, stderr) {
+  Log.info('> ./valacar.js %s %j --logPath %j', command, Database.DATABASE_PATH, LOG_PATH);
+  ChildProcess.exec(Utilities.format('./valacar.js %s %j --logPath %j', command, Database.DATABASE_PATH, LOG_PATH), function(error, stdout, stderr) {
 
     let _command = command;
     _command = _command.match(REGEXP_SPLIT);
@@ -40,7 +40,7 @@ Application.executeCommand = function(command, callback) {
         FileSystem.writeFile(Path.join(Process.cwd(), 'process', 'output', Utilities.format('%s.err', _command)), stderr, callback);
       },
       function(callback) {
-        Log.info('< node valacar.js %s %j --logPath %j', command, Database.DATABASE_PATH, LOG_PATH);
+        Log.info('< ./valacar.js %s %j --logPath %j', command, Database.DATABASE_PATH, LOG_PATH);
         if (error) {
           Log.info('       error.code=%j', error.code);
           Log.info('    error.message=%j', error.message);
