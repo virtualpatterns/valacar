@@ -8,7 +8,7 @@ const Path = require('path');
 const Database = require('./database');
 const Log = require('./log');
 
-const RESOURCES_PATH = Path.join(__dirname, 'resources');
+const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
 
 const Leases = Object.create({});
 

@@ -15,9 +15,18 @@ FROM    tLease
             tLease.cDevice = tDeviceTranslation.cFrom
           LEFT OUTER JOIN tTranslation AS tHostTranslation ON
             tLease.cHost = tHostTranslation.cFrom
-WHERE   tLease.cFrom = tLease.cTo OR
-        ( tLease.cFrom <= datetime('now') AND
-          tLease.cTo > datetime('now') )
+WHERE   ( tLease.cFrom = tLease.cTo OR
+          ( tLease.cFrom <= datetime('now') AND
+            tLease.cTo > datetime('now') ) ) AND
+        NOT EXISTS (  SELECT  tLeaseExpiring.cAddress,
+                              tLeaseExpiring.cFrom,
+                              tLeaseExpiring.cFrom
+                      FROM    tLease AS tLeaseExpiring
+                      WHERE   tLeaseExpiring.cAddress = tLease.cAddress AND
+                              NOT tLeaseExpiring.cFrom = tLease.cFrom AND
+                              NOT tLeaseExpiring.cTo = tLease.cTo AND
+                              tLeaseExpiring.cFrom >= tLease.cFrom AND
+                              tLeaseExpiring.cFrom < tLease.cTo )
 ORDER
 BY      tLease.cTo ASC,
         tLease.cHost;

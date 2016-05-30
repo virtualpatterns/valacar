@@ -9,7 +9,7 @@ const Package = require('../../package.json');
 const Path = require('../../library/path');
 const Process = require('../../library/process');
 
-const RESOURCES_PATH = Path.join(__dirname, 'resources');
+const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
 
 const Database = Object.create(_Database);
 

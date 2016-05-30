@@ -10,7 +10,7 @@ const Database = require('./database');
 const Log = require('./log');
 const Path = require('./path');
 
-const RESOURCES_PATH = Path.join(__dirname, 'resources');
+const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
 const MIGRATIONS_PATH = Path.join(__dirname, 'migrations');
 
 const migrationPrototype = Object.create({});
@@ -70,7 +70,7 @@ migrationPrototype.postUninstall = function(connection, callback) {
 };
 
 migrationPrototype.isInstalled = function(connection, callback) {
-  Database.getFile(connection, Path.join(RESOURCES_PATH, 'select-tmigration-one.sql'), {
+  Database.getFile(connection, Path.join(RESOURCES_PATH, 'select-tmigration-where.sql'), {
     $Name: this.name
   }, function(error, row) {
     if (error)
@@ -206,7 +206,7 @@ Migration.uninstallAll = function(connection, callback) {
 
     Asynchronous.waterfall([
       function(callback) {
-        Database.allFile(connection, Path.join(RESOURCES_PATH, 'select-tmigration-all.sql'), [], callback);
+        Database.allFile(connection, Path.join(RESOURCES_PATH, 'select-tmigration.sql'), [], callback);
       },
       function(rows, callback) {
         Asynchronous.eachSeries(rows, function(row, callback) {

@@ -15,7 +15,7 @@ const ValidationError = require('./errors/validation-error');
 
 const Application = Object.create({});
 
-const RESOURCES_PATH = Path.join(__dirname, 'resources');
+const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
 const TRANSACTION_NAME = 'sDefault';
 
 const REGEXP_ADDRESS = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;

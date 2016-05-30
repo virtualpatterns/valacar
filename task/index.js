@@ -24,7 +24,7 @@ task('default', ['log'], function () {
     .execute(complete, fail);
 });
 
-desc('Merge origin, tag, push, increment version');
+desc('Merge origin, test, increment version, commit/tag, push');
 task('push', ['log'], function (version) {
   GitTask.createTask(this.fullName)
     .addIsDirty()
@@ -96,6 +96,7 @@ task('release', ['log'], function () {
 //     system("git commit --all --message=\'Version #{$1}.#{$2}.#{$3.to_i + 1}\'")
 // end
 
+require('./tasks/data')
 require('./tasks/run')
 require('./tasks/test')
 require('./tasks/git')

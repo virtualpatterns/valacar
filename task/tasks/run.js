@@ -10,7 +10,7 @@ const Task = require('../library/task');
 const DATABASE_PATH = Path.join(Process.cwd(), 'process', 'data', Utilities.format('%s.db', Package.name));
 const LOG_PATH = Path.join(Process.cwd(), 'process', 'log', Utilities.format('%s.log', Package.name));
 const IMPORT_SOURCE_COMPUTER = 'PIGWIDGEON.local';
-const IMPORT_SOURCE_LEASES_PATH = '/var/lib/dhcp/dhcpd.leases';
+const IMPORT_SOURCE_LEASES_PATH = Path.join('var', 'lib', 'dhcp', 'dhcpd.leases');
 const IMPORT_TARGET_LEASES_PATH = Path.join(Process.cwd(), 'process', 'data', 'dhcpd.leases');
 
 namespace('run', function() {
