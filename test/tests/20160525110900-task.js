@@ -25,25 +25,25 @@ const ZERO_RESULT_PATH = Utilities.format('%j', Path.join(RESOURCES_PATH, 'zero-
 
 describe('Task (without options)', function() {
 
-  it('should execute a command without substitutions and without options', function (callback) {
+  it('should execute a command without substitutions and without options', function(callback) {
     Task.createTask()
       .add(ZERO_RESULT_PATH)
       .execute(callback);
   });
 
-  it('should execute a command with substitutions and without options', function (callback) {
+  it('should execute a command with substitutions and without options', function(callback) {
     Task.createTask()
     .add('%s', ZERO_RESULT_PATH)
       .execute(callback);
   });
 
-  it('should execute a command with two substitutions and without options', function (callback) {
+  it('should execute a command with two substitutions and without options', function(callback) {
     Task.createTask()
     .add('%s %d', ZERO_RESULT_PATH, 123)
       .execute(callback);
   });
 
-  it('should execute a function without arguments', function (callback) {
+  it('should execute a function without arguments', function(callback) {
     Task.createTask()
       .add(function() {
         Log.info('= should execute a function without arguments');
@@ -51,7 +51,7 @@ describe('Task (without options)', function() {
       .execute(callback);
   });
 
-  it('should execute a function with a callback', function (callback) {
+  it('should execute a function with a callback', function(callback) {
     Task.createTask()
       .add(function(callback) {
         Log.info('= should execute a function with a callback');
@@ -60,7 +60,7 @@ describe('Task (without options)', function() {
       .execute(callback);
   });
 
-  it('should generate an ArgumentError when adding a function with more than one argument', function (callback) {
+  it('should generate an ArgumentError when adding a function with more than one argument', function(callback) {
 
     let error = null;
 
@@ -114,7 +114,7 @@ describe('Task (with options)', function() {
 
   });
 
-  it('should output the current file on a command without substitutions and with options', function (callback) {
+  it('should output the current file on a command without substitutions and with options', function(callback) {
     Asynchronous.waterfall([
       function(callback) {
         Task.createTask()
@@ -133,7 +133,7 @@ describe('Task (with options)', function() {
     ], callback);
   });
 
-  it('should output the current file on a command with substitutions and with options', function (callback) {
+  it('should output the current file on a command with substitutions and with options', function(callback) {
     Asynchronous.waterfall([
       function(callback) {
         Task.createTask()
@@ -152,7 +152,7 @@ describe('Task (with options)', function() {
     ], callback);
   });
 
-  it('should generate a ProcessError on a command that returns a non-zero result', function (callback) {
+  it('should generate a ProcessError on a command that returns a non-zero result', function(callback) {
     Task.createTask()
       .add(NON_ZERO_RESULT_PATH, options)
       .execute(function(error) {
@@ -167,7 +167,7 @@ describe('Task (with options)', function() {
       });
   });
 
-  it('should execute a function without arguments and with (ignored) options', function (callback) {
+  it('should execute a function without arguments and with (ignored) options', function(callback) {
     Task.createTask()
       .add(function() {
         Log.info('= should execute a function without arguments and with (ignored) options');
@@ -175,7 +175,7 @@ describe('Task (with options)', function() {
       .execute(callback);
   });
 
-  it('should execute a function with a callback and with (ignored) options', function (callback) {
+  it('should execute a function with a callback and with (ignored) options', function(callback) {
     Task.createTask()
       .add(function(callback) {
         Log.info('= should execute a function with a callback and with (ignored) options');

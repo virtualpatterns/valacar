@@ -16,7 +16,7 @@ const COPY_TARGET_LOG_PATH = Path.join(Process.cwd(), 'process', 'log', Utilitie
 namespace('data', function() {
 
   desc('Copy database and log from production');
-  task('copy', ['log'], function () {
+  task('copy', ['log'], {'async': true}, function () {
     Task.createTask(this.fullName)
       .add('echo -n "Copying %s from %s to %s ... "', COPY_SOURCE_DATABASE_PATH, COPY_SOURCE_COMPUTER, Path.trim(COPY_TARGET_DATABASE_PATH))
       .add('scp "%s:%s" %j', COPY_SOURCE_COMPUTER, COPY_SOURCE_DATABASE_PATH, COPY_TARGET_DATABASE_PATH, Task.OPTIONS_STDIO_IGNORE)

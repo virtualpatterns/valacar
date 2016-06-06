@@ -19,8 +19,16 @@
     "async": "^2.0.0-rc.3",
     "cli-table": "^0.3.1",
     "commander": "^2.9.0",
+    "daemon": "^1.1.0",
     "dhcpd-leases": "0.0.1",
+    "mkdirp": "^0.5.1",
+    "pad": "^1.0.0",
+    "restify": "^4.1.0",
     "sqlite3": "^3.1.3",
     "winston": "^2.2.0"
+  },
+  "devDependencies": {
+    "json-query": "^2.1.0",
+    "prettyjson": "^1.1.3"
   }
 }

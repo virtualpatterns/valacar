@@ -17,11 +17,11 @@ const INVALID_HOST = '@ABC';
 
 describe('Application.validateAddLease', function() {
 
-  it('should not generate an error for a valid address, device, and host', function (callback) {
+  it('should not generate an error for a valid address, device, and host', function(callback) {
     Application.validateAddLease(VALID_ADDRESS, VALID_DEVICE, VALID_HOST, callback);
   });
 
-  it('should generate a ValidationError for an invalid address', function (callback) {
+  it('should generate a ValidationError for an invalid address', function(callback) {
     Application.validateAddLease(INVALID_ADDRESS, VALID_DEVICE, VALID_HOST, function(error) {
       if (!error)
         callback(new Error(Utilities.format('The address %j is invalid but did not generate a ValidationError.', INVALID_ADDRESS)));
@@ -32,7 +32,7 @@ describe('Application.validateAddLease', function() {
     });
   });
 
-  it('should generate a ValidationError for an invalid device', function (callback) {
+  it('should generate a ValidationError for an invalid device', function(callback) {
     Application.validateAddLease(VALID_ADDRESS, INVALID_DEVICE, VALID_HOST, function(error) {
       if (!error)
         callback(new Error(Utilities.format('The device %j is invalid but did not generate a ValidationError.', INVALID_DEVICE)));
@@ -43,7 +43,7 @@ describe('Application.validateAddLease', function() {
     });
   });
 
-  it('should generate a ValidationError for an invalid host', function (callback) {
+  it('should generate a ValidationError for an invalid host', function(callback) {
     Application.validateAddLease(VALID_ADDRESS, VALID_DEVICE, INVALID_HOST, function(error) {
       if (!error)
         callback(new Error(Utilities.format('The host %j is invalid but did not generate a ValidationError.', INVALID_HOST)));
@@ -69,7 +69,7 @@ describe('Command.command("addLease <IPAddress> <MACAddress> <hostName> [databas
     ], callback);
   });
 
-  it(Utilities.format('should have added the static lease %j', VALID_ADDRESS), function (callback) {
+  it(Utilities.format('should have added the static lease %j', VALID_ADDRESS), function(callback) {
     Database.openConnection(function(connection, callback) {
       Database.existsStaticLease(connection, VALID_ADDRESS, VALID_DEVICE, VALID_HOST, callback);
     }, callback);

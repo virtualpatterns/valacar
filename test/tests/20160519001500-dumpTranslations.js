@@ -15,7 +15,7 @@ describe('Command.command("dumpTranslations [databasePath]")', function() {
     Application.executeInstall(callback);
   });
 
-  it('should output the translation for 02AA01AB44120TQ1', function (callback) {
+  it('should output the translation for 02AA01AB44120TQ1', function(callback) {
     Application.executeDumpTranslations(function(error, stdout, stderr) {
       if (error)
         callback(error);

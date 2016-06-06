@@ -25,14 +25,15 @@ taskPrototype[tasksSymbol] = [];
 
 taskPrototype.add = function(task, options) {
 
+  let _this = this;
   let argumentsObject = Task.getAddArguments(task, options, arguments);
+
+  Log.info('> [%s] Task.add(task, options) { ... }\n\nargumentsObject\n---------------\n\n%s\n\n', _this.name, Log.render(argumentsObject));
 
   let _task = task;
   let _options = options || Task.OPTIONS_STDIO_INHERIT;
 
   if (argumentsObject.isCommand) {
-
-    let _this = this;
 
     this[tasksSymbol].push(function(callback) {
 
@@ -41,19 +42,21 @@ taskPrototype.add = function(task, options) {
       Log.info('> [%s] ChildProcess.spawn(%j, %j, options)', _this.name, argumentsObject.command, argumentsObject.arguments);
       ChildProcess
         .spawn(argumentsObject.command, argumentsObject.arguments, argumentsObject.options)
-        .on('error', function(_error) {
+        .once('error', function(_error) {
+          Log.debug('= [%s] ChildProcess.once("error", function(_error) { ... }', _this.name);
+          Log.debug('         error.message=%s\n\n%s\n\n', _error.message, _error.stack);
           error = _error;
         })
-        .on('close', function(code) {
+        .once('close', function(code) {
           Log.info('< [%s] ChildProcess.spawn(%j, %j, options)', _this.name, argumentsObject.command, argumentsObject.arguments);
           if (error) {
-            Log.info('             code=%d', code);
-            Log.info('    error.message=%s', error.message);
+            Log.info('         code=%d', code);
+            Log.info('         error.message=%s\n\n%s\n\n', error.message, error.stack);
             callback(error);
           }
           else if (code > 0) {
-            Log.info('    code=%d', code);
-            callback(new ProcessError(Utilities.format('The command %j returned a non-zero result (code=%d).', Utilities.format('%s %s', argumentsObject.command, argumentsObject.arguments.join(' ')), code), code));
+            Log.info('         code=%d', code);
+            callback(new ProcessError(Utilities.format('The command returned a non-zero result (code=%d).', code), code));
           }
           else {
             callback(null);
@@ -89,37 +92,42 @@ taskPrototype.add = function(task, options) {
 };
 
 taskPrototype.execute = function(resolve, reject) {
+
+  let _this = this;
+
+  Log.info('> [%s] Task.execute(resolve, reject) { ... }', _this.name);
   Asynchronous.series(this[tasksSymbol], function(error) {
-    if (error)
+    if (error) {
+      Log.info('< [%s] Task.execute(resolve, reject) { ... }', _this.name);
+      Log.info('         error.message=%j\n\n%s\n\n', error.message, error.stack);
       (reject || resolve)(error);
+    }
     else
       resolve(null);
   });
 };
 
-taskPrototype.executeToLog = function() {
-
-  let _this = this;
-
-  this.execute(function(error) {
-    if (error) {
-      Log.info('= [%s] Task.logError(%j) { ... }', _this.name, error.message);
-    }
-  });
-
-};
-
-taskPrototype.executeToConsole = function() {
-
-  let _this = this;
-
-  this.execute(function(error) {
-    if (error) {
-      console.log('= [%s] Task.logError(%j) { ... }', _this.name, error.message);
-    }
-  });
-
-};
+// taskPrototype.executeToLog = function() {
+//
+//   let _this = this;
+//
+//   this.execute(function(error) {
+//     if (error)
+//       Log.info('= [%s] Task.logError(%j) { ... }', _this.name, error.message);
+//   });
+//
+// };
+//
+// taskPrototype.executeToConsole = function() {
+//
+//   let _this = this;
+//
+//   this.execute(function(error) {
+//     if (error)
+//       console.log('= [%s] Task.logError(%j) { ... }', _this.name, error.message);
+//   });
+//
+// };
 
 const Task = Object.create({});
 

@@ -4,7 +4,7 @@ require('../index');
 
 const Utilities = require('util');
 
-const GitTask = require('./library/git-task');
+const FileSystemTask = require('./library/file-system-task');
 const Log = require('../library/log');
 const Package = require('../package.json');
 const Path = require('../library/path');
@@ -18,50 +18,22 @@ task('log', function () {
   Log.addFile(LOG_PATH);
 });
 
-task('default', ['log'], function () {
+task('clean', {'async': true}, function () {
+  // Process.stdout.write(Utilities.format('Deleting contents of %j ... ', Path.join(Process.cwd(), 'process', 'log')));
+  FileSystemTask.createTask(this.fullName)
+    .removeFiles(Path.join(Process.cwd(), 'process', 'log'))
+    .execute(function() {
+      // Process.stdout.write('done.\n');
+      complete();
+    }, function(error) {
+      // Process.stdout.write(Utilities.format('failed (%s).\n', error.message));
+      fail(error);
+    });
+});
+
+task('default', {'async': true}, function () {
   Task.createTask(this.fullName)
     .add('jake --tasks')
-    .execute(complete, fail);
-});
-
-desc('Merge origin, test, increment version, commit/tag, push');
-task('push', ['log'], function (version) {
-  GitTask.createTask(this.fullName)
-    .addIsDirty()
-    .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
-    .add('git pull origin development')
-    .add('mocha --require test/index.js test/tests')
-    .add('npm version %s --message "Creating v%s"', version || 'prerelease', '%s', Task.OPTIONS_STDIO_IGNORE)
-    .add('git push origin development --tags', Task.OPTIONS_STDIO_IGNORE)
-    .execute(complete, fail);
-});
-
-desc('Stage development');
-task('stage', ['log'], function () {
-  GitTask.createTask(this.fullName)
-    .addIsDirty()
-    .add('git checkout staging', Task.OPTIONS_STDIO_IGNORE)
-    .add('git pull origin staging')
-    .add('git merge development')
-    .add('mocha --require test/index.js test/tests')
-    .add('git push origin staging --tags', Task.OPTIONS_STDIO_IGNORE)
-    .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
-    .execute(complete, fail);
-});
-
-desc('Release staging');
-task('release', ['log'], function () {
-  GitTask.createTask(this.fullName)
-    .addIsDirty()
-    .add('git checkout staging', Task.OPTIONS_STDIO_IGNORE)
-    .add('git pull origin staging')
-    .add('git checkout production', Task.OPTIONS_STDIO_IGNORE)
-    .add('git pull origin production')
-    .add('git merge staging')
-    .add('mocha --require test/index.js test/tests')
-    .add('git push origin production --tags', Task.OPTIONS_STDIO_IGNORE)
-    .add('npm publish', Task.OPTIONS_STDIO_IGNORE)
-    .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
     .execute(complete, fail);
 });
 
@@ -98,5 +70,6 @@ task('release', ['log'], function () {
 
 require('./tasks/data')
 require('./tasks/run')
+require('./tasks/server')
 require('./tasks/test')
 require('./tasks/git')

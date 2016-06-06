@@ -45,7 +45,7 @@ describe('Command.command("dumpLeases [databasePath]")', function() {
     ], callback);
   });
 
-  it('should output the lease for HOST1', function (callback) {
+  it('should output the lease for HOST1', function(callback) {
     Application.executeDumpLeases(function(error, stdout, stderr) {
       if (error)
         callback(error);
@@ -56,7 +56,7 @@ describe('Command.command("dumpLeases [databasePath]")', function() {
     });
   });
 
-  it('should not output the lease for HOST2', function (callback) {
+  it('should not output the lease for HOST2', function(callback) {
     Application.executeDumpLeases(function(error, stdout, stderr) {
       if (error)
         callback(error);
@@ -67,7 +67,7 @@ describe('Command.command("dumpLeases [databasePath]")', function() {
     });
   });
 
-  it('should not output the lease for HOST3', function (callback) {
+  it('should not output the lease for HOST3', function(callback) {
     Application.executeDumpLeases(function(error, stdout, stderr) {
       if (error)
         callback(error);
@@ -100,7 +100,7 @@ describe('Command.command("dumpLeasesWhere <filter> [databasePath]")', function(
     ], callback);
   });
 
-  it('should output two leases for HOST4', function (callback) {
+  it('should output two leases for HOST4', function(callback) {
     Application.executeDumpLeasesWhere('HOST', function(error, stdout, stderr) {
       if (error)
         callback(error);

@@ -16,21 +16,21 @@ const IMPORT_TARGET_LEASES_PATH = Path.join(Process.cwd(), 'process', 'data', 'd
 namespace('run', function() {
 
   desc(Utilities.format('Install to %j, log to %j', Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));
-  task('install', ['log'], function () {
+  task('install', ['log'], {'async': true}, function () {
     Task.createTask(this.fullName)
       .add('./valacar.js install %j --logPath %j', DATABASE_PATH, LOG_PATH)
       .execute(complete, fail);
   });
 
   desc(Utilities.format('Uninstall from %j, log to %j', Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));
-  task('uninstall', ['log'], function () {
+  task('uninstall', ['log'], {'async': true}, function () {
     Task.createTask(this.fullName)
       .add('./valacar.js uninstall %j --logPath %j', DATABASE_PATH, LOG_PATH)
       .execute(complete, fail);
   });
 
   desc(Utilities.format('Import from %j on %j to %j, log to %j', IMPORT_SOURCE_LEASES_PATH, IMPORT_SOURCE_COMPUTER, Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));
-  task('import', ['log'], function () {
+  task('import', ['log'], {'async': true}, function () {
     Task.createTask(this.fullName)
       .add('echo -n "Copying %s from %s to %s ... "', IMPORT_SOURCE_LEASES_PATH, IMPORT_SOURCE_COMPUTER, Path.trim(IMPORT_TARGET_LEASES_PATH))
       .add('scp "%s:%s" %j', IMPORT_SOURCE_COMPUTER, IMPORT_SOURCE_LEASES_PATH, IMPORT_TARGET_LEASES_PATH, Task.OPTIONS_STDIO_IGNORE)
@@ -40,7 +40,7 @@ namespace('run', function() {
   });
 
   desc(Utilities.format('Clean at %j, log to %j', Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));
-  task('clean', ['log'], function () {
+  task('clean', ['log'], {'async': true}, function () {
     Task.createTask(this.fullName)
       .add('./valacar.js clean %j --logPath %j', DATABASE_PATH, LOG_PATH)
       .execute(complete, fail);
@@ -49,7 +49,7 @@ namespace('run', function() {
   namespace('dump', function() {
 
     desc(Utilities.format('Dump leases in %j, log to %j', Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));
-    task('leases', ['log'], function () {
+    task('leases', ['log'], {'async': true}, function () {
       Task.createTask(this.fullName)
         .add('./valacar.js dumpLeases %j --logPath %j', DATABASE_PATH, LOG_PATH)
         .execute(complete, fail);
@@ -58,7 +58,7 @@ namespace('run', function() {
     namespace('leases', function() {
 
       desc(Utilities.format('Dump leases matching filter in %j, log to %j', Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));
-      task('where', ['log'], function (filter) {
+      task('where', ['log'], {'async': true}, function (filter) {
         Task.createTask(this.fullName)
           .add(function(callback) {
             if (!filter)
@@ -73,7 +73,7 @@ namespace('run', function() {
     });
 
     desc(Utilities.format('Dump translations in %j, log to %j', Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));
-    task('translations', ['log'], function () {
+    task('translations', ['log'], {'async': true}, function () {
       Task.createTask(this.fullName)
         .add('./valacar.js dumpTranslations %j --logPath %j', DATABASE_PATH, LOG_PATH)
         .execute(complete, fail);

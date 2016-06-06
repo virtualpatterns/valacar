@@ -14,11 +14,11 @@ const VALID_TO = '(ABC)';
 
 describe('Application.validateRemoveTranslation', function() {
 
-  it('should not generate an error for a valid translation', function (callback) {
+  it('should not generate an error for a valid translation', function(callback) {
     Application.validateRemoveTranslation(VALID_FROM, callback);
   });
 
-  it('should generate a ValidationError for an invalid translation', function (callback) {
+  it('should generate a ValidationError for an invalid translation', function(callback) {
     Application.validateRemoveTranslation(INVALID_FROM, function(error) {
       if (!error)
         callback(new Error(Utilities.format('The translation from %j is invalid but did not generate a ValidationError.', INVALID_FROM)));
@@ -48,7 +48,7 @@ describe('Command.command("removeTranslation <from> [databasePath]")', function(
     ], callback);
   });
 
-  it(Utilities.format('should have removed the translation from %j', VALID_FROM), function (callback) {
+  it(Utilities.format('should have removed the translation from %j', VALID_FROM), function(callback) {
     Database.openConnection(function(connection, callback) {
       Database.notExistsTranslation(connection, VALID_FROM, VALID_TO, callback);
     }, callback);

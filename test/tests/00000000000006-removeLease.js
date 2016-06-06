@@ -15,11 +15,11 @@ const VALID_HOST = 'ABC';
 
 describe('Application.validateRemoveLease', function() {
 
-  it('should not generate an error for a valid address', function (callback) {
+  it('should not generate an error for a valid address', function(callback) {
     Application.validateRemoveLease(VALID_ADDRESS, callback);
   });
 
-  it('should generate a ValidationError for an invalid address', function (callback) {
+  it('should generate a ValidationError for an invalid address', function(callback) {
     Application.validateRemoveLease(INVALID_ADDRESS, function(error) {
       if (!error)
         callback(new Error(Utilities.format('The address %j is invalid but did not generate a ValidationError.', INVALID_ADDRESS)));
@@ -49,7 +49,7 @@ describe('Command.command("removeLease <IPAddress> [databasePath]")', function()
     ], callback);
   });
 
-  it(Utilities.format('should have removed the static lease %j', VALID_ADDRESS), function (callback) {
+  it(Utilities.format('should have removed the static lease %j', VALID_ADDRESS), function(callback) {
     Database.openConnection(function(connection, callback) {
       Database.notExistsStaticLease(connection, VALID_ADDRESS, VALID_DEVICE, VALID_HOST, callback);
     }, callback);

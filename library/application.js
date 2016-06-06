@@ -22,7 +22,7 @@ const REGEXP_ADDRESS = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4]
 const REGEXP_DEVICE = /^(([A-Fa-f0-9]{2}[:]){5}[A-Fa-f0-9]{2}[,]?)+$/;
 const REGEXP_HOST = /^(?=.{1,255}$)[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?)*\.?$/;
 
-Application.executeTask = function (databasePath, options, task, callback) {
+Application.executeTask = function(databasePath, options, task, callback) {
   Database.openConnection(databasePath, options, function(connection, callback) {
     Database.startTransaction(
       connection,
@@ -33,21 +33,21 @@ Application.executeTask = function (databasePath, options, task, callback) {
   }, callback);
 };
 
-Application.install = function (databasePath, options, callback) {
+Application.install = function(databasePath, options, callback) {
   this.executeTask(databasePath, options, Migration.installAll, callback);
 };
 
-Application.uninstall = function (databasePath, options, callback) {
+Application.uninstall = function(databasePath, options, callback) {
   this.executeTask(databasePath, options, Migration.uninstallAll, callback);
 };
 
-Application.import = function (filePath, databasePath, options, callback) {
+Application.import = function(filePath, databasePath, options, callback) {
   this.executeTask(databasePath, options, function(connection, callback) {
     Leases.import(connection, filePath, callback);
   }, callback);
 };
 
-Application.clean = function (databasePath, options, callback) {
+Application.clean = function(databasePath, options, callback) {
   this.executeTask(databasePath, options, function(connection, callback) {
     Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-tlease.sql'), {
       $From: Database.MINIMUM_DATE.toISOString(),
@@ -66,32 +66,40 @@ Application.validateAddTranslation = function(_from, callback) {
 
 };
 
-Application.addTranslation = function (_from, _to, databasePath, options, callback) {
-  this.executeTask(databasePath, options, function(connection, callback) {
-    Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-ttranslation.sql'), {
-      $From: _from,
-      $To: _to
-    }, callback);
+Application._addTranslation = function(_from, _to, connection, callback) {
+  Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-ttranslation.sql'), {
+    $From: _from,
+    $To: _to
   }, callback);
+};
+
+Application.addTranslation = function(_from, _to, databasePath, options, callback) {
+
+  let _this = this;
+
+  _this.executeTask(databasePath, options, function(connection, callback) {
+    _this._addTranslation(_from, _to, connection, callback);
+  }, callback);
+
 };
 
 Application.validateRemoveTranslation = function(_from, callback) {
   this.validateAddTranslation(_from, callback);
 };
 
-Application.removeTranslation = function (_from, databasePath, options, callback) {
+Application.removeTranslation = function(_from, databasePath, options, callback) {
   this.executeTask(databasePath, options, function(connection, callback) {
     Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-ttranslation.sql'), {
       $From: _from
     }, function(error) {
       if (!error)
         Assert.ok(this.changes <= 1, Utilities.format('The number of rows deleted from tTranslation should be 0 or 1 but is instead %d.', this.changes));
-      callback(error);
+      callback(error, this.changes);
     });
   }, callback);
 };
 
-Application.dumpTranslations = function (databasePath, options, callback) {
+Application.dumpTranslations = function(databasePath, options, callback) {
   this.executeTask(databasePath, options, function(connection, callback) {
     Asynchronous.waterfall([
       function(callback) {
@@ -141,7 +149,7 @@ Application.validateAddLease = function(address, device, host, callback) {
 
 };
 
-Application.addLease = function (address, device, host, databasePath, options, callback) {
+Application.addLease = function(address, device, host, databasePath, options, callback) {
   this.executeTask(databasePath, options, function(connection, callback) {
     Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-tlease-static.sql'), {
       $Address: address,
@@ -162,21 +170,29 @@ Application.validateRemoveLease = function(address, callback) {
 
 };
 
-Application.removeLease = function (address, databasePath, options, callback) {
-  this.executeTask(databasePath, options, function(connection, callback) {
-    Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-tlease-static.sql'), {
-      $Address: address,
-      $From: Database.MINIMUM_DATE.toISOString(),
-      $To: Database.MINIMUM_DATE.toISOString()
-    }, function(error) {
-      if (!error)
-        Assert.ok(this.changes <= 1, Utilities.format('The number of rows deleted from tLease should be 0 or 1 but is instead %d.', this.changes));
-      callback(error);
-    });
-  }, callback);
+Application._removeLease = function(address, connection, callback) {
+  Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-tlease-static.sql'), {
+    $Address: address,
+    $From: Database.MINIMUM_DATE.toISOString(),
+    $To: Database.MINIMUM_DATE.toISOString()
+  }, function(error) {
+    if (!error)
+      Assert.ok(this.changes <= 1, Utilities.format('The number of rows deleted from tLease should be 0 or 1 but is instead %d.', this.changes));
+    callback(error, this.changes);
+  });
 };
 
-Application.dumpLeases = function (databasePath, options, callback) {
+Application.removeLease = function(address, databasePath, options, callback) {
+
+  let _this = this;
+
+  _this.executeTask(databasePath, options, function(connection, callback) {
+    _this._removeLease(address, connection, callback);
+  }, callback);
+
+};
+
+Application.dumpLeases = function(databasePath, options, callback) {
   this.executeTask(databasePath, options, function(connection, callback) {
     Asynchronous.waterfall([
       function(callback) {
@@ -220,7 +236,7 @@ Application.dumpLeases = function (databasePath, options, callback) {
   }, callback);
 };
 
-Application.dumpLeasesWhere = function (filter, databasePath, options, callback) {
+Application.dumpLeasesWhere = function(filter, databasePath, options, callback) {
   this.executeTask(databasePath, options, function(connection, callback) {
     Asynchronous.waterfall([
       function(callback) {

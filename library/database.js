@@ -31,7 +31,7 @@ Database.openConnection = function(path, options, task, callback) {
 
   Asynchronous.waterfall([
     function(callback) {
-      Log.info('> OPEN %s', Path.trim(path), options, {});
+      Log.info('> OPEN %s %j', Path.trim(path), options, {});
       Database.createConnection(path, callback);
     },
     function(connection, callback) {
@@ -55,11 +55,16 @@ Database.openConnection = function(path, options, task, callback) {
           task(connection, callback);
         }
       ], function(error) {
+
+        let argumentsArray = Array.prototype.slice.call(arguments);
+
         connection.close(function(_error) {
           if (!_error)
-            Log.info('< CLOSE %s', Path.trim(path), options, {});
-          callback(error || _error);
+            Log.info('< CLOSE %s %j', Path.trim(path), options, {});
+          argumentsArray[0] = error || _error;
+          callback.apply(callback, argumentsArray);
         });
+
       });
 
     }
@@ -81,20 +86,26 @@ Database.startTransaction = function(connection, transactionName, task, callback
           task(connection, callback);
         }
       ], function(error) {
+
+        let argumentsArray = Array.prototype.slice.call(arguments);
+
         if (error) {
           connection.run(Utilities.format('ROLLBACK TO %s;', transactionName), [], function(_error) {
             if (!_error)
               Log.info('< ROLLBACK TO %s', transactionName);
-            callback(error || _error);
+            argumentsArray[0] = error || _error;
+            callback.apply(callback, argumentsArray);
           });
         }
         else {
           connection.run(Utilities.format('RELEASE %s;', transactionName), [], function(_error) {
             if (!_error)
               Log.info('< RELEASE %s', transactionName);
-            callback(_error);
+              argumentsArray[0] = _error;
+              callback.apply(callback, argumentsArray);
           });
         }
+
       });
 
 
@@ -135,7 +146,14 @@ Database.getFile = function(connection, path, parameters, callback) {
       callback(error);
     else {
       Log.info('> SQLite.Database.get(statement, %j, callback)\n\n%s', parameters, statement);
-      connection.get(statement, parameters, callback);
+      connection.get(statement, parameters, function(error, row) {
+        if (error)
+          callback(error);
+        else if (!row)
+          callback(null, null);
+        else
+          callback(null, row);
+      });
     }
   });
 

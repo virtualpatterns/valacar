@@ -14,11 +14,11 @@ const VALID_TO = '(ABC)';
 
 describe('Application.validateAddTranslation', function() {
 
-  it('should not generate an error for a valid translation', function (callback) {
+  it('should not generate an error for a valid translation', function(callback) {
     Application.validateAddTranslation(VALID_FROM, callback);
   });
 
-  it('should generate a ValidationError for an invalid translation', function (callback) {
+  it('should generate a ValidationError for an invalid translation', function(callback) {
     Application.validateAddTranslation(INVALID_FROM, function(error) {
       if (!error)
         callback(new Error(Utilities.format('The translation from %j is invalid but did not generate a ValidationError.', INVALID_FROM)));
@@ -44,7 +44,7 @@ describe('Command.command("addTranslation <from> <to> [databasePath]")', functio
     ], callback);
   });
 
-  it(Utilities.format('should have added the translation from %j to %j', VALID_FROM, VALID_TO), function (callback) {
+  it(Utilities.format('should have added the translation from %j to %j', VALID_FROM, VALID_TO), function(callback) {
     Database.openConnection(function(connection, callback) {
       Database.existsTranslation(connection, VALID_FROM, VALID_TO, callback);
     }, callback);

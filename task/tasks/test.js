@@ -1,11 +1,13 @@
 'use strict';
 
+const Path = require('../../library/path');
+const Process = require('../../library/process');
 const Task = require('../library/task');
 
 namespace('test', function() {
 
   desc('Run all tests');
-  task('all', ['log'], function () {
+  task('all', ['clean', 'log'], {'async': true}, function () {
     Task.createTask(this.fullName)
       .add('mocha --require test/index.js \
                   test/tests')
@@ -13,7 +15,7 @@ namespace('test', function() {
   });
 
   desc('Run task tests');
-  task('task', ['log'], function () {
+  task('task', ['clean', 'log'], {'async': true}, function () {
     Task.createTask(this.fullName)
       .add('mocha --require test/index.js \
                   test/tests/00000000000000-begin.js \
@@ -23,7 +25,7 @@ namespace('test', function() {
   });
 
   desc('Run install tests');
-  task('install', ['log'], function () {
+  task('install', ['clean', 'log'], {'async': true}, function () {
     Task.createTask(this.fullName)
       .add('mocha --require test/index.js \
                   test/tests/00000000000000-begin.js \
@@ -33,7 +35,7 @@ namespace('test', function() {
   });
 
   desc('Run install/uninstall tests');
-  task('uninstall', ['log'], function () {
+  task('uninstall', ['clean', 'log'], {'async': true}, function () {
     Task.createTask(this.fullName)
       .add('mocha --require test/index.js \
                   test/tests/00000000000000-begin.js \
@@ -44,7 +46,7 @@ namespace('test', function() {
   });
 
   desc('Run translation tests');
-  task('translation', ['log'], function () {
+  task('translation', ['clean', 'log'], {'async': true}, function () {
     Task.createTask(this.fullName)
       .add('mocha --require test/index.js \
                   test/tests/00000000000000-begin.js \
@@ -58,7 +60,7 @@ namespace('test', function() {
   });
 
   desc('Run leases tests');
-  task('leases', ['log'], function () {
+  task('leases', ['clean', 'log'], {'async': true}, function () {
     Task.createTask(this.fullName)
       .add('mocha --require test/index.js \
                   test/tests/00000000000000-begin.js \
@@ -70,6 +72,64 @@ namespace('test', function() {
                   test/tests/20160518103000-dumpLeases.js \
                   test/tests/99999999999999-end.js')
       .execute(complete, fail);
+  });
+
+  namespace('server', function() {
+
+    desc('Run all server tests');
+    task('all', ['clean', 'log'], {'async': true}, function () {
+      Task.createTask(this.fullName)
+        .add('mocha --require test/index.js \
+                    --timeout 10000 \
+                    test/server/tests')
+        .execute(complete, fail);
+    });
+
+    desc('Run start tests');
+    task('start', ['clean', 'log'], {'async': true}, function () {
+      Task.createTask(this.fullName)
+        .add('mocha --require test/index.js \
+                    --timeout 10000 \
+                    test/server/tests/00000000000000-begin.js \
+                    test/server/tests/20160603231000-start.js \
+                    test/server/tests/99999999999999-end.js')
+        .execute(complete, fail);
+    });
+
+    desc('Run start/stop tests');
+    task('stop', ['clean', 'log'], {'async': true}, function () {
+      Task.createTask(this.fullName)
+        .add('mocha --require test/index.js \
+                    --timeout 10000 \
+                    test/server/tests/00000000000000-begin.js \
+                    test/server/tests/20160603231000-start.js \
+                    test/server/tests/20160604224200-stop.js \
+                    test/server/tests/99999999999999-end.js')
+        .execute(complete, fail);
+    });
+
+    desc('Run / tests');
+    task('default', ['clean', 'log'], {'async': true}, function () {
+      Task.createTask(this.fullName)
+        .add('mocha --require test/index.js \
+                    --timeout 10000 \
+                    test/server/tests/00000000000000-begin.js \
+                    test/server/tests/20160605001200-default.js \
+                    test/server/tests/99999999999999-end.js')
+        .execute(complete, fail);
+    });
+
+    desc('Run /translations tests');
+    task('translations', ['clean', 'log'], {'async': true}, function () {
+      Task.createTask(this.fullName)
+        .add('mocha --require test/index.js \
+                    --timeout 10000 \
+                    test/server/tests/00000000000000-begin.js \
+                    test/server/tests/20160605010500-translations.js \
+                    test/server/tests/99999999999999-end.js')
+        .execute(complete, fail);
+    });
+
   });
 
 });

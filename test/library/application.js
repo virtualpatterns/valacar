@@ -3,6 +3,7 @@
 const Asynchronous = require('async');
 const ChildProcess = require('child_process');
 const FileSystem = require('fs');
+
 const Utilities = require('util');
 
 const _Application = require('../../library/application');
@@ -14,15 +15,29 @@ const Process = require('../../library/process');
 
 const ProcessError = require('../../library/errors/process-error');
 
-const LOG_PATH = Path.join(Process.cwd(), 'process', 'log', Utilities.format('%s.test.log', Package.name));
 const REGEXP_SPLIT = /(?:[^\s"]+|"[^"]*")+/g;
 const REGEXP_QUOTE = /^"|"$/g;
 
 const Application = Object.create(_Application);
 
+Object.defineProperty(Application, 'DATABASE_PATH', {
+  'enumerable': true,
+  'writable': false,
+  'value': Database.DATABASE_PATH
+});
+
+Object.defineProperty(Application, 'LOG_PATH', {
+  'enumerable': true,
+  'writable': false,
+  'value': Path.join(Process.cwd(), 'process', 'log', Utilities.format('%s.test.log', Package.name))
+});
+
 Application.executeCommand = function(command, callback) {
-  Log.info('> ./valacar.js %s %j --logPath %j', command, Database.DATABASE_PATH, LOG_PATH);
-  ChildProcess.exec(Utilities.format('./valacar.js %s %j --logPath %j', command, Database.DATABASE_PATH, LOG_PATH), function(error, stdout, stderr) {
+
+  let _this = this;
+
+  Log.info('> ./valacar.js %s %j --logPath %j', command, _this.DATABASE_PATH, _this.LOG_PATH);
+  ChildProcess.exec(Utilities.format('./valacar.js %s %j --logPath %j', command, _this.DATABASE_PATH, _this.LOG_PATH), function(error, stdout, stderr) {
 
     let _command = command;
     _command = _command.match(REGEXP_SPLIT);
@@ -40,7 +55,7 @@ Application.executeCommand = function(command, callback) {
         FileSystem.writeFile(Path.join(Process.cwd(), 'process', 'output', Utilities.format('%s.err', _command)), stderr, callback);
       },
       function(callback) {
-        Log.info('< ./valacar.js %s %j --logPath %j', command, Database.DATABASE_PATH, LOG_PATH);
+        Log.info('< ./valacar.js %s %j --logPath %j', command, _this.DATABASE_PATH, _this.LOG_PATH);
         if (error) {
           Log.info('       error.code=%j', error.code);
           Log.info('    error.message=%j', error.message);
@@ -53,6 +68,7 @@ Application.executeCommand = function(command, callback) {
       }
     ], callback);
   });
+
 };
 
 Application.executeInstall = function(callback) {

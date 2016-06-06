@@ -4,4 +4,5 @@ npm-debug.log
 process/data
 process/log
 process/output
+process/pid
 sandbox
