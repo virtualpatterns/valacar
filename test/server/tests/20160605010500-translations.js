@@ -27,7 +27,7 @@ describe('GET /translations', function() {
         callback(error);
       else {
 
-        let translation = data.query('translations', 'translations[from=tv4622148de6a5 & to=(TV)]');
+        let translation = data.query('translation', 'translation[from=tv4622148de6a5 & to=(TV)]');
 
         if (!translation)
           callback(new Error('The server response did not include a translation from tv4622148de6a5 to (TV).'));
@@ -194,6 +194,10 @@ describe('DELETE /translations', function() {
 
   it('should respond to DELETE /translations/from05 with 200 OK', function(callback) {
     Application.isDELETE('/translations/from05', 200, callback);
+  });
+
+  it('should respond to DELETE /translations@from09 (an invalid translation) with 500 Internal Server Error', function(callback) {
+    Application.isDELETE('/translations/@from09', 500, callback);
   });
 
   it('should respond to DELETE /translations/from06 (a non-existent translation) with 404 Not Found', function(callback) {

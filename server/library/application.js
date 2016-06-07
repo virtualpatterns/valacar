@@ -12,6 +12,7 @@ const Package = require('../../package.json');
 const Path = require('../../library/path');
 const Process = require('../../library/process');
 
+const PAUSE = 2500;
 const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
 
 const Application = Object.create(_Application);
@@ -33,39 +34,33 @@ Application.startMaster = function (numberOfWorkers, pidPath) {
 
   Process.once('SIGHUP', function() {
     Log.info('> Process.once("SIGHUP", function() { ... })');
-    Cluster.disconnect(function() {
-      Log.info('< Process.once("SIGHUP", function() { ... })');
-    });
+    Cluster.disconnect(function() {});
   });
 
   Process.once('SIGINT', function() {
     Log.info('> Process.once("SIGINT", function() { ... })');
     Process.kill(Process.pid, 'SIGHUP');
     setTimeout(function() {
-        Log.info('< Process.once("SIGINT", function() { ... })');
         Process.exit(1);
-    }, 5000);
+    }, PAUSE);
   });
 
   Process.once('SIGTERM', function() {
     Log.info('> Process.once("SIGTERM", function() { ... })');
     Process.kill(Process.pid, 'SIGHUP');
     setTimeout(function() {
-      Log.info('< Process.once("SIGTERM", function() { ... })');
       Process.exit(1);
-    }, 5000);
+    }, PAUSE);
   });
 
   Process.once('uncaughtException', function(error) {
     Log.error('> Process.once("uncaughtException", function(error) { ... })\n\n%s\n', error.stack);
     Process.kill(Process.pid, 'SIGHUP');
     setTimeout(function() {
-        Log.error('< Process.once("uncaughtException", function(error) { ... })');
         Process.exit(1);
-    }, 5000);
+    }, PAUSE);
   });
 
-  Log.info('< Application.startMaster(%d, %j) { ... }', numberOfWorkers, Path.trim(pidPath));
 };
 
 Application.startWorker = function (address, port, databasePath, options) {
@@ -95,56 +90,54 @@ Application.startWorker = function (address, port, databasePath, options) {
   Process.once('uncaughtException', function(error) {
     Log.error('> Process.once("uncaughtException", function(error) { ... })\n\n%s\n', error.stack);
     setTimeout(function() {
-        Log.error('< Process.once("uncaughtException", function(error) { ... })');
         Process.exit(1);
-    }, 5000);
+    }, PAUSE);
   });
 
-  Log.info('< Application.startWorker(%j, %d, %j, %j) { ... }', address, port, Path.trim(databasePath), options, {});
 };
 
-Application.getTranslations = function (databasePath, options, task, callback) {
-  this.executeTask(databasePath, options, function(connection, callback) {
-    Asynchronous.waterfall([
-      function(callback) {
-        Database.allFile(connection, Path.join(RESOURCES_PATH, 'select-ttranslation.sql'), [], callback);
-      },
-      function(rows, callback) {
-        task(rows, callback);
+Application.getTranslations = function (databasePath, options, callback) {
+  this.openDatabase(databasePath, options, function(connection, callback) {
+    Database.allFile(connection, Path.join(RESOURCES_PATH, 'select-ttranslation.sql'), [], function(error, rows) {
+      if (error)
+        callback(error);
+      else {
+        // Log.debug('= Application.getTranslations(databasePath, options, callback) { ... }\n\nrows\n----\n%s\n\n', Utilities.inspect(rows));
+        callback(null, rows);
       }
-    ], callback);
+    });
   }, callback);
 };
 
-Application._getTranslation = function (_from, connection, task, callback) {
-  Asynchronous.waterfall([
-    function(callback) {
-      Database.getFile(connection, Path.join(RESOURCES_PATH, 'select-ttranslation-where.sql'), {
-        $From: _from
-      }, callback);
-    },
-    function(row, callback) {
-      task(row, callback);
+Application._getTranslation = function (_from, connection, callback) {
+  Database.getFile(connection, Path.join(RESOURCES_PATH, 'select-ttranslation-where.sql'), {
+    $From: _from
+  }, function(error, row) {
+    if (error)
+      callback(error);
+    else {
+      // Log.debug('= Application._getTranslation(_from, connection, callback) { ... }\n\nrow\n---\n%s\n\n', Utilities.inspect(row));
+      callback(null, row);
     }
-  ], callback);
+  });
 };
 
-Application.getTranslation = function (_from, databasePath, options, task, callback) {
+Application.getTranslation = function (_from, databasePath, options, callback) {
 
   let _this = this;
 
-  _this.executeTask(databasePath, options, function(connection, callback) {
-    _this._getTranslation(_from, connection, task, callback);
+  _this.openDatabase(databasePath, options, function(connection, callback) {
+    _this._getTranslation(_from, connection, callback);
   }, callback);
 
 };
 
-Application.postTranslation = function (_from, _to, databasePath, options, task, callback) {
+Application.postTranslation = function (_from, _to, databasePath, options, callback) {
 
   let _this = this;
 
-  _this.executeTask(databasePath, options, function(connection, callback) {
-    Asynchronous.series([
+  _this.openDatabase(databasePath, options, function(connection, callback) {
+    Asynchronous.waterfall([
       function(callback) {
         _this.validateAddTranslation(_from, callback);
       },
@@ -152,7 +145,14 @@ Application.postTranslation = function (_from, _to, databasePath, options, task,
         _this._addTranslation(_from, _to, connection, callback);
       },
       function(callback) {
-        _this._getTranslation(_from, connection, task, callback)
+        _this._getTranslation(_from, connection, function(error, row) {
+          if (error)
+            callback(error);
+          else {
+            // Log.debug('= Application.postTranslation(_from, _to, databasePath, options, callback) { ... }\n\nrow\n---\n%s\n\n', Utilities.inspect(row));
+            callback(null, row);
+          }
+        });
       }
     ], callback);
   }, callback);

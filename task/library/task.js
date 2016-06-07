@@ -28,7 +28,7 @@ taskPrototype.add = function(task, options) {
   let _this = this;
   let argumentsObject = Task.getAddArguments(task, options, arguments);
 
-  Log.info('> [%s] Task.add(task, options) { ... }\n\nargumentsObject\n---------------\n\n%s\n\n', _this.name, Log.render(argumentsObject));
+  Log.info('> [%s] Task.add(task, options) { ... }\n\nargumentsObject\n---------------\n\n%s\n\n', _this.name, Utilities.inspect(argumentsObject));
 
   let _task = task;
   let _options = options || Task.OPTIONS_STDIO_INHERIT;

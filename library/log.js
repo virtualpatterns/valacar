@@ -2,21 +2,12 @@
 
 const Cluster = require('cluster');
 const Pad = require('pad');
-const PrettyJSON = require('prettyjson');
 const Utilities = require('util');
 const Winston = require('winston');
 
 const Path = require('./path');
 
-const PRETTY_JSON_OPTIONS = {
-  noColor: true
-};
-
 const Log = Object.create(Winston);
-
-Log.render = function(data) {
-  return PrettyJSON.render(data, PRETTY_JSON_OPTIONS);
-};
 
 Log.format = function(options) {
 

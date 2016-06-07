@@ -158,7 +158,7 @@ Application.request = function(method, path, requestData, callback) {
   }
 
   if (requestData)
-    Log.info('> Application.request(%j, %j, requestData, callback)\n\n%s\n', method, path, Log.render(requestData));
+    Log.info('> Application.request(%j, %j, requestData, callback)\n\n%s\n', method, path, Utilities.inspect(requestData));
   else
     Log.info('> Application.request(%j, %j, requestData, callback)', method, path);
 
@@ -174,10 +174,10 @@ Application.request = function(method, path, requestData, callback) {
     }
   };
 
-  Log.info('> HTTP.request(options, function(response) { ... }\n\n%s\n', Log.render(options));
+  Log.info('> HTTP.request(options, function(response) { ... }\n\n%s\n', Utilities.inspect(options));
   let request = HTTP.request(options, function(response) {
     Log.info('= HTTP.request(options, function(response) { ... }');
-    Log.info('    response.statusCode=%d\n\n%s\n', response.statusCode, Log.render(response.headers));
+    Log.info('    response.statusCode=%d\n\n%s\n', response.statusCode, Utilities.inspect(response.headers));
 
     let responseData = '';
 
@@ -211,13 +211,13 @@ Application.request = function(method, path, requestData, callback) {
             _data['data'][name] = this;
 
             let result = Query(query, _data);
-            Log.info('< Query(%j, _data)\n\n_data\n-----\n%s\n\nresult.value\n------------\n%s\n', query, Log.render(_data), Log.render(result.value));
+            Log.info('< Query(%j, _data)\n\n_data\n-----\n%s\n\nresult.value\n------------\n%s\n', query, Utilities.inspect(_data), Utilities.inspect(result.value));
 
             return result.value;
 
           };
 
-          Log.info('< HTTP.ServerResponse.on("end", function() { ... })\n\n%s\n', Log.render(data));
+          Log.info('< HTTP.ServerResponse.on("end", function() { ... })\n\n%s\n', Utilities.inspect(data));
           callback(null, response.statusCode, response.headers, data);
 
         }

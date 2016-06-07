@@ -69,9 +69,6 @@ Command
 
       }
 
-      Log.info('< Command.command("start [databasePath]")');
-      Log.info('--------------------------------------------------------------------------------');
-
     }
     else {
 
@@ -91,11 +88,8 @@ Command
 
       }
       catch(error) {
-
         Log.error('= %s\n\n%s\n', error.message, error.stack);
-
         Process.exitCode = 1;
-
       }
 
     }
@@ -134,9 +128,6 @@ Command
       console.log(error.stack);
 
     }
-
-    Log.info('< Command.command("stop")');
-    Log.info('--------------------------------------------------------------------------------');
 
   });
 

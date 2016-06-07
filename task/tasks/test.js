@@ -6,7 +6,18 @@ const Task = require('../library/task');
 
 namespace('test', function() {
 
-  desc('Run all tests');
+  desc('Run all application and server tests');
+  task('both', ['clean', 'log'], {'async': true}, function () {
+    Task.createTask(this.fullName)
+      .add('mocha --require test/index.js \
+                  test/tests')
+      .add('mocha --require test/index.js \
+                  --timeout 10000 \
+                  test/server/tests')
+      .execute(complete, fail);
+  });
+
+  desc('Run all application tests');
   task('all', ['clean', 'log'], {'async': true}, function () {
     Task.createTask(this.fullName)
       .add('mocha --require test/index.js \
