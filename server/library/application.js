@@ -12,10 +12,40 @@ const Package = require('../../package.json');
 const Path = require('../../library/path');
 const Process = require('../../library/process');
 
-const PAUSE = 2500;
+const PAUSE = 500;
 const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
+const TYPEOF_NUMBER = 'number';
 
 const Application = Object.create(_Application);
+
+Application.numberOfWorkersListening = 0;
+Application.allWorkersListening = false;
+
+Application.waitUntilAllWorkersListening = function(whenAllWorkersListeningFn) {
+
+  // Log.debug('= Application.waitUntilAllWorkersListening(whenAllWorkersListeningFn) { ... } Application.numberOfWorkersListening=%d Application.allWorkersListening=%s', Application.numberOfWorkersListening, Application.allWorkersListening);
+  if (!Application.allWorkersListening)
+    setTimeout(function() {
+      Application.waitUntilAllWorkersListening(whenAllWorkersListeningFn);
+    }, PAUSE);
+  else
+    whenAllWorkersListeningFn();
+
+};
+
+Application.waitUntilNoWorkersListening = function(whenNoWorkersListeningFn) {
+
+  // Log.debug('= Application.waitUntilNoWorkersListening(whenNoWorkersListeningFn) { ... } Application.numberOfWorkersListening=%d Application.allWorkersListening=%s', Application.numberOfWorkersListening, Application.allWorkersListening);
+  if (Application.numberOfWorkersListening > 0)
+    setTimeout(function() {
+      Application.waitUntilNoWorkersListening(whenNoWorkersListeningFn);
+    }, PAUSE);
+  else if (typeof whenNoWorkersListeningFn == TYPEOF_NUMBER)
+    Process.exit(whenNoWorkersListeningFn);
+  else
+    whenNoWorkersListeningFn();
+
+};
 
 Application.startMaster = function (numberOfWorkers, pidPath) {
   Log.info('> Application.startMaster(%d, %j) { ... }', numberOfWorkers, Path.trim(pidPath));
@@ -23,14 +53,20 @@ Application.startMaster = function (numberOfWorkers, pidPath) {
   Process.createPID(pidPath);
 
   for (let i = 0; i < numberOfWorkers; i++) {
-
-    let worker = Cluster.fork();
-
-    worker.on('exit', function(code, signal) {
-      Log.info('< worker.on("exit", function(%d, %j) { ... }) worker.process.pid=%d', code, signal, worker.process.pid);
-    });
-
+    Cluster.fork();
   }
+
+  Cluster.on('listening', function(worker, address) {
+    Application.numberOfWorkersListening ++;
+    Application.allWorkersListening = (Application.numberOfWorkersListening == numberOfWorkers ? true : false);
+    Log.debug('< Cluster.on("listening", function(worker, address) { ... }) worker.process.pid=%d Application.numberOfWorkersListening=%d Application.allWorkersListening=%s', worker.process.pid, Application.numberOfWorkersListening, Application.allWorkersListening);
+  });
+
+  Cluster.on('exit', function(worker, code, signal) {
+    Application.numberOfWorkersListening --;
+    Application.allWorkersListening = false;
+    Log.debug('< Cluster.on("exit", function(worker, %d, %j) { ... }) worker.process.pid=%d Application.numberOfWorkersListening=%d Application.allWorkersListening=%s', code, signal, worker.process.pid, Application.numberOfWorkersListening, Application.allWorkersListening);
+  });
 
   Process.once('SIGHUP', function() {
     Log.info('> Process.once("SIGHUP", function() { ... })');
@@ -40,25 +76,19 @@ Application.startMaster = function (numberOfWorkers, pidPath) {
   Process.once('SIGINT', function() {
     Log.info('> Process.once("SIGINT", function() { ... })');
     Process.kill(Process.pid, 'SIGHUP');
-    setTimeout(function() {
-        Process.exit(1);
-    }, PAUSE);
+    Application.waitUntilNoWorkersListening(0);
   });
 
   Process.once('SIGTERM', function() {
     Log.info('> Process.once("SIGTERM", function() { ... })');
     Process.kill(Process.pid, 'SIGHUP');
-    setTimeout(function() {
-      Process.exit(1);
-    }, PAUSE);
+    Application.waitUntilNoWorkersListening(0);
   });
 
   Process.once('uncaughtException', function(error) {
     Log.error('> Process.once("uncaughtException", function(error) { ... })\n\n%s\n', error.stack);
     Process.kill(Process.pid, 'SIGHUP');
-    setTimeout(function() {
-        Process.exit(1);
-    }, PAUSE);
+    Application.waitUntilNoWorkersListening(1);
   });
 
 };
@@ -83,17 +113,20 @@ Application.startWorker = function (address, port, databasePath, options) {
   Default.createRoutes(server, databasePath, options);
   Translation.createRoutes(server, databasePath, options);
 
-  server.listen(port, address, function() {
-    Log.info('< server.listen(%d, %s, function() { ... })', port, address);
-  });
+  // setTimeout(function() {
+    server.listen(port, address);
+  // },10000)
 
   Process.once('uncaughtException', function(error) {
     Log.error('> Process.once("uncaughtException", function(error) { ... })\n\n%s\n', error.stack);
-    setTimeout(function() {
-        Process.exit(1);
-    }, PAUSE);
+    Process.exit(1);
   });
 
+};
+
+Application.stopMaster = function (pidPath) {
+  Log.info('> Application.stopMaster(%j) { ... }', Path.trim(pidPath));
+  Process.killPID(pidPath);
 };
 
 Application.getTranslations = function (databasePath, options, callback) {

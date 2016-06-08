@@ -1,11 +1,12 @@
 'use strict';
 
-const Path = require('path');
+const _Path = require('path');
 
-const _Path = Object.create(Path);
+const Path = Object.create(_Path);
 
-_Path.trim = function(path) {
-  return path.replace(process.cwd(), '.');
+Path.trim = function(path) {
+  const Process = require('./process');
+  return path.replace(Process.cwd(), '.');
 }
 
-module.exports = _Path;
+module.exports = Path;

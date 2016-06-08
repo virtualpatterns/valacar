@@ -121,11 +121,11 @@ Database.delete = function(callback) {
 
   let _this = this;
 
-  Log.info('> FileSystem.access(%j, FileSystem.F_OK, callback)', Path.trim(_this.DATABASE_PATH));
+  // Log.info('> FileSystem.access(%j, FileSystem.F_OK, callback)', Path.trim(_this.DATABASE_PATH));
   FileSystem.access(_this.DATABASE_PATH, FileSystem.F_OK, function(error) {
-    Log.info('< FileSystem.access(%j, FileSystem.F_OK, callback)', Path.trim(_this.DATABASE_PATH));
+    // Log.info('< FileSystem.access(%j, FileSystem.F_OK, callback)', Path.trim(_this.DATABASE_PATH));
     if (error) {
-      Log.info('    error.message=%j', error.message);
+      // Log.info('    error.message=%j\n\n%s\n\n', error.message, error.stack);
       callback(null);
     }
     else {

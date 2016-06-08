@@ -12,7 +12,7 @@ namespace('test', function() {
       .add('mocha --require test/index.js \
                   test/tests')
       .add('mocha --require test/index.js \
-                  --timeout 10000 \
+                  --timeout 0 \
                   test/server/tests')
       .execute(complete, fail);
   });
@@ -91,7 +91,7 @@ namespace('test', function() {
     task('all', ['clean', 'log'], {'async': true}, function () {
       Task.createTask(this.fullName)
         .add('mocha --require test/index.js \
-                    --timeout 10000 \
+                    --timeout 0 \
                     test/server/tests')
         .execute(complete, fail);
     });
@@ -100,7 +100,7 @@ namespace('test', function() {
     task('start', ['clean', 'log'], {'async': true}, function () {
       Task.createTask(this.fullName)
         .add('mocha --require test/index.js \
-                    --timeout 10000 \
+                    --timeout 0 \
                     test/server/tests/00000000000000-begin.js \
                     test/server/tests/20160603231000-start.js \
                     test/server/tests/99999999999999-end.js')
@@ -111,7 +111,7 @@ namespace('test', function() {
     task('stop', ['clean', 'log'], {'async': true}, function () {
       Task.createTask(this.fullName)
         .add('mocha --require test/index.js \
-                    --timeout 10000 \
+                    --timeout 0 \
                     test/server/tests/00000000000000-begin.js \
                     test/server/tests/20160603231000-start.js \
                     test/server/tests/20160604224200-stop.js \
@@ -123,7 +123,7 @@ namespace('test', function() {
     task('default', ['clean', 'log'], {'async': true}, function () {
       Task.createTask(this.fullName)
         .add('mocha --require test/index.js \
-                    --timeout 10000 \
+                    --timeout 0 \
                     test/server/tests/00000000000000-begin.js \
                     test/server/tests/20160605001200-default.js \
                     test/server/tests/99999999999999-end.js')
@@ -134,7 +134,7 @@ namespace('test', function() {
     task('translations', ['clean', 'log'], {'async': true}, function () {
       Task.createTask(this.fullName)
         .add('mocha --require test/index.js \
-                    --timeout 10000 \
+                    --timeout 0 \
                     test/server/tests/00000000000000-begin.js \
                     test/server/tests/20160605010500-translations.js \
                     test/server/tests/99999999999999-end.js')

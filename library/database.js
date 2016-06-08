@@ -27,7 +27,7 @@ Database.createConnection = function(path, callback) {
 
 };
 
-Database.openConnection = function(path, options, task, callback) {
+Database.openConnection = function(path, options, taskFn, callback) {
 
   Asynchronous.waterfall([
     function(callback) {
@@ -50,8 +50,8 @@ Database.openConnection = function(path, options, task, callback) {
           });
       }
 
-      task(connection, function(error) {
-        // Log.debug('= Database.openConnection(path, options, task, callback) { ... }\n\narguments\n---------\n%s\n\n', Utilities.inspect(arguments, {'depth': null}));
+      taskFn(connection, function(error) {
+        // Log.debug('= Database.openConnection(path, options, taskFn, callback) { ... }\n\narguments\n---------\n%s\n\n', Utilities.inspect(arguments, {'depth': null}));
 
         let argumentsArray = Array.prototype.slice.call(arguments);
 
@@ -59,7 +59,7 @@ Database.openConnection = function(path, options, task, callback) {
           if (!_error)
             Log.info('< CLOSE %s %j', Path.trim(path), options, {});
           argumentsArray[0] = error || _error;
-          // Log.debug('= Database.openConnection(path, options, task, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray, {'depth': null}));
+          // Log.debug('= Database.openConnection(path, options, taskFn, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray, {'depth': null}));
           callback.apply(callback, argumentsArray);
         });
 
@@ -67,10 +67,10 @@ Database.openConnection = function(path, options, task, callback) {
 
       // Asynchronous.series([
       //   function(callback) {
-      //     task(connection, callback);
+      //     taskFn(connection, callback);
       //   }
       // ], function(error) {
-      //   // Log.debug('= Database.openConnection(path, options, task, callback) { ... }\n\narguments\n---------\n%s\n\n', Utilities.inspect(arguments, {'depth': null}));
+      //   // Log.debug('= Database.openConnection(path, options, taskFn, callback) { ... }\n\narguments\n---------\n%s\n\n', Utilities.inspect(arguments, {'depth': null}));
       //
       //   let argumentsArray = Array.prototype.slice.call(arguments);
       //
@@ -78,7 +78,7 @@ Database.openConnection = function(path, options, task, callback) {
       //     if (!_error)
       //       Log.info('< CLOSE %s %j', Path.trim(path), options, {});
       //     argumentsArray[0] = error || _error;
-      //     Log.debug('= Database.openConnection(path, options, task, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray, {'depth': null}));
+      //     Log.debug('= Database.openConnection(path, options, taskFn, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray, {'depth': null}));
       //     callback.apply(callback, argumentsArray);
       //   });
       //
@@ -89,7 +89,7 @@ Database.openConnection = function(path, options, task, callback) {
 
 }
 
-Database.startTransaction = function(connection, transactionName, task, callback) {
+Database.startTransaction = function(connection, transactionName, taskFn, callback) {
 
   Asynchronous.waterfall([
     function(callback) {
@@ -98,8 +98,8 @@ Database.startTransaction = function(connection, transactionName, task, callback
     },
     function(callback) {
 
-      task(connection, function(error) {
-        // Log.debug('= Database.startTransaction(connection, transactionName, task, callback) { ... }\n\narguments\n---------\n%s\n\n', Utilities.inspect(arguments, {'depth': null}));
+      taskFn(connection, function(error) {
+        // Log.debug('= Database.startTransaction(connection, transactionName, taskFn, callback) { ... }\n\narguments\n---------\n%s\n\n', Utilities.inspect(arguments, {'depth': null}));
 
         let argumentsArray = Array.prototype.slice.call(arguments);
 
@@ -108,7 +108,7 @@ Database.startTransaction = function(connection, transactionName, task, callback
             if (!_error)
               Log.info('< ROLLBACK TO %s', transactionName);
             argumentsArray[0] = error || _error;
-            // Log.debug('= Database.startTransaction(connection, transactionName, task, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray, {'depth': null}));
+            // Log.debug('= Database.startTransaction(connection, transactionName, taskFn, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray, {'depth': null}));
             callback.apply(callback, argumentsArray);
           });
         }
@@ -117,7 +117,7 @@ Database.startTransaction = function(connection, transactionName, task, callback
             if (!_error)
               Log.info('< RELEASE %s', transactionName);
             argumentsArray[0] = _error;
-            // Log.debug('= Database.startTransaction(connection, transactionName, task, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray, {'depth': null}));
+            // Log.debug('= Database.startTransaction(connection, transactionName, taskFn, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray, {'depth': null}));
             callback.apply(callback, argumentsArray);
           });
         }
@@ -126,10 +126,10 @@ Database.startTransaction = function(connection, transactionName, task, callback
 
       // Asynchronous.waterfall([
       //   function(callback) {
-      //     task(connection, callback);
+      //     taskFn(connection, callback);
       //   }
       // ], function(error) {
-      //   // Log.debug('= Database.startTransaction(connection, transactionName, task, callback) { ... }\n\narguments\n---------\n%s\n\n', Utilities.inspect(arguments, {'depth': null}));
+      //   // Log.debug('= Database.startTransaction(connection, transactionName, taskFn, callback) { ... }\n\narguments\n---------\n%s\n\n', Utilities.inspect(arguments, {'depth': null}));
       //
       //   let argumentsArray = Array.prototype.slice.call(arguments);
       //
@@ -138,7 +138,7 @@ Database.startTransaction = function(connection, transactionName, task, callback
       //       if (!_error)
       //         Log.info('< ROLLBACK TO %s', transactionName);
       //       argumentsArray[0] = error || _error;
-      //       Log.debug('= Database.startTransaction(connection, transactionName, task, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray, {'depth': null}));
+      //       Log.debug('= Database.startTransaction(connection, transactionName, taskFn, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray, {'depth': null}));
       //       callback.apply(callback, argumentsArray);
       //     });
       //   }
@@ -147,7 +147,7 @@ Database.startTransaction = function(connection, transactionName, task, callback
       //       if (!_error)
       //         Log.info('< RELEASE %s', transactionName);
       //       argumentsArray[0] = _error;
-      //       Log.debug('= Database.startTransaction(connection, transactionName, task, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray, {'depth': null}));
+      //       Log.debug('= Database.startTransaction(connection, transactionName, taskFn, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray, {'depth': null}));
       //       callback.apply(callback, argumentsArray);
       //     });
       //   }

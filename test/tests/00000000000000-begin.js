@@ -38,6 +38,6 @@ after(function(callback) {
 
 });
 
-describe('Begin', function() {
+describe('begin', function() {
   it('should do nothing', function() {});
 });

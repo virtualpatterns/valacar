@@ -3,7 +3,6 @@
 const Asynchronous = require('async');
 const ChildProcess = require('child_process');
 const HTTP = require('http');
-const Query = require('json-query');
 const Utilities = require('util');
 
 const _Application = require('../../library/application');
@@ -16,10 +15,11 @@ const Process = require('../../../library/process');
 
 const ProcessError = require('../../../library/errors/process-error');
 
-const PAUSE = 5000;
+const PAUSE = 500;
 const REGEXP_SPLIT = /(?:[^\s"]+|"[^"]*")+/g;
 const REGEXP_QUOTE = /^"|"$/g;
 const TYPEOF_FUNCTION = 'function';
+const TYPEOF_NUMBER = 'number';
 
 const Application = Object.create(_Application);
 
@@ -72,6 +72,7 @@ Object.defineProperty(Application, 'NUMBER_OF_WORKERS', {
 });
 
 Application.executeCommand = function(command, callback) {
+  Log.debug('> Application.executeCommand(%j, callback) { ... }', command);
 
   let _command = command;
   _command = _command.match(REGEXP_SPLIT);
@@ -82,8 +83,10 @@ Application.executeCommand = function(command, callback) {
   _command = _command.shift();
 
   if (_command != 'start' &&
-      _command != 'stop')
+      _command != 'stop') {
+    // Log.debug('> Object.getPrototypeOf(this).executeCommand.call(this, %j, callback)', command);
     Object.getPrototypeOf(this).executeCommand.call(this, command, callback);
+  }
   else {
 
     Log.info('> ./server.js %s', command);
@@ -98,10 +101,7 @@ Application.executeCommand = function(command, callback) {
         function(callback) {
           Log.info('< ./server.js %s', command);
           if (error) {
-            Log.info('       error.code=%j', error.code);
-            Log.info('    error.message=%j', error.message);
-            Log.info('       error.name=%j', error.name);
-            Log.info('           stderr=%j', stderr);
+            Log.info('    error.message=%j\n\n%s\n\n', error.message, error.stack);
             callback(new ProcessError(Utilities.format('An error occurred executing the command %j (%s).', command, stderr)), stdout, stderr);
           }
           else
@@ -127,27 +127,13 @@ Application.executeStart = function(callback) {
                                                                           this.MASTER_LOG_PATH,
                                                                           this.WORKER_LOG_PATH,
                                                                           this.MASTER_PID_PATH,
-                                                                          this.NUMBER_OF_WORKERS), function(error) {
-                                                                            if (error)
-                                                                              callback(error);
-                                                                            else
-                                                                              setTimeout(function() {
-                                                                                callback(null);
-                                                                              }, PAUSE);
-                                                                          });
+                                                                          this.NUMBER_OF_WORKERS), callback);
 };
 
 Application.executeStop = function(callback) {
   this.executeCommand(Utilities.format('stop  --masterLogPath %j \
                                               --masterPIDPath %j',  this.MASTER_LOG_PATH,
-                                                                    this.MASTER_PID_PATH), function(error) {
-                                                                      if (error)
-                                                                        callback(error);
-                                                                      else
-                                                                        setTimeout(function() {
-                                                                          callback(null);
-                                                                        }, PAUSE);
-                                                                    });
+                                                                    this.MASTER_PID_PATH), callback);
 };
 
 Application.request = function(method, path, requestData, callback) {
@@ -156,6 +142,8 @@ Application.request = function(method, path, requestData, callback) {
     callback = requestData;
     requestData = null;
   }
+
+  let _this = this;
 
   if (requestData)
     Log.info('> Application.request(%j, %j, requestData, callback)\n\n%s\n', method, path, Utilities.inspect(requestData));
@@ -174,16 +162,16 @@ Application.request = function(method, path, requestData, callback) {
     }
   };
 
-  Log.info('> HTTP.request(options, function(response) { ... }\n\n%s\n', Utilities.inspect(options));
+  // Log.info('> HTTP.request(options, function(response) { ... }');
+  // Log.info('> HTTP.request(options, function(response) { ... }\n\n%s\n', Utilities.inspect(options));
   let request = HTTP.request(options, function(response) {
-    Log.info('= HTTP.request(options, function(response) { ... }');
-    Log.info('    response.statusCode=%d\n\n%s\n', response.statusCode, Utilities.inspect(response.headers));
+    // Log.info('= HTTP.request(options, function(response) { ... }');
+    // Log.info('    response.statusCode=%d\n\n%s\n', response.statusCode, Utilities.inspect(response.headers));
 
     let responseData = '';
 
     response.setEncoding('utf8');
     response.on('data', function(_responseData) {
-      Log.info('= HTTP.ServerResponse.on("data", function(%j) { ... })', _responseData);
       responseData += _responseData;
     });
 
@@ -197,25 +185,13 @@ Application.request = function(method, path, requestData, callback) {
         }
       ], function(error) {
         if (error) {
-          Log.info('< HTTP.ServerResponse.on("end", function() { ... })');
-          Log.info('    error.message=%s', error.message);
+          Log.info('< HTTP.ServerResponse.once("end", function() { ... })');
+          Log.info('    error.message=%j\n\n%s\n\n', error.message, error.stack);
           callback(error)
         }
         else if (responseData) {
 
           let data = JSON.parse(responseData);
-          data.query = function(name, query) {
-
-            let _data = {};
-            _data['data'] = {};
-            _data['data'][name] = this;
-
-            let result = Query(query, _data);
-            Log.info('< Query(%j, _data)\n\n_data\n-----\n%s\n\nresult.value\n------------\n%s\n', query, Utilities.inspect(_data), Utilities.inspect(result.value));
-
-            return result.value;
-
-          };
 
           Log.info('< HTTP.ServerResponse.on("end", function() { ... })\n\n%s\n', Utilities.inspect(data));
           callback(null, response.statusCode, response.headers, data);
@@ -231,9 +207,14 @@ Application.request = function(method, path, requestData, callback) {
   });
 
   request.once('error', function(error) {
-    Log.info('< HTTP.ServerRequest.on("error", function(error) { ... })');
-    Log.info('    error.message=%s', error.message);
-    callback(error);
+    // if (error.code == 'ECONNREFUSED')
+    //   _this.request(method, path, requestData, callback);
+    // else {
+      Log.info('< HTTP.ServerRequest.on("error", function(error) { ... })');
+      Log.info('    error.code=%j', error.code);
+      Log.info('    error.message=%j\n\n%s\n\n', error.message, error.stack);
+      callback(error);
+    // }
   });
 
   if (requestData)
@@ -243,11 +224,43 @@ Application.request = function(method, path, requestData, callback) {
 
 };
 
-Application.existsHEAD = function(path, callback) {
+Application.waitReady = function(callback) {
+
+  let _this = this;
+
+  this.HEAD('/', function(error, statusCode, headers, data) {
+    if (error &&
+        error.code == 'ECONNREFUSED')
+      setTimeout(function() {
+        _this.waitReady(callback);
+      }, PAUSE);
+    else
+      callback(error);
+  });
+
+};
+
+Application.waitNotReady = function(callback) {
+
+  let _this = this;
+
+  this.HEAD('/', function(error, statusCode, headers, data) {
+    if (error &&
+        error.code == 'ECONNREFUSED')
+      callback(null);
+    else
+      setTimeout(function() {
+        _this.waitNotReady(callback);
+      }, PAUSE);
+  });
+
+};
+
+Application.isHEAD = function(path, callback) {
   this.request('HEAD', path, function(error, statusCode, headers, data) {
     if (error) {
       Log.info('< Application.existsHEAD(%j, callback) { ... }', path);
-      Log.info('    error.message=%s', error.message);
+      Log.info('    error.message=%j\n\n%s\n\n', error.message, error.stack);
       callback(error);
     }
     else
@@ -255,16 +268,20 @@ Application.existsHEAD = function(path, callback) {
   });
 };
 
-Application.notExistsHEAD = function(path, callback) {
+Application.isNotHEAD = function(path, callback) {
   this.request('HEAD', path, function(error, statusCode, headers, data) {
     if (error) {
-      Log.info('< Application.notExistsHEAD(%j, callback) { ... }', path);
-      Log.info('    error.message=%s', error.message);
+      // Log.info('< Application.notExistsHEAD(%j, callback) { ... }', path);
+      // Log.info('    error.message=%j\n\n%s\n\n', error.message, error.stack);
       callback(null);
     }
     else
       callback(new URIError(Utilities.format('HEAD\'ing %j succeeded.', path)));
   });
+};
+
+Application.HEAD = function(path, callback) {
+  this.request('HEAD', path, callback);
 };
 
 Application.GET = function(path, callback) {
@@ -279,35 +296,63 @@ Application.DELETE = function(path, callback) {
   this.request('DELETE', path, callback);
 };
 
-Application.isRequest = function(method, path, requestData, statusCode, callback) {
+Application.isRequest = function(method, path, requestData, matchFn, callback) {
 
-  if (typeof statusCode == TYPEOF_FUNCTION) {
-    callback = statusCode;
-    statusCode = requestData;
+  if (typeof requestData == TYPEOF_FUNCTION) {
+    callback = matchFn;
+    matchFn = requestData;
     requestData = null;
   }
 
-  this.request(method, path, requestData, function(error, actualStatusCode, headers, data) {
+  this.request(method, path, requestData, function(error, statusCode, headers, data) {
     if (error)
       callback(error);
-    else if (actualStatusCode != statusCode)
-      callback(new Error(Utilities.format('The status code of the server response (%d %s) is not the expected status code (%d %s).', actualStatusCode, HTTP.STATUS_CODES[actualStatusCode], statusCode, HTTP.STATUS_CODES[statusCode])));
     else
-      callback(null);
+      matchFn(statusCode, headers, data, function(error, isMatch) {
+        // Log.debug('Application.isRequest(%j, %j, requestData, matchFn, callback) { ... } isMatch=%j', method, path, isMatch);
+        if (error)
+          callback(error);
+        else if (!isMatch)
+          callback(new Error('The server response does not match what is expected.'));
+        else
+          callback(null, true);
+      });
   });
 
 };
 
-Application.isGET = function(path, statusCode, callback) {
-  this.isRequest('GET', path, statusCode, callback);
+Application.isGET = function(path, matchFn, callback) {
+  this.isRequest('GET', path, matchFn, callback);
 };
 
-Application.isPOST = function(path, requestData, statusCode, callback) {
-  this.isRequest('POST', path, requestData, statusCode, callback);
+Application.isPOST = function(path, requestData, matchFn, callback) {
+  this.isRequest('POST', path, requestData, matchFn, callback);
 };
 
-Application.isDELETE = function(path, statusCode, callback) {
-  this.isRequest('DELETE', path, statusCode, callback);
+Application.isRequestStatusCode = function(method, path, requestData, expectedStatusCode, callback) {
+
+  if (typeof requestData == TYPEOF_NUMBER) {
+    callback = expectedStatusCode;
+    expectedStatusCode = requestData;
+    requestData = null;
+  }
+
+  this.isRequest(method, path, requestData, function(actualStatusCode, headers, data, callback) {
+    callback(null, actualStatusCode == expectedStatusCode);
+  }, callback);
+
+};
+
+Application.isGETStatusCode = function(path, statusCode, callback) {
+  this.isRequestStatusCode('GET', path, statusCode, callback);
+};
+
+Application.isPOSTStatusCode = function(path, requestData, statusCode, callback) {
+  this.isRequestStatusCode('POST', path, requestData, statusCode, callback);
+};
+
+Application.isDELETEStatusCode = function(path, statusCode, callback) {
+  this.isRequestStatusCode('DELETE', path, statusCode, callback);
 };
 
 module.exports = Application;

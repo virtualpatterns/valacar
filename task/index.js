@@ -19,14 +19,14 @@ task('log', function () {
 });
 
 task('clean', {'async': true}, function () {
-  // Process.stdout.write(Utilities.format('Deleting contents of %j ... ', Path.join(Process.cwd(), 'process', 'log')));
+  Process.stdout.write(Utilities.format('Deleting contents of %j ... ', Path.join(Process.cwd(), 'process', 'log')));
   FileSystemTask.createTask(this.fullName)
     .removeFiles(Path.join(Process.cwd(), 'process', 'log'))
     .execute(function() {
-      // Process.stdout.write('done.\n');
+      Process.stdout.write('done.\n');
       complete();
     }, function(error) {
-      // Process.stdout.write(Utilities.format('failed (%s).\n', error.message));
+      Process.stdout.write(Utilities.format('failed (%s).\n', error.message));
       fail(error);
     });
 });

@@ -1,5 +1,5 @@
 'use strict';
 
-describe('End', function() {
+describe('end', function() {
   it('should do nothing', function() {});
 });

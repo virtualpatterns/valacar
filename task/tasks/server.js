@@ -19,7 +19,7 @@ const PAUSE = 5000;
 namespace('server', function() {
 
   desc(Utilities.format('Run server on %j, log to %j, pid to %j', Path.trim(DATABASE_PATH), Path.trim(MASTER_LOG_PATH), Path.trim(MASTER_PID_PATH)));
-  task('run', ['log'], {'async': true}, function () {
+  task('run', ['clean', 'log'], {'async': true}, function (numberOfWorkers) {
     Task.createTask(this.fullName)
       .add('./server.js start %j  --port %d \
                                   --masterLogPath %j \
@@ -30,14 +30,12 @@ namespace('server', function() {
                                                           MASTER_LOG_PATH,
                                                           WORKER_LOG_PATH,
                                                           MASTER_PID_PATH,
-                                                          NUMBER_OF_WORKERS)
+                                                          numberOfWorkers || NUMBER_OF_WORKERS)
       .execute(complete, fail);
   });
 
   desc(Utilities.format('Start server on %j, log to %j, pid to %j', Path.trim(DATABASE_PATH), Path.trim(MASTER_LOG_PATH), Path.trim(MASTER_PID_PATH)));
-  task('start', ['log'], {'async': true}, {
-    'async': true
-  }, function () {
+  task('start', ['clean', 'log'], {'async': true}, {'async': true}, function (numberOfWorkers) {
     Task.createTask(this.fullName)
       .add('./server.js start %j  --fork \
                                   --port %d \
@@ -49,7 +47,7 @@ namespace('server', function() {
                                                           MASTER_LOG_PATH,
                                                           WORKER_LOG_PATH,
                                                           MASTER_PID_PATH,
-                                                          NUMBER_OF_WORKERS)
+                                                          numberOfWorkers || NUMBER_OF_WORKERS)
       .execute(complete, fail);
   });
 

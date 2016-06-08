@@ -14,9 +14,9 @@ const Package = require('./package.json');
 const Path = require('./library/path');
 const Process = require('./library/process');
 
-const DATABASE_PATH = Path.join(Process.cwd(), Utilities.format('%s.%s', Package.name, 'db'));
+const DATABASE_PATH = Path.join(Process.cwd(), Utilities.format('%s.db', Package.name));
 const LEASES_PATH = Path.join(Process.cwd(), 'dhcpd.leases');
-const LOG_PATH = Path.join(Process.cwd(), Utilities.format('%s.%s', Package.name, 'log'));
+const LOG_PATH = Path.join(Process.cwd(), Utilities.format('%s.log', Package.name));
 
 Command
   .version(Package.version);

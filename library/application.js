@@ -22,12 +22,12 @@ const REGEXP_ADDRESS = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4]
 const REGEXP_DEVICE = /^(([A-Fa-f0-9]{2}[:]){5}[A-Fa-f0-9]{2}[,]?)+$/;
 const REGEXP_HOST = /^(?=.{1,255}$)[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?)*\.?$/;
 
-Application.openDatabase = function(databasePath, options, task, callback) {
+Application.openDatabase = function(databasePath, options, taskFn, callback) {
   Database.openConnection(databasePath, options, function(connection, callback) {
     Database.startTransaction(
       connection,
       TRANSACTION_NAME,
-      task,
+      taskFn,
       callback
     );
   }, callback);

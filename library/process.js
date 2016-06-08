@@ -29,14 +29,13 @@ Process.createPID = function(path) {
   let error = null;
 
   try {
-    Log.info('> FileSystem.accessSync(%j, FileSystem.F_OK)', Path.trim(path));
+    // Log.info('> FileSystem.accessSync(%j, FileSystem.F_OK)', Path.trim(path));
     FileSystem.accessSync(path, FileSystem.F_OK);
   }
   catch (_error) {
     error = _error;
-    Log.info('< FileSystem.accessSync(%j, FileSystem.F_OK)', Path.trim(path));
-    Log.info('    error.message=%j', error.message);
-    Log.info('       error.name=%j', error.name);
+    // Log.info('< FileSystem.accessSync(%j, FileSystem.F_OK)', Path.trim(path));
+    // Log.info('    error.message=%j\n\n%s\n\n', error.message, error.stack);
   }
 
   if (!error)
@@ -48,8 +47,14 @@ Process.createPID = function(path) {
   });
 
   this.once('exit', function() {
-    FileSystem.accessSync(path, FileSystem.F_OK);
-    FileSystem.unlinkSync(path);
+    try {
+      FileSystem.accessSync(path, FileSystem.F_OK);
+      FileSystem.unlinkSync(path);
+    }
+    catch (error) {
+      console.log('< Process.once("exit", function() { ... }');
+      console.log('    error.message=%j\n\n%s\n\n', error.message, error.stack);
+    }
   });
 
 };
@@ -61,30 +66,26 @@ Process.killPID = function(path) {
   Log.info('> Process.killPID(%j)', Path.trim(path));
 
   try {
-    Log.info('> FileSystem.accessSync(%j, FileSystem.F_OK)', Path.trim(path));
+    // Log.info('> FileSystem.accessSync(%j, FileSystem.F_OK)', Path.trim(path));
     FileSystem.accessSync(path, FileSystem.F_OK);
   }
   catch (error) {
-    Log.info('< FileSystem.accessSync(%j, FileSystem.F_OK)', Path.trim(path));
-    Log.info('    error.message=%j', error.message);
-    Log.info('       error.name=%j', error.name);
+    // Log.info('< FileSystem.accessSync(%j, FileSystem.F_OK)', Path.trim(path));
+    // Log.info('    error.message=%j\n\n%s\n\n', error.message, error.stack);
     throw new ArgumentError(Utilities.format('The PID cannot be killed because the PID file %j does not exist.', Path.trim(path)));
   }
 
-  Log.info('> FileSystem.readFileSync(%j, ...)', Path.trim(path));
+  // Log.info('> FileSystem.readFileSync(%j, ...)', Path.trim(path));
   let pid = FileSystem.readFileSync(path, {
     encoding: 'utf-8'
   });
-  Log.info('< FileSystem.readFileSync(%j, ...) pid=%d', Path.trim(path), pid);
 
   Log.info('> Process.kill(%d, "SIGTERM")', pid);
   this.kill(pid, 'SIGTERM');
-  Log.info('< Process.kill(%d, "SIGTERM")', pid);
 
-};
+  Log.info('> FileSystem.unlinkSync(%j)', Path.trim(path));
+  FileSystem.unlinkSync(path);
 
-Process.trimPath = function(path) {
-  return path.replace(process.cwd(), '.');
 };
 
 module.exports = Process;

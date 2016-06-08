@@ -44,14 +44,14 @@ taskPrototype.add = function(task, options) {
         .spawn(argumentsObject.command, argumentsObject.arguments, argumentsObject.options)
         .once('error', function(_error) {
           Log.debug('= [%s] ChildProcess.once("error", function(_error) { ... }', _this.name);
-          Log.debug('         error.message=%s\n\n%s\n\n', _error.message, _error.stack);
+          Log.debug('         error.message=%j\n\n%s\n\n', _error.message, _error.stack);
           error = _error;
         })
         .once('close', function(code) {
           Log.info('< [%s] ChildProcess.spawn(%j, %j, options)', _this.name, argumentsObject.command, argumentsObject.arguments);
           if (error) {
             Log.info('         code=%d', code);
-            Log.info('         error.message=%s\n\n%s\n\n', error.message, error.stack);
+            Log.info('         error.message=%j\n\n%s\n\n', error.message, error.stack);
             callback(error);
           }
           else if (code > 0) {

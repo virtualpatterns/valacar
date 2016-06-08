@@ -15,9 +15,9 @@ const Process = require('../library/process');
 const ADDRESS = '0.0.0.0';
 const PORT = 8080;
 const DATABASE_PATH = Path.join(Process.cwd(), Utilities.format('%s.%s', Package.name, 'db'));
-const MASTER_LOG_PATH = Path.join(Process.cwd(), Utilities.format('%s.master.%s', Package.name, 'log'));
-const WORKER_LOG_PATH = Path.join(Process.cwd(), Utilities.format('%s.worker.%s', Package.name, 'log'));
-const MASTER_PID_PATH = Path.join(Process.cwd(), Utilities.format('%s.master.%s', Package.name, 'pid'));
+const MASTER_LOG_PATH = Path.join(Process.cwd(), Utilities.format('%s.master.log', Package.name));
+const WORKER_LOG_PATH = Path.join(Process.cwd(), Utilities.format('%s.worker.log', Package.name));
+const MASTER_PID_PATH = Path.join(Process.cwd(), Utilities.format('%s.master.pid', Package.name));
 const NUMBER_OF_WORKERS = System.cpus().length;
 
 Command
@@ -39,6 +39,8 @@ Command
 
     if (Cluster.isMaster) {
 
+      if (options.fork) Daemon();
+
       Log.addFile(options.masterLogPath || MASTER_LOG_PATH);
 
       Log.info('--------------------------------------------------------------------------------');
@@ -51,20 +53,15 @@ Command
         Application.startMaster(  options.numberOfWorkers || NUMBER_OF_WORKERS,
                                   options.masterPIDPath || MASTER_PID_PATH);
 
-        Process.exitCode = 0;
-        console.log('Successfully started the server process, listening at http://%s:%d.', options.address || ADDRESS, options.port || PORT);
-
-        if (options.fork)
-          Daemon();
+        Application.waitUntilAllWorkersListening(function() {});
 
       }
       catch(error) {
 
-        Log.error('= %s\n\n%s\n', error.message, error.stack);
-        console.error(error.stack);
+        Log.error('= %j\n\n%s\n', error.message, error.stack);
 
         Process.exitCode = 1;
-        console.log('An error occured starting the server process.');
+        console.log('An error occured starting the server processes.');
         console.log(error.stack);
 
       }
@@ -84,11 +81,9 @@ Command
                                     'enableProfile': !!options.enableProfile
                                   });
 
-        Process.exitCode = 0;
-
       }
       catch(error) {
-        Log.error('= %s\n\n%s\n', error.message, error.stack);
+        Log.error('= %j\n\n%s\n', error.message, error.stack);
         Process.exitCode = 1;
       }
 
@@ -111,20 +106,14 @@ Command
     Log.info('--------------------------------------------------------------------------------');
 
     try {
-
-      Process.killPID(options.masterPIDPath || MASTER_PID_PATH);
-
-      Process.exitCode = 0;
-      console.log('Successfully stopped the server process.');
-
+      Application.stopMaster(options.masterPIDPath || MASTER_PID_PATH);
     }
     catch(error) {
 
-      Log.error('= %s\n\n%s\n', error.message, error.stack);
-      console.error(error.stack);
+      Log.error('= %j\n\n%s\n', error.message, error.stack);
 
       Process.exitCode = 1;
-      console.log('An error occured stopping the server process.');
+      console.log('An error occured stopping the server processes.');
       console.log(error.stack);
 
     }

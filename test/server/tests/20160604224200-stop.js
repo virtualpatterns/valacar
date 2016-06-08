@@ -5,10 +5,7 @@ const Asynchronous = require('async');
 const Application = require('../library/application');
 const Database = require('../library/database');
 
-const PAUSE = 5000;
-
 describe('Command.command("stop")', function() {
- this.timeout(PAUSE * 4);
 
   before(function(callback) {
     Asynchronous.series([
@@ -19,24 +16,23 @@ describe('Command.command("stop")', function() {
         Application.executeStart(callback);
       },
       function(callback) {
-        Application.executeStop(function(error) {
-          if (error)
-            callback(error);
-          else
-            setTimeout(function() {
-              callback(null);
-            }, PAUSE);
-        });
+        Application.waitReady(callback);
       },
+      function(callback) {
+        Application.executeStop(callback);
+      },
+      function(callback) {
+        Application.waitNotReady(callback);
+      }
     ], callback);
   });
 
   it('should not respond to HEAD /', function(callback) {
-    Application.notExistsHEAD('/', callback);
+    Application.isNotHEAD('/', callback);
   });
 
   it('should not respond to HEAD /translations', function(callback) {
-    Application.notExistsHEAD('/translations', callback);
+    Application.isNotHEAD('/translations', callback);
   });
 
   after(function(callback) {
