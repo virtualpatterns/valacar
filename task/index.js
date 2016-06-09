@@ -1,21 +1,21 @@
 'use strict';
 
-require('../index');
-
 const Utilities = require('util');
 
 const FileSystemTask = require('./library/file-system-task');
-const Log = require('../library/log');
+const Log = require('../client/library/log');
 const Package = require('../package.json');
-const Path = require('../library/path');
-const Process = require('../library/process');
+const Path = require('../client/library/path');
+const Process = require('../client/library/process');
 const Task = require('./library/task');
 
 const LOG_PATH = Path.join(Process.cwd(), 'process', 'log', Utilities.format('%s.jake.log', Package.name));
 const RESOURCES_PATH = Path.join(__dirname, 'resources');
 
-task('log', function () {
-  Log.addFile(LOG_PATH);
+task('default', {'async': true}, function () {
+  Task.createTask(this.fullName)
+    .add('jake --tasks')
+    .execute(complete, fail);
 });
 
 task('clean', {'async': true}, function () {
@@ -31,45 +31,24 @@ task('clean', {'async': true}, function () {
     });
 });
 
-task('default', {'async': true}, function () {
+task('log', function () {
+  Log.addFile(LOG_PATH);
+});
+
+require('./tasks/client')
+require('./tasks/api-server')
+require('./tasks/data')
+
+desc('Run all application and server tests');
+task('test', ['clean', 'log'], {'async': true}, function () {
   Task.createTask(this.fullName)
-    .add('jake --tasks')
+    .add('mocha --require test/index.js \
+                test/client/tests')
+    .add('mocha --require test/index.js \
+                --timeout 0 \
+                test/api-server/tests')
     .execute(complete, fail);
 });
 
-// desc 'Pull development, tag, push to development, and increment version'
-// task :push do |task|
-//   system("git checkout development; git pull origin development; git tag -a -m 'Tag #{Pike::VERSION}' '#{Pike::VERSION}'; git push --tags origin development")
-//   version_file = File.join(Pike::ROOT, %w[lib pike version.rb])
-//   Pike::VERSION =~ /(\d+)\.(\d+)\.(\d+)/
-//   system("sed 's|[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*|#{$1}.#{$2}.#{$3.to_i + 1}|g' < '#{version_file}' > '#{version_file}.out'; rm '#{version_file}'; mv '#{version_file}.out' '#{version_file}'")
-//   system("git commit --all --message='Version #{$1}.#{$2}.#{$3.to_i + 1}'")
-// end
-
-// desc('Push to production, release, and increment version');
-// task('release', ['log'], function () {
-//   Task.createTask(this.fullName)
-//     .add('git checkout production')
-//     .add('git pull origin production')
-//     .add('git merge origin development')
-  //     .add('git push origin production')
-//     // .add('npm release')
-//     .add('git checkout development')
-//     .add('git status')
-//     .execute(complete, fail);
-// });
-
-// desc 'Push to production, release, and increment version'
-// task :release do |task|
-//     system('git checkout production; git pull origin production; git merge origin/development; git push origin production; rake release; git checkout development')
-//     version_file = File.join(RubyApp::ROOT, %w[version.rb])
-//     RubyApp::VERSION =~ /(\d+)\.(\d+)\.(\d+)/
-//     system("sed 's|[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*|#{$1}.#{$2}.#{$3.to_i + 1}|g' < '#{version_file}' > '#{version_file}.out'; rm '#{version_file}'; mv '#{version_file}.out' '#{version_file}'")
-//     system("git commit --all --message=\'Version #{$1}.#{$2}.#{$3.to_i + 1}\'")
-// end
-
-require('./tasks/data')
-require('./tasks/run')
-require('./tasks/server')
-require('./tasks/test')
+require('./tasks/test/index')
 require('./tasks/git')

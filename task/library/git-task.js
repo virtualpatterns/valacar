@@ -3,7 +3,7 @@
 
 const Utilities = require('util');
 
-const Path = require('../../library/path');
+const Path = require('../../client/library/path');
 const Task = require('./task');
 
 const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');

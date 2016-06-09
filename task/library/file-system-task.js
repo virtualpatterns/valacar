@@ -2,8 +2,8 @@
 
 const Utilities = require('util');
 
-const FileSystem = require('../../library/file-system');
-const Path = require('../../library/path');
+const FileSystem = require('../../client/library/file-system');
+const Path = require('../../client/library/path');
 
 const Task = require('./task');
 

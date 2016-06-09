@@ -3,8 +3,8 @@
 const Utilities = require('util');
 
 const Package = require('../../package.json');
-const Path = require('../../library/path');
-const Process = require('../../library/process');
+const Path = require('../../client/library/path');
+const Process = require('../../client/library/process');
 const Task = require('../library/task');
 
 const COPY_SOURCE_COMPUTER = 'PIGWIDGEON.local';

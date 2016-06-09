@@ -3,8 +3,8 @@
   "version": "0.0.2-27",
   "description": "Import DHCP leases into a database",
   "bin": {
-    "valacar": "./valacar.js",
-    "valacar-libraries": "./libraries.js"
+    "valacar": "./client.js",
+    "valacar-api-server": "./client.js"
   },
   "repository": {
     "type": "git",
