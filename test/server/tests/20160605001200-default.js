@@ -21,6 +21,42 @@ describe('GET /', function() {
     ], callback);
   });
 
+  it('should respond to HEAD / with 200 OK', function(callback) {
+    Application.isHEADStatusCode('/', 200, callback);
+  });
+
+  after(function(callback) {
+    Asynchronous.series([
+      function(callback) {
+        Application.executeStop(callback);
+      },
+      function(callback) {
+        Application.waitNotReady(callback);
+      },
+      function(callback) {
+        Application.executeUninstall(callback);
+      }
+    ], callback);
+  });
+
+});
+
+describe('GET /', function() {
+
+  before(function(callback) {
+    Asynchronous.series([
+      function(callback) {
+        Application.executeInstall(callback);
+      },
+      function(callback) {
+        Application.executeStart(callback);
+      },
+      function(callback) {
+        Application.waitReady(callback);
+      }
+    ], callback);
+  });
+
   it('should respond to GET / with a name', function(callback) {
     Application.isGET('/', function(statusCode, headers, data, callback) {
       callback(null, data.name);

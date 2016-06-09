@@ -8,6 +8,42 @@ const Application = require('../library/application');
 const Database = require('../library/database');
 const Log = require('../../../library/log');
 
+describe('HEAD /translations', function() {
+
+  before(function(callback) {
+    Asynchronous.series([
+      function(callback) {
+        Application.executeInstall(callback);
+      },
+      function(callback) {
+        Application.executeStart(callback);
+      },
+      function(callback) {
+        Application.waitReady(callback);
+      }
+    ], callback);
+  });
+
+  it('should respond to HEAD /translations with 200 OK', function(callback) {
+    Application.isHEADStatusCode('/translations', 200, callback);
+  });
+
+  after(function(callback) {
+    Asynchronous.series([
+      function(callback) {
+        Application.executeStop(callback);
+      },
+      function(callback) {
+        Application.waitNotReady(callback);
+      },
+      function(callback) {
+        Application.executeUninstall(callback);
+      }
+    ], callback);
+  });
+
+});
+
 describe('GET /translations', function() {
 
   before(function(callback) {

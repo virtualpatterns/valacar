@@ -20,19 +20,12 @@ describe('Command.command("stop")', function() {
       },
       function(callback) {
         Application.executeStop(callback);
-      },
-      function(callback) {
-        Application.waitNotReady(callback);
       }
     ], callback);
   });
 
-  it('should not respond to HEAD /', function(callback) {
-    Application.isNotHEAD('/', callback);
-  });
-
-  it('should not respond to HEAD /translations', function(callback) {
-    Application.isNotHEAD('/translations', callback);
+  it('should not be ready', function(callback) {
+    Application.waitNotReady(callback);
   });
 
   after(function(callback) {

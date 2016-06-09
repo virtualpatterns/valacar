@@ -343,6 +343,10 @@ Application.isRequestStatusCode = function(method, path, requestData, expectedSt
 
 };
 
+Application.isHEADStatusCode = function(path, statusCode, callback) {
+  this.isRequestStatusCode('HEAD', path, statusCode, callback);
+};
+
 Application.isGETStatusCode = function(path, statusCode, callback) {
   this.isRequestStatusCode('GET', path, statusCode, callback);
 };

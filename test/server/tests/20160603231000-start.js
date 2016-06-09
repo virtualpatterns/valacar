@@ -14,28 +14,18 @@ describe('Command.command("start [databasePath]")', function() {
       },
       function(callback) {
         Application.executeStart(callback);
-      },
-      function(callback) {
-        Application.waitReady(callback);
       }
     ], callback);
   });
 
-  it('should respond to HEAD /', function(callback) {
-    Application.isHEAD('/', callback);
-  });
-
-  it('should respond to HEAD /translations', function(callback) {
-    Application.isHEAD('/translations', callback);
+  it('should be ready', function(callback) {
+    Application.waitReady(callback);
   });
 
   after(function(callback) {
     Asynchronous.series([
       function(callback) {
         Application.executeStop(callback);
-      },
-      function(callback) {
-        Application.waitNotReady(callback);
       },
       function(callback) {
         Application.executeUninstall(callback);
