@@ -5,8 +5,5 @@
 *.pid
 node_modules
 npm-debug.log
-process/data
-process/log
-process/output
-process/pid
+process
 sandbox

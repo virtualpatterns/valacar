@@ -4,18 +4,19 @@
   "description": "Import DHCP leases into a database",
   "bin": {
     "valacar": "./client.js",
-    "valacar-api-server": "./client.js"
+    "valacar-server": "./server.js"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/virtualpatterns/valacar"
   },
   "scripts": {
-    "test": "jake test:all"
+    "test": "jake test"
   },
   "author": "code@virtualpatterns.com",
   "license": "ISC",
   "dependencies": {
+    "@pwn/is": "^1.0.1",
     "async": "^2.0.0-rc.3",
     "cli-table": "^0.3.1",
     "commander": "^2.9.0",
@@ -23,11 +24,15 @@
     "dhcpd-leases": "0.0.1",
     "mkdirp": "^0.5.1",
     "pad": "^1.0.0",
+    "pug": "^2.0.0-beta3",
     "restify": "^4.1.0",
     "sqlite3": "^3.1.3",
     "winston": "^2.2.0"
   },
   "devDependencies": {
-    "json-query": "^2.1.0"
+    "bower": "^1.7.9",
+    "browserify": "^13.0.1",
+    "browserify-bower": "^0.6.1",
+    "watchify": "^3.7.0"
   }
 }

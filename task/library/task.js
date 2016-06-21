@@ -1,56 +1,66 @@
-'use strict';
 
-const Asynchronous = require('async');
-const ChildProcess = require('child_process');
-const Utilities = require('util');
 
-const FileSystem = require('../../client/library/file-system');
-const Log = require('../../client/library/log');
-const Path = require('../../client/library/path');
-const Process = require('../../client/library/process');
+var Asynchronous = require('async');
+var ChildProcess = require('child_process');
+var Is = require('@pwn/is');
+var Utilities = require('util');
 
-const ArgumentError = require('../../client/library/errors/argument-error');
-const ProcessError = require('../../client/library/errors/process-error');
+var FileSystem = require('../../client/library/file-system');
+var Log = require('../../client/library/log');
+var Path = require('../../client/library/path');
+var Process = require('../../client/library/process');
 
-const REGEXP_PLACEHOLDER = /%d|%j|%s/g;
-const REGEXP_SPLIT = /(?:[^\s"]+|"[^"]*")+/g;
-const REGEXP_QUOTE = /^"|"$/g;
-const TYPEOF_STRING = 'string';
-const TYPEOF_FUNCTION = 'function';
+var ArgumentError = require('../../client/library/errors/argument-error');
+var ProcessError = require('../../client/library/errors/process-error');
 
-const taskPrototype = Object.create({});
+var REGEXP_PLACEHOLDER = /%d|%j|%s/g;
+var REGEXP_SPLIT = /(?:[^\s"]+|"[^"]*")+/g;
+var REGEXP_QUOTE = /^"|"$/g;
 
-const tasksSymbol = Symbol();
+var taskPrototype = Object.create({});
+
+var tasksSymbol = Symbol();
 taskPrototype[tasksSymbol] = [];
 
 taskPrototype.add = function(task, options) {
 
-  let _this = this;
-  let argumentsObject = Task.getAddArguments(task, options, arguments);
+  var _this = this;
+  var argumentsObject = Task.getAddArguments(task, options, arguments);
 
-  Log.info('> [%s] Task.add(task, options) { ... }\n\nargumentsObject\n---------------\n\n%s\n\n', _this.name, Utilities.inspect(argumentsObject));
-
-  let _task = task;
-  let _options = options || Task.OPTIONS_STDIO_INHERIT;
+  Log.info('> [%s] Task.add(task, options) { ... }\n\n%s\n\n', _this.name, Utilities.inspect(argumentsObject));
 
   if (argumentsObject.isCommand) {
 
     this[tasksSymbol].push(function(callback) {
 
-      let error = null;
+      var _options = argumentsObject.options || _this.options || Task.OPTIONS_STDIO_INHERIT;
+
+      Log.debug('> [%s] %s', _this.name, argumentsObject.command.concat(' ', argumentsObject.arguments.map(function(argument) {
+        return '"'.concat(argument, '"');
+      }).join(' ')));
 
       Log.info('> [%s] ChildProcess.spawn(%j, %j, options)', _this.name, argumentsObject.command, argumentsObject.arguments);
-      ChildProcess
-        .spawn(argumentsObject.command, argumentsObject.arguments, argumentsObject.options)
-        .once('error', function(_error) {
-          Log.debug('= [%s] ChildProcess.once("error", function(_error) { ... }', _this.name);
-          Log.debug('         error.message=%j\n\n%s\n\n', _error.message, _error.stack);
+      var _process = ChildProcess.spawn(argumentsObject.command, argumentsObject.arguments, _options);
+
+      if (_options.detached) {
+
+        _process.unref();
+
+        Log.info('< [%s] ChildProcess.spawn(%j, %j, options)', _this.name, argumentsObject.command, argumentsObject.arguments);
+        callback(null);
+
+      }
+      else {
+
+        var error = null;
+
+        _process.once('error', function(_error) {
           error = _error;
-        })
-        .once('close', function(code) {
+        });
+
+        _process.once('close', function(code) {
           Log.info('< [%s] ChildProcess.spawn(%j, %j, options)', _this.name, argumentsObject.command, argumentsObject.arguments);
           if (error) {
-            Log.info('         code=%d', code);
             Log.info('         error.message=%j\n\n%s\n\n', error.message, error.stack);
             callback(error);
           }
@@ -63,12 +73,14 @@ taskPrototype.add = function(task, options) {
           }
         });
 
+      }
+
     });
 
   }
   else if (argumentsObject.isFunction) {
 
-    let argumentsFunction = argumentsObject.function;
+    var argumentsFunction = argumentsObject.function;
 
     if (argumentsObject.function.length == 0) {
       argumentsObject.function = function(callback) {
@@ -91,15 +103,21 @@ taskPrototype.add = function(task, options) {
 
 };
 
+taskPrototype.addLine = function(options) {
+  return this.add('echo', options);
+};
+
 taskPrototype.execute = function(resolve, reject) {
 
-  let _this = this;
+  var _this = this;
+
+  _this.add('echo "FINISH %j"', _this.name, _this.options);
 
   Log.info('> [%s] Task.execute(resolve, reject) { ... }', _this.name);
   Asynchronous.series(this[tasksSymbol], function(error) {
     if (error) {
-      Log.info('< [%s] Task.execute(resolve, reject) { ... }', _this.name);
-      Log.info('         error.message=%j\n\n%s\n\n', error.message, error.stack);
+      Log.error('< [%s] Task.execute(resolve, reject) { ... }', _this.name);
+      Log.error('         error.message=%j\n\n%s\n\n', error.message, error.stack);
       (reject || resolve)(error);
     }
     else
@@ -107,29 +125,33 @@ taskPrototype.execute = function(resolve, reject) {
   });
 };
 
-// taskPrototype.executeToLog = function() {
-//
-//   let _this = this;
-//
-//   this.execute(function(error) {
-//     if (error)
-//       Log.info('= [%s] Task.logError(%j) { ... }', _this.name, error.message);
-//   });
-//
-// };
-//
-// taskPrototype.executeToConsole = function() {
-//
-//   let _this = this;
-//
-//   this.execute(function(error) {
-//     if (error)
-//       console.log('= [%s] Task.logError(%j) { ... }', _this.name, error.message);
-//   });
-//
-// };
+taskPrototype.executeToLog = function() {
 
-const Task = Object.create({});
+  var _this = this;
+
+  this.execute(function(error) {
+    if (error) {
+      Log.error('< [%s] Task.executeToLog() { ... }', _this.name);
+      Log.error('         error.message=%j\n\n%s\n', error.message, error.stack);
+    }
+  });
+
+};
+
+taskPrototype.executeToConsole = function() {
+
+  var _this = this;
+
+  this.execute(function(error) {
+    if (error) {
+      console.error('< [%s] Task.executeToConsole() { ... }', _this.name);
+      console.error('         error.message=%j\n\n%s\n', error.message, error.stack);
+    }
+  });
+
+};
+
+var Task = Object.create({});
 
 Object.defineProperty(Task, 'IGNORE', {
   'enumerable': true,
@@ -167,9 +189,9 @@ Object.defineProperty(Task, 'OPTIONS_STDIO_IGNORE', {
   }
 });
 
-Task.createTask = function(name, prototype) {
+Task.createTask = function(name, options, prototype) {
 
-  let task = Object.create(prototype || taskPrototype);
+  var task = Object.create(prototype || taskPrototype);
 
   Object.defineProperty(task, 'name', {
     'enumerable': true,
@@ -177,7 +199,15 @@ Task.createTask = function(name, prototype) {
     'value': name || 'Task'
   });
 
+  Object.defineProperty(task, 'options', {
+    'enumerable': true,
+    'writable': false,
+    'value': options || Task.OPTIONS_STDIO_INHERIT
+  });
+
   task[tasksSymbol] = [];
+
+  task.add('echo -n "START %j ... "', task.name, task.options);
 
   return task;
 
@@ -193,65 +223,64 @@ Task.getTaskPrototype = function() {
 
 Task.getAddArguments = function(task, options, _arguments) {
 
-  let argumentsArray = Array.prototype.slice.call(_arguments).slice(2);
+  var argumentsArray = Array.prototype.slice.call(_arguments).slice(2);
 
-  switch (typeof task) {
-    case TYPEOF_STRING:
+  if (Is.string(task)) {
 
-      let command = task;
-      let notOptions = options;
+    var command = task;
+    var notOptions = options;
 
-      if (REGEXP_PLACEHOLDER.test(command)) {
+    if (REGEXP_PLACEHOLDER.test(command)) {
 
-        let format = command;
-        let numberOfPlaceholders = format.match(REGEXP_PLACEHOLDER).length;
+      var format = command;
+      var numberOfPlaceholders = format.match(REGEXP_PLACEHOLDER).length;
 
-        let formatArguments = [
-          notOptions
-        ].concat(argumentsArray.slice(0, numberOfPlaceholders - 1));
-        notOptions = argumentsArray[numberOfPlaceholders - 1];
+      var formatArguments = [
+        notOptions
+      ].concat(argumentsArray.slice(0, numberOfPlaceholders - 1));
+      notOptions = argumentsArray[numberOfPlaceholders - 1];
 
-        command = Utilities.format.apply(Utilities.format, [format].concat(formatArguments));
+      command = Utilities.format.apply(Utilities.format, [format].concat(formatArguments));
 
-      }
+    }
 
-      let commandArray = command;
-      commandArray = commandArray.match(REGEXP_SPLIT);
-      commandArray = commandArray.map(function(item) {
-        return item.replace(REGEXP_QUOTE, '');
-      });
+    var commandArray = command;
+    commandArray = commandArray.match(REGEXP_SPLIT);
+    commandArray = commandArray.map(function(item) {
+      return item.replace(REGEXP_QUOTE, '');
+    });
 
-      command = commandArray.shift();
-      let commandArguments = commandArray;
+    command = commandArray.shift();
+    var commandArguments = commandArray;
 
-      return {
-        'isCommand': true,
-        'isFunction': false,
-        'command': command,
-        'arguments': commandArguments,
-        'options': notOptions || Task.OPTIONS_STDIO_INHERIT
-      };
+    return {
+      'isCommand': true,
+      'isFunction': false,
+      'command': command,
+      'arguments': commandArguments,
+      'options': notOptions
+    };
 
-    case TYPEOF_FUNCTION:
-
-      switch (task.length) {
-        case 0:
-        case 1:
-
-          return {
-            'isCommand': false,
-            'isFunction': true,
-            'function': task
-          };
-
-        default:
-          throw new ArgumentError('The function takes too many arguments.');
-      }
-
-      break;
-    default:
-      throw new TypeError('The task is invalid.');
   }
+  else if (Is.function(task)) {
+
+    switch (task.length) {
+      case 0:
+      case 1:
+
+        return {
+          'isCommand': false,
+          'isFunction': true,
+          'function': task
+        };
+
+      default:
+        throw new ArgumentError('The function takes too many arguments.');
+    }
+
+  }
+  else
+    throw new TypeError('The task is invalid.');
 
 }
 

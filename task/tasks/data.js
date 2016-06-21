@@ -1,17 +1,17 @@
-'use strict';
 
-const Utilities = require('util');
 
-const Package = require('../../package.json');
-const Path = require('../../client/library/path');
-const Process = require('../../client/library/process');
-const Task = require('../library/task');
+var Utilities = require('util');
 
-const COPY_SOURCE_COMPUTER = 'PIGWIDGEON.local';
-const COPY_SOURCE_DATABASE_PATH = Path.join(Path.sep, 'home', 'fficnar', 'data', Utilities.format('%s.db', Package.name));
-const COPY_SOURCE_LOG_PATH = Path.join(Path.sep, 'home', 'fficnar', 'data', Utilities.format('%s.log', Package.name));
-const COPY_TARGET_DATABASE_PATH = Path.join(Process.cwd(), 'process', 'data', Utilities.format('%s.db', Package.name));
-const COPY_TARGET_LOG_PATH = Path.join(Process.cwd(), 'process', 'log', Utilities.format('%s.log', Package.name));
+var Package = require('../../package.json');
+var Path = require('../../client/library/path');
+var Process = require('../../client/library/process');
+var Task = require('../library/task');
+
+var COPY_SOURCE_COMPUTER = 'PIGWIDGEON.local';
+var COPY_SOURCE_DATABASE_PATH = Path.join(Path.sep, 'home', 'fficnar', 'data', Utilities.format('%s.db', Package.name));
+var COPY_SOURCE_LOG_PATH = Path.join(Path.sep, 'home', 'fficnar', 'data', Utilities.format('%s.log', Package.name));
+var COPY_TARGET_DATABASE_PATH = Path.join(Process.DATA_PATH, Utilities.format('%s.db', Package.name));
+var COPY_TARGET_LOG_PATH = Path.join(Process.LOG_PATH, Utilities.format('%s.log', Package.name));
 
 namespace('data', function() {
 

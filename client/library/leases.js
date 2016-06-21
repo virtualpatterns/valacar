@@ -1,16 +1,16 @@
 'use strict'
 
-const Asynchronous = require('async');
-const _Leases = require('dhcpd-leases');
-const Path = require('path');
+var Asynchronous = require('async');
+var _Leases = require('dhcpd-leases');
+var Path = require('path');
 
-const Database = require('./database');
-const FileSystem = require('./file-system');
-const Log = require('./log');
+var Database = require('./database');
+var FileSystem = require('./file-system');
+var Log = require('./log');
 
-const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
+var RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
 
-const Leases = Object.create({});
+var Leases = Object.create({});
 
 Leases.import = function(connection, path, callback) {
   Asynchronous.waterfall([
@@ -22,7 +22,7 @@ Leases.import = function(connection, path, callback) {
     },
     function(dataRaw, callback) {
 
-      let data = _Leases(dataRaw);
+      var data = _Leases(dataRaw);
 
       Asynchronous.forEachOfSeries(data, function(lease, address, callback) {
 

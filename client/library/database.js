@@ -1,14 +1,12 @@
-'use strict';
+var Asynchronous = require('async');
+var SQLite = require('sqlite3');
+var Utilities = require('util');
 
-const Asynchronous = require('async');
-const SQLite = require('sqlite3');
-const Utilities = require('util');
+var FileSystem = require('./file-system');
+var Log = require('./log');
+var Path = require('./path');
 
-const FileSystem = require('./file-system');
-const Log = require('./log');
-const Path = require('./path');
-
-const Database = Object.create(SQLite);
+var Database = Object.create(SQLite);
 
 Object.defineProperty(Database, 'MINIMUM_DATE', {
   'enumerable': true,
@@ -18,7 +16,7 @@ Object.defineProperty(Database, 'MINIMUM_DATE', {
 
 Database.createConnection = function(path, callback) {
 
-  let connection = new SQLite.Database(path, function(error) {
+  var connection = new SQLite.Database(path, function(error) {
     if (error)
       callback(error);
     else
@@ -53,7 +51,7 @@ Database.openConnection = function(path, options, taskFn, callback) {
       taskFn(connection, function(error) {
         // Log.debug('= Database.openConnection(path, options, taskFn, callback) { ... }\n\narguments\n---------\n%s\n\n', Utilities.inspect(arguments, {'depth': null}));
 
-        let argumentsArray = Array.prototype.slice.call(arguments);
+        var argumentsArray = Array.prototype.slice.call(arguments);
 
         connection.close(function(_error) {
           if (!_error)
@@ -72,7 +70,7 @@ Database.openConnection = function(path, options, taskFn, callback) {
       // ], function(error) {
       //   // Log.debug('= Database.openConnection(path, options, taskFn, callback) { ... }\n\narguments\n---------\n%s\n\n', Utilities.inspect(arguments, {'depth': null}));
       //
-      //   let argumentsArray = Array.prototype.slice.call(arguments);
+      //   var argumentsArray = Array.prototype.slice.call(arguments);
       //
       //   connection.close(function(_error) {
       //     if (!_error)
@@ -101,7 +99,7 @@ Database.startTransaction = function(connection, transactionName, taskFn, callba
       taskFn(connection, function(error) {
         // Log.debug('= Database.startTransaction(connection, transactionName, taskFn, callback) { ... }\n\narguments\n---------\n%s\n\n', Utilities.inspect(arguments, {'depth': null}));
 
-        let argumentsArray = Array.prototype.slice.call(arguments);
+        var argumentsArray = Array.prototype.slice.call(arguments);
 
         if (error) {
           connection.run(Utilities.format('ROLLBACK TO %s;', transactionName), [], function(_error) {
@@ -131,7 +129,7 @@ Database.startTransaction = function(connection, transactionName, taskFn, callba
       // ], function(error) {
       //   // Log.debug('= Database.startTransaction(connection, transactionName, taskFn, callback) { ... }\n\narguments\n---------\n%s\n\n', Utilities.inspect(arguments, {'depth': null}));
       //
-      //   let argumentsArray = Array.prototype.slice.call(arguments);
+      //   var argumentsArray = Array.prototype.slice.call(arguments);
       //
       //   if (error) {
       //     connection.run(Utilities.format('ROLLBACK TO %s;', transactionName), [], function(_error) {

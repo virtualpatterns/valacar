@@ -1,4 +1,4 @@
-'use strict';
+
 
 function MigrationError(message) {
   Error.call(this);

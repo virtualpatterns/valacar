@@ -1,50 +1,50 @@
-'use strict';
 
-const Asynchronous = require('async');
-const Stream = require('stream');
-const Utilities = require('util');
 
-const FileSystem = require('../../../client/library/file-system');
-const Log = require('../../../client/library/log');
-const Path = require('../../../client/library/path');
-const Process = require('../../../client/library/process');
-const Task = require('../../../task/library/task');
+var Asynchronous = require('async');
+var Stream = require('stream');
+var Utilities = require('util');
 
-const ArgumentError = require('../../../client/library/errors/argument-error');
-const ProcessError = require('../../../client/library/errors/process-error');
+var FileSystem = require('../../../client/library/file-system');
+var Log = require('../../../client/library/log');
+var Path = require('../../../client/library/path');
+var Process = require('../../../client/library/process');
+var Task = require('../../../task/library/task');
 
-const OPTIONS_STDIO_STDOUT_PATH = Path.join(Process.cwd(), 'process', 'output', 'task.out');
-const OPTIONS_STDIO_STDERR_PATH = Path.join(Process.cwd(), 'process', 'output', 'task.err');
+var ArgumentError = require('../../../client/library/errors/argument-error');
+var ProcessError = require('../../../client/library/errors/process-error');
 
-const REGEXP_FILE = /^.*20160525110900-task\.js.*$/m;
+var OPTIONS_STDIO_STDOUT_PATH = Path.join(Process.OUTPUT_PATH, 'task.out');
+var OPTIONS_STDIO_STDERR_PATH = Path.join(Process.OUTPUT_PATH, 'task.err');
 
-const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
+var REGEXP_FILE = /^.*20160525110900-task\.js.*$/m;
 
-const NON_ZERO_RESULT_PATH = Utilities.format('%j', Path.join(RESOURCES_PATH, 'non-zero-result.sh'));
-const ZERO_RESULT_PATH = Utilities.format('%j', Path.join(RESOURCES_PATH, 'zero-result.sh'));
+var RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
+
+var NON_ZERO_RESULT_PATH = Utilities.format('%j', Path.join(RESOURCES_PATH, 'non-zero-result.sh'));
+var ZERO_RESULT_PATH = Utilities.format('%j', Path.join(RESOURCES_PATH, 'zero-result.sh'));
 
 describe('Task (without options)', function() {
 
   it('should execute a command without substitutions and without options', function(callback) {
-    Task.createTask()
+    Task.createTask('Task', Task.OPTIONS_STDIO_IGNORE)
       .add(ZERO_RESULT_PATH)
       .execute(callback);
   });
 
   it('should execute a command with substitutions and without options', function(callback) {
-    Task.createTask()
+    Task.createTask('Task', Task.OPTIONS_STDIO_IGNORE)
     .add('%s', ZERO_RESULT_PATH)
       .execute(callback);
   });
 
   it('should execute a command with two substitutions and without options', function(callback) {
-    Task.createTask()
+    Task.createTask('Task', Task.OPTIONS_STDIO_IGNORE)
     .add('%s %d', ZERO_RESULT_PATH, 123)
       .execute(callback);
   });
 
   it('should execute a function without arguments', function(callback) {
-    Task.createTask()
+    Task.createTask('Task', Task.OPTIONS_STDIO_IGNORE)
       .add(function() {
         Log.info('= should execute a function without arguments');
       })
@@ -52,7 +52,7 @@ describe('Task (without options)', function() {
   });
 
   it('should execute a function with a callback', function(callback) {
-    Task.createTask()
+    Task.createTask('Task', Task.OPTIONS_STDIO_IGNORE)
       .add(function(callback) {
         Log.info('= should execute a function with a callback');
         callback(null);
@@ -62,10 +62,10 @@ describe('Task (without options)', function() {
 
   it('should generate an ArgumentError when adding a function with more than one argument', function(callback) {
 
-    let error = null;
+    var error = null;
 
     try {
-      Task.createTask()
+      Task.createTask('Task', Task.OPTIONS_STDIO_IGNORE)
         .add(function(a, b) {
           Log.info('= should generate an ArgumentError when adding a function with more than one argument');
           callback(null);
@@ -89,7 +89,7 @@ describe('Task (without options)', function() {
 
 describe('Task (with options)', function() {
 
-  let options = null;
+  var options = null;
 
   beforeEach(function(callback) {
 
@@ -117,7 +117,7 @@ describe('Task (with options)', function() {
   it('should output the current file on a command without substitutions and with options', function(callback) {
     Asynchronous.waterfall([
       function(callback) {
-        Task.createTask()
+        Task.createTask('Task', Task.OPTIONS_STDIO_IGNORE)
           .add('ls -al ./test/client/tests', options)
           .execute(callback);
       },
@@ -136,7 +136,7 @@ describe('Task (with options)', function() {
   it('should output the current file on a command with substitutions and with options', function(callback) {
     Asynchronous.waterfall([
       function(callback) {
-        Task.createTask()
+        Task.createTask('Task', Task.OPTIONS_STDIO_IGNORE)
           .add('ls -al %j', __dirname, options)
           .execute(callback);
       },
@@ -153,7 +153,7 @@ describe('Task (with options)', function() {
   });
 
   it('should generate a ProcessError on a command that returns a non-zero result', function(callback) {
-    Task.createTask()
+    Task.createTask('Task', Task.OPTIONS_STDIO_IGNORE)
       .add(NON_ZERO_RESULT_PATH, options)
       .execute(function(error) {
         if (!error)
@@ -168,7 +168,7 @@ describe('Task (with options)', function() {
   });
 
   it('should execute a function without arguments and with (ignored) options', function(callback) {
-    Task.createTask()
+    Task.createTask('Task', Task.OPTIONS_STDIO_IGNORE)
       .add(function() {
         Log.info('= should execute a function without arguments and with (ignored) options');
       }, options)
@@ -176,7 +176,7 @@ describe('Task (with options)', function() {
   });
 
   it('should execute a function with a callback and with (ignored) options', function(callback) {
-    Task.createTask()
+    Task.createTask('Task', Task.OPTIONS_STDIO_IGNORE)
       .add(function(callback) {
         Log.info('= should execute a function with a callback and with (ignored) options');
         callback(null);

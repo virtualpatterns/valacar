@@ -1,31 +1,44 @@
-'use strict';
 
-const Utilities = require('util');
 
-const FileSystem = require('../../client/library/file-system');
-const Path = require('../../client/library/path');
+var Utilities = require('util');
 
-const Task = require('./task');
+var FileSystem = require('../../client/library/file-system');
+var Log = require('../../client/library/log');
+var Path = require('../../client/library/path');
 
-const taskPrototype = Object.create(Task.getTaskPrototype());
+var Task = require('./task');
+
+var taskPrototype = Object.create(Task.getTaskPrototype());
+
+taskPrototype.removeFile = function(path, options) {
+  try {
+    FileSystem.accessSync(path, FileSystem.F_OK);
+    this.add(Utilities.format('rm -rv %j', path), options || Task.OPTIONS_STDIO_IGNORE);
+  }
+  catch (error) {
+    Log.error('< FileSystemTask.removeFile(%j, options) { ... }', path);
+    Log.error('    error.message=%j\n\n%s\n\n', error.message, error.stack);
+  }
+  return this;
+};
 
 taskPrototype.removeFiles = function(path, options) {
 
-  let _this = this;
-  let files = FileSystem.readdirSync(path);
+  var _this = this;
+  var files = FileSystem.readdirSync(path);
 
   files.forEach(function(file) {
-    _this.add(Utilities.format('rm -r %j', Path.join(path, file)), options || Task.OPTIONS_STDIO_IGNORE);
+    _this.removeFile(Path.join(path, file), options || Task.OPTIONS_STDIO_IGNORE);
   });
 
   return _this;
 
 };
 
-const FileSystemTask = Object.create(Task);
+var FileSystemTask = Object.create(Task);
 
-FileSystemTask.createTask = function(name, prototype) {
-  return Object.getPrototypeOf(this).createTask.call(this, name, prototype || taskPrototype);
+FileSystemTask.createTask = function(name, options, prototype) {
+  return Task.createTask.call(this, name, options, prototype || taskPrototype);
 };
 
 FileSystemTask.isTask = function(task) {

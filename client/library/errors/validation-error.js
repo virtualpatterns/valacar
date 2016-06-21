@@ -1,4 +1,4 @@
-'use strict';
+
 
 function ValidationError(message) {
   Error.call(this);

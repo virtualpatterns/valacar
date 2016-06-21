@@ -1,21 +1,21 @@
-'use strict';
 
-const Asynchronous = require('async');
-const Utilities = require('util');
 
-const Application = require('../library/application');
-const Database = require('../library/database');
-const Path = require('../../../client/library/path');
+var Asynchronous = require('async');
+var Utilities = require('util');
 
-const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
-const LEASES_PATH = Path.join(RESOURCES_PATH, 'dhcpd.leases');
-const LEASES_HOST4_1_PATH = Path.join(RESOURCES_PATH, 'dhcpd.leases.HOST4.1');
-const LEASES_HOST4_2_PATH = Path.join(RESOURCES_PATH, 'dhcpd.leases.HOST4.2');
+var Application = require('../library/application');
+var Database = require('../library/database');
+var Path = require('../../../client/library/path');
 
-const REGEXP_HOST1 = /^.*HOST1.*$/m;
-const REGEXP_HOST2 = /^.*HOST2.*$/m;
-const REGEXP_HOST3 = /^.*HOST3.*$/m;
-const REGEXP_HOST4 = /^(.|[\r\n])*HOST4(.|[\r\n])*HOST4(.|[\r\n])*$/m;
+var RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
+var LEASES_PATH = Path.join(RESOURCES_PATH, 'dhcpd.leases');
+var LEASES_HOST4_1_PATH = Path.join(RESOURCES_PATH, 'dhcpd.leases.HOST4.1');
+var LEASES_HOST4_2_PATH = Path.join(RESOURCES_PATH, 'dhcpd.leases.HOST4.2');
+
+var REGEXP_HOST1 = /^.*HOST1.*$/m;
+var REGEXP_HOST2 = /^.*HOST2.*$/m;
+var REGEXP_HOST3 = /^.*HOST3.*$/m;
+var REGEXP_HOST4 = /^(.|[\r\n])*HOST4(.|[\r\n])*HOST4(.|[\r\n])*$/m;
 
 describe('Command.command("dumpLeases [databasePath]")', function() {
 

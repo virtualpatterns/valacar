@@ -1,16 +1,16 @@
-'use strict';
 
-const Asynchronous = require('async');
-const Utilities = require('util');
 
-const Application = require('../library/application');
-const Database = require('../library/database');
+var Asynchronous = require('async');
+var Utilities = require('util');
 
-const ValidationError = require('../../../client/library/errors/validation-error');
+var Application = require('../library/application');
+var Database = require('../library/database');
 
-const VALID_FROM = '01:ab:23:cd:45:ef';
-const INVALID_FROM = '@1:ab:23:cd:45:ef';
-const VALID_TO = '(ABC)';
+var ValidationError = require('../../../client/library/errors/validation-error');
+
+var VALID_FROM = '01:ab:23:cd:45:ef';
+var INVALID_FROM = '@1:ab:23:cd:45:ef';
+var VALID_TO = '(ABC)';
 
 describe('Application.validateAddTranslation', function() {
 

@@ -1,14 +1,14 @@
-'use strict';
 
-const Asynchronous = require('async');
-const Utilities = require('util');
 
-const Application = require('../library/application');
-const Database = require('../library/database');
-const Path = require('../../../client/library/path');
+var Asynchronous = require('async');
+var Utilities = require('util');
 
-const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
-const LEASES_PATH = Path.join(RESOURCES_PATH, 'dhcpd.leases');
+var Application = require('../library/application');
+var Database = require('../library/database');
+var Path = require('../../../client/library/path');
+
+var RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
+var LEASES_PATH = Path.join(RESOURCES_PATH, 'dhcpd.leases');
 
 describe('Command.command("clean [databasePath]")', function() {
 

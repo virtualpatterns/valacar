@@ -1,22 +1,22 @@
-'use strict';
 
-const Utilities = require('util');
 
-const _Database = require('../../../client/library/database');
-const FileSystem = require('../../../client/library/file-system');
-const Log = require('../../../client/library/log');
-const Package = require('../../../package.json');
-const Path = require('../../../client/library/path');
-const Process = require('../../../client/library/process');
+var Utilities = require('util');
 
-const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
+var _Database = require('../../../client/library/database');
+var FileSystem = require('../../../client/library/file-system');
+var Log = require('../../../client/library/log');
+var Package = require('../../../package.json');
+var Path = require('../../../client/library/path');
+var Process = require('../../../client/library/process');
 
-const Database = Object.create(_Database);
+var RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
+
+var Database = Object.create(_Database);
 
 Object.defineProperty(Database, 'DATABASE_PATH', {
   'enumerable': true,
   'writable': false,
-  'value': Path.join(Process.cwd(), 'process', 'data', Utilities.format('%s.test.db', Package.name))
+  'value': Path.join(Process.DATA_PATH, Utilities.format('%s.test.db', Package.name))
 });
 
 Object.defineProperty(Database, 'DATABASE_OPTIONS', {
@@ -28,8 +28,8 @@ Object.defineProperty(Database, 'DATABASE_OPTIONS', {
   }
 });
 
-Database.openConnection = function(task, callback) {
-  Object.getPrototypeOf(this).openConnection.call(this, this.DATABASE_PATH, this.DATABASE_OPTIONS, task, callback);
+Database.openConnection = function(taskFn, callback) {
+  _Database.openConnection.call(this, this.DATABASE_PATH, this.DATABASE_OPTIONS, taskFn, callback);
 };
 
 Database.existsTable = function(connection, tableName, callback) {
@@ -119,7 +119,7 @@ Database.notExistsTranslation = function(connection, _from, _to, callback) {
 
 Database.delete = function(callback) {
 
-  let _this = this;
+  var _this = this;
 
   // Log.info('> FileSystem.access(%j, FileSystem.F_OK, callback)', Path.trim(_this.DATABASE_PATH));
   FileSystem.access(_this.DATABASE_PATH, FileSystem.F_OK, function(error) {

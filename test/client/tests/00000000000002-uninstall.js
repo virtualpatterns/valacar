@@ -1,12 +1,12 @@
-'use strict';
 
-const Asynchronous = require('async');
-const Utilities = require('util');
 
-const Application = require('../library/application');
-const Database = require('../library/database');
+var Asynchronous = require('async');
+var Utilities = require('util');
 
-const MigrationError = require('../../../client/library/errors/migration-error');
+var Application = require('../library/application');
+var Database = require('../library/database');
+
+var MigrationError = require('../../../client/library/errors/migration-error');
 
 describe('Command.command("uninstall [databasePath]")', function() {
 
@@ -55,7 +55,7 @@ describe('00000000000000-tmigration.uninstall', function() {
 
   it('should generate a MigrationError if 00000000000000-tmigration alone is uninstalled', function(callback) {
 
-    let migration = require('../../../client/library/migrations/00000000000000-tmigration');
+    var migration = require('../../../client/library/migrations/00000000000000-tmigration');
 
     Database.openConnection(function(connection, callback) {
       migration.uninstall(connection, function(error) {
@@ -85,7 +85,7 @@ describe('20160516171700-tlease.uninstall', function() {
       },
       function(callback) {
 
-        let migration = require('../../../client/library/migrations/20160516171700-tlease');
+        var migration = require('../../../client/library/migrations/20160516171700-tlease');
 
         Database.openConnection(function(connection, callback) {
           migration.uninstall(connection, callback);
@@ -122,7 +122,7 @@ describe('20160517132700-ttranslation.uninstall', function() {
       },
       function(callback) {
 
-        let migration = require('../../../client/library/migrations/20160517132700-ttranslation');
+        var migration = require('../../../client/library/migrations/20160517132700-ttranslation');
 
         Database.openConnection(function(connection, callback) {
           migration.uninstall(connection, callback);
@@ -177,7 +177,7 @@ describe('20160521182200-ttranslation.uninstall', function() {
       },
       function(callback) {
 
-        let migration = require('../../../client/library/migrations/20160521182200-ttranslation');
+        var migration = require('../../../client/library/migrations/20160521182200-ttranslation');
 
         Database.openConnection(function(connection, callback) {
           migration.uninstall(connection, callback);

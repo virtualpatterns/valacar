@@ -1,35 +1,103 @@
-'use strict';
 
-const Asynchronous = require('async');
-const Utilities = require('util');
 
-const FileSystem = require('./file-system');
-const Path = require('./path');
+var Is = require( '@pwn/is' );
+var Utilities = require('util');
 
-const ArgumentError = require('./errors/argument-error');
+var Path = require('./path');
 
-const Process = Object.create(process);
+var ArgumentError = require('./errors/argument-error');
+var ProcessError = require('./errors/process-error');
+
+var EXIT_TIMEOUT = 5000;
+
+var Process = Object.create(process);
+
+Object.defineProperty(Process, 'DATA_PATH', {
+  get: function() {
+    return Process.createPath(Path.join(Process.cwd(), 'process', 'data'));
+  }
+});
+
+Object.defineProperty(Process, 'LOG_PATH', {
+  get: function() {
+    return Process.createPath(Path.join(Process.cwd(), 'process', 'log'));
+  }
+});
+
+Object.defineProperty(Process, 'OUTPUT_PATH', {
+  get: function() {
+    return Process.createPath(Path.join(Process.cwd(), 'process', 'output'));
+  }
+});
+
+Object.defineProperty(Process, 'PID_PATH', {
+  get: function() {
+    return Process.createPath(Path.join(Process.cwd(), 'process', 'pid'));
+  }
+});
 
 Object.defineProperty(Process, 'exitCode', {
   get: function() {
-    return Object.getPrototypeOf(this).exitCode;
+    return process.exitCode;
   },
   set: function(value) {
-    Object.getPrototypeOf(this).exitCode = value;
+    process.exitCode = value;
   },
   enumerable: true
 });
 
-Process.createPID = function(path) {
+Process.createPath = function(path) {
 
-  const Log = require('./log');
+  var FileSystem = require('./file-system');
+  FileSystem.mkdirp.sync(path);
 
-  Log.info('> Process.createPID(%j)', Path.trim(path));
+  return path;
 
-  let error = null;
+};
+
+Process.waitUntil = function(timeout, maximumDuration, testFn, callback) {
+
+  var Log = require('./log');
+
+  Log.info('> Process.waitUntil(%d, %d, testFn, callback) { ... }', timeout, maximumDuration);
+
+  var waitLoop = function(start) {
+
+    var duration = (new Date()) - start;
+
+    testFn(function(error) {
+      if (error &&
+          duration < maximumDuration)
+        setTimeout(function() {
+          waitLoop(start, testFn, callback);
+        }, timeout);
+      else if (duration >= maximumDuration) {
+        Log.error('< Process.waitUntil(%d, %d, testFn, callback) { ... } duration=%d', timeout, maximumDuration, duration);
+        callback(new ProcessError('Duration exceeded.'));
+      }
+      else {
+        Log.info('< Process.waitUntil(%d, %d, testFn, callback) { ... }', timeout, maximumDuration);
+        callback(null);
+      }
+    });
+
+  }
+
+  waitLoop(new Date());
+
+};
+
+Process.notExistsPID = function(path) {
+
+  var FileSystem = require('./file-system');
+  var Log = require('./log');
+
+  Log.info('> Process.notExistsPID(%j)', Path.trim(path));
+
+  var error = null;
 
   try {
-    // Log.info('> FileSystem.accessSync(%j, FileSystem.F_OK)', Path.trim(path));
+    Log.info('> FileSystem.accessSync(%j, FileSystem.F_OK)', Path.trim(path));
     FileSystem.accessSync(path, FileSystem.F_OK);
   }
   catch (_error) {
@@ -39,14 +107,46 @@ Process.createPID = function(path) {
   }
 
   if (!error)
-    throw new ArgumentError(Utilities.format('The PID file %j cannot be created because it already exists.', Path.trim(path)));
+    throw new ArgumentError(Utilities.format('The PID file %j already exists.', Path.trim(path)));
 
-  Log.info('> FileSystem.writeFileSync(%j, %j, ...)', Path.trim(path), this.pid);
-  FileSystem.writeFileSync(path, this.pid, {
+};
+
+Process.existsPID = function(path) {
+
+  var FileSystem = require('./file-system');
+  var Log = require('./log');
+
+  Log.info('> Process.existsPID(%j)', Path.trim(path));
+
+  try {
+    Log.info('> FileSystem.accessSync(%j, FileSystem.F_OK)', Path.trim(path));
+    FileSystem.accessSync(path, FileSystem.F_OK);
+  }
+  catch (error) {
+    Log.info('< FileSystem.accessSync(%j, FileSystem.F_OK)', Path.trim(path));
+    Log.info('    error.message=%j\n\n%s\n\n', error.message, error.stack);
+    throw new ArgumentError(Utilities.format('The PID file %j does not exist.', Path.trim(path)));
+  }
+
+};
+
+Process.createPID = function(path, _process) {
+
+  var FileSystem = require('./file-system');
+  var Log = require('./log');
+
+  _process = _process || this;
+
+  Log.info('> Process.createPID(%j, _process) _process.pid=%d', Path.trim(path), _process.pid);
+
+  this.notExistsPID(path);
+
+  Log.info('> FileSystem.writeFileSync(%j, %j, ...)', Path.trim(path), _process.pid);
+  FileSystem.writeFileSync(path, _process.pid, {
     encoding: 'utf-8'
   });
 
-  this.once('exit', function() {
+  _process.once('exit', function() {
     try {
       FileSystem.accessSync(path, FileSystem.F_OK);
       FileSystem.unlinkSync(path);
@@ -61,30 +161,34 @@ Process.createPID = function(path) {
 
 Process.killPID = function(path) {
 
-  const Log = require('./log');
+  var FileSystem = require('./file-system');
+  var Log = require('./log');
 
   Log.info('> Process.killPID(%j)', Path.trim(path));
 
-  try {
-    // Log.info('> FileSystem.accessSync(%j, FileSystem.F_OK)', Path.trim(path));
-    FileSystem.accessSync(path, FileSystem.F_OK);
-  }
-  catch (error) {
-    // Log.info('< FileSystem.accessSync(%j, FileSystem.F_OK)', Path.trim(path));
-    // Log.info('    error.message=%j\n\n%s\n\n', error.message, error.stack);
-    throw new ArgumentError(Utilities.format('The PID cannot be killed because the PID file %j does not exist.', Path.trim(path)));
-  }
+  this.existsPID(path);
 
-  // Log.info('> FileSystem.readFileSync(%j, ...)', Path.trim(path));
-  let pid = FileSystem.readFileSync(path, {
+  Log.info('> FileSystem.readFileSync(%j, ...)', Path.trim(path));
+  var pid = FileSystem.readFileSync(path, {
     encoding: 'utf-8'
   });
 
   Log.info('> Process.kill(%d, "SIGTERM")', pid);
   this.kill(pid, 'SIGTERM');
 
-  Log.info('> FileSystem.unlinkSync(%j)', Path.trim(path));
-  FileSystem.unlinkSync(path);
+};
+
+Process.exit = function(code) {
+
+  var Log = require('./log');
+
+  Log.info('> Process.exit(%j)', code);
+
+  var _this = this;
+
+  setTimeout(function() {
+    process.exit.call(code);
+  }, EXIT_TIMEOUT);
 
 };
 

@@ -1,26 +1,26 @@
-'use strict';
 
-const Asynchronous = require('async');
-const Assert = require('assert');
-const Table = require('cli-table');
-const Utilities = require('util');
 
-const Database = require('./database');
-const Leases = require('./leases');
-const Log = require('./log');
-const Migration = require('./migration');
-const Path = require('./path');
+var Asynchronous = require('async');
+var Assert = require('assert');
+var Table = require('cli-table');
+var Utilities = require('util');
 
-const ValidationError = require('./errors/validation-error');
+var Database = require('./database');
+var Leases = require('./leases');
+var Log = require('./log');
+var Migration = require('./migration');
+var Path = require('./path');
 
-const Application = Object.create({});
+var ValidationError = require('./errors/validation-error');
 
-const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
-const TRANSACTION_NAME = 'sDefault';
+var Application = Object.create({});
 
-const REGEXP_ADDRESS = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-const REGEXP_DEVICE = /^(([A-Fa-f0-9]{2}[:]){5}[A-Fa-f0-9]{2}[,]?)+$/;
-const REGEXP_HOST = /^(?=.{1,255}$)[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?)*\.?$/;
+var RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
+var TRANSACTION_NAME = 'sDefault';
+
+var REGEXP_ADDRESS = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+var REGEXP_DEVICE = /^(([A-Fa-f0-9]{2}[:]){5}[A-Fa-f0-9]{2}[,]?)+$/;
+var REGEXP_HOST = /^(?=.{1,255}$)[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?)*\.?$/;
 
 Application.openDatabase = function(databasePath, options, taskFn, callback) {
   Database.openConnection(databasePath, options, function(connection, callback) {
@@ -75,7 +75,7 @@ Application._addTranslation = function(_from, _to, connection, callback) {
 
 Application.addTranslation = function(_from, _to, databasePath, options, callback) {
 
-  let _this = this;
+  var _this = this;
 
   _this.openDatabase(databasePath, options, function(connection, callback) {
     _this._addTranslation(_from, _to, connection, callback);
@@ -107,7 +107,7 @@ Application.dumpTranslations = function(databasePath, options, callback) {
       },
       function(rows, callback) {
 
-        let table = new Table({
+        var table = new Table({
           head: [
             'From',
             'To'
@@ -184,7 +184,7 @@ Application._removeLease = function(address, connection, callback) {
 
 Application.removeLease = function(address, databasePath, options, callback) {
 
-  let _this = this;
+  var _this = this;
 
   _this.openDatabase(databasePath, options, function(connection, callback) {
     _this._removeLease(address, connection, callback);
@@ -200,7 +200,7 @@ Application.dumpLeases = function(databasePath, options, callback) {
       },
       function(rows, callback) {
 
-        let table = new Table({
+        var table = new Table({
           head: [
             'IP Address',
             'From/To',
@@ -215,9 +215,9 @@ Application.dumpLeases = function(databasePath, options, callback) {
 
         rows.forEach(function(row) {
 
-          let cFrom = new Date(row.cFrom);
-          let cTo = new Date(row.cTo);
-          let isStatic = cFrom.getTime() == cTo.getTime();
+          var cFrom = new Date(row.cFrom);
+          var cTo = new Date(row.cTo);
+          var isStatic = cFrom.getTime() == cTo.getTime();
 
           table.push([
             row.cAddress,
@@ -246,7 +246,7 @@ Application.dumpLeasesWhere = function(filter, databasePath, options, callback) 
       },
       function(rows, callback) {
 
-        let table = new Table({
+        var table = new Table({
           head: [
             'IP Address',
             'From/To',
@@ -261,9 +261,9 @@ Application.dumpLeasesWhere = function(filter, databasePath, options, callback) 
 
         rows.forEach(function(row) {
 
-          let cFrom = new Date(row.cFrom);
-          let cTo = new Date(row.cTo);
-          let isStatic = cFrom.getTime() == cTo.getTime();
+          var cFrom = new Date(row.cFrom);
+          var cTo = new Date(row.cTo);
+          var isStatic = cFrom.getTime() == cTo.getTime();
 
           table.push([
             row.cAddress,

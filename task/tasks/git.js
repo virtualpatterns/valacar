@@ -1,6 +1,6 @@
-'use strict';
 
-const GitTask = require('../library/git-task');
+
+var GitTask = require('../library/git-task');
 
 namespace('git', function() {
 

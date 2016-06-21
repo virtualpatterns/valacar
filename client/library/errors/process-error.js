@@ -1,4 +1,4 @@
-'use strict';
+
 
 function ProcessError(message, code) {
   Error.call(this);

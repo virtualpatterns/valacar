@@ -1,13 +1,13 @@
-'use strict';
 
-const Asynchronous = require('async');
-const Utilities = require('util');
 
-const Application = require('../library/application');
-const Database = require('../library/database');
+var Asynchronous = require('async');
+var Utilities = require('util');
 
-const REGEXP_02AA01AB44120TQ1 = /.*02AA01AB44120TQ1.*/m;
-const REGEXP_NEST = /.*\(Nest\).*/m;
+var Application = require('../library/application');
+var Database = require('../library/database');
+
+var REGEXP_02AA01AB44120TQ1 = /.*02AA01AB44120TQ1.*/m;
+var REGEXP_NEST = /.*\(Nest\).*/m;
 
 describe('Command.command("dumpTranslations [databasePath]")', function() {
 

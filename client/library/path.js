@@ -1,11 +1,11 @@
-'use strict';
 
-const _Path = require('path');
 
-const Path = Object.create(_Path);
+var _Path = require('path');
+
+var Path = Object.create(_Path);
 
 Path.trim = function(path) {
-  const Process = require('./process');
+  var Process = require('./process');
   return path.replace(Process.cwd(), '.');
 }
 

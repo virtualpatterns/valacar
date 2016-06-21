@@ -1,17 +1,17 @@
-'use strict';
 
-const Assert = require('assert');
-const Asynchronous = require('async');
-const Utilities = require('util');
 
-const Database = require('../database');
-const Migration = require('../migration');
-const Path = require('../path');
+var Assert = require('assert');
+var Asynchronous = require('async');
+var Utilities = require('util');
 
-const MIGRATION_NAME = Path.basename(__filename, '.js');
-const RESOURCES_PATH = Path.join(__dirname, MIGRATION_NAME, 'resources');
+var Database = require('../database');
+var Migration = require('../migration');
+var Path = require('../path');
 
-let migration = Migration.createMigration(MIGRATION_NAME);
+var MIGRATION_NAME = Path.basename(__filename, '.js');
+var RESOURCES_PATH = Path.join(__dirname, MIGRATION_NAME, 'resources');
+
+var migration = Migration.createMigration(MIGRATION_NAME);
 
 migration.install = function(connection, callback) {
   Asynchronous.series([

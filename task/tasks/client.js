@@ -1,37 +1,40 @@
-'use strict';
 
-const Utilities = require('util');
 
-const Package = require('../../package.json');
-const Path = require('../../client/library/path');
-const Process = require('../../client/library/process');
-const Task = require('../library/task');
+var Utilities = require('util');
 
-const DATABASE_PATH = Path.join(Process.cwd(), 'process', 'data', Utilities.format('%s.db', Package.name));
-const LOG_PATH = Path.join(Process.cwd(), 'process', 'log', Utilities.format('%s.log', Package.name));
-const IMPORT_SOURCE_COMPUTER = 'PIGWIDGEON.local';
-const IMPORT_SOURCE_LEASES_PATH = Path.join('var', 'lib', 'dhcp', 'dhcpd.leases');
-const IMPORT_TARGET_LEASES_PATH = Path.join(Process.cwd(), 'process', 'data', 'dhcpd.leases');
+var Package = require('../../package.json');
+var Path = require('../../client/library/path');
+var Process = require('../../client/library/process');
+var Task = require('../library/task');
+
+var DATABASE_PATH = Path.join(Process.DATA_PATH, Utilities.format('%s.db', Package.name));
+var LOG_PATH = Path.join(Process.LOG_PATH, Utilities.format('%s.log', Package.name));
+var IMPORT_SOURCE_COMPUTER = 'PIGWIDGEON.local';
+var IMPORT_SOURCE_LEASES_PATH = Path.join('/var', 'lib', 'dhcp', 'dhcpd.leases');
+var IMPORT_TARGET_LEASES_PATH = Path.join(Process.DATA_PATH, 'dhcpd.leases');
 
 namespace('client', function() {
 
   desc(Utilities.format('Install to %j, log to %j', Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));
-  task('install', ['log'], {'async': true}, function () {
+  task('install', ['clean', 'log'], {'async': true}, function () {
     Task.createTask(this.fullName)
+      .addLine()
       .add('./client.js install %j --logPath %j', DATABASE_PATH, LOG_PATH)
       .execute(complete, fail);
   });
 
   desc(Utilities.format('Uninstall from %j, log to %j', Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));
-  task('uninstall', ['log'], {'async': true}, function () {
+  task('uninstall', ['clean', 'log'], {'async': true}, function () {
     Task.createTask(this.fullName)
+      .addLine()
       .add('./client.js uninstall %j --logPath %j', DATABASE_PATH, LOG_PATH)
       .execute(complete, fail);
   });
 
   desc(Utilities.format('Import from %j on %j to %j, log to %j', IMPORT_SOURCE_LEASES_PATH, IMPORT_SOURCE_COMPUTER, Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));
-  task('import', ['log'], {'async': true}, function () {
+  task('import', ['clean', 'log'], {'async': true}, function () {
     Task.createTask(this.fullName)
+      .addLine()
       .add('echo -n "Copying %s from %s to %s ... "', IMPORT_SOURCE_LEASES_PATH, IMPORT_SOURCE_COMPUTER, Path.trim(IMPORT_TARGET_LEASES_PATH))
       .add('scp "%s:%s" %j', IMPORT_SOURCE_COMPUTER, IMPORT_SOURCE_LEASES_PATH, IMPORT_TARGET_LEASES_PATH, Task.OPTIONS_STDIO_IGNORE)
       .add('echo    "done"')
@@ -40,8 +43,9 @@ namespace('client', function() {
   });
 
   desc(Utilities.format('Clean at %j, log to %j', Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));
-  task('clean', ['log'], {'async': true}, function () {
+  task('_clean', ['clean', 'log'], {'async': true}, function () {
     Task.createTask(this.fullName)
+      .addLine()
       .add('./client.js clean %j --logPath %j', DATABASE_PATH, LOG_PATH)
       .execute(complete, fail);
   });
@@ -49,8 +53,9 @@ namespace('client', function() {
   namespace('dump', function() {
 
     desc(Utilities.format('Dump leases in %j, log to %j', Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));
-    task('leases', ['log'], {'async': true}, function () {
+    task('leases', ['clean', 'log'], {'async': true}, function () {
       Task.createTask(this.fullName)
+        .addLine()
         .add('./client.js dumpLeases %j --logPath %j', DATABASE_PATH, LOG_PATH)
         .execute(complete, fail);
     });
@@ -58,8 +63,9 @@ namespace('client', function() {
     namespace('leases', function() {
 
       desc(Utilities.format('Dump leases matching filter in %j, log to %j', Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));
-      task('where', ['log'], {'async': true}, function (filter) {
+      task('where', ['clean', 'log'], {'async': true}, function (filter) {
         Task.createTask(this.fullName)
+          .addLine()
           .add(function(callback) {
             if (!filter)
               callback(new Error('A filter must be provided (e.g. jake run:dump:leases:where[PIGWIDGEON]).'));
@@ -73,8 +79,9 @@ namespace('client', function() {
     });
 
     desc(Utilities.format('Dump translations in %j, log to %j', Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));
-    task('translations', ['log'], {'async': true}, function () {
+    task('translations', ['clean', 'log'], {'async': true}, function () {
       Task.createTask(this.fullName)
+        .addLine()
         .add('./client.js dumpTranslations %j --logPath %j', DATABASE_PATH, LOG_PATH)
         .execute(complete, fail);
     });

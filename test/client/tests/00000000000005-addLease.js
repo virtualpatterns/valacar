@@ -1,19 +1,19 @@
-'use strict';
 
-const Asynchronous = require('async');
-const Utilities = require('util');
 
-const Application = require('../library/application');
-const Database = require('../library/database');
+var Asynchronous = require('async');
+var Utilities = require('util');
 
-const ValidationError = require('../../../client/library/errors/validation-error');
+var Application = require('../library/application');
+var Database = require('../library/database');
 
-const VALID_ADDRESS = '1.2.3.4';
-const INVALID_ADDRESS = 'a.b.c.d';
-const VALID_DEVICE = '01:ab:23:cd:45:ef';
-const INVALID_DEVICE = '67:gh:89:ij:01:kl';
-const VALID_HOST = 'ABC';
-const INVALID_HOST = '@ABC';
+var ValidationError = require('../../../client/library/errors/validation-error');
+
+var VALID_ADDRESS = '1.2.3.4';
+var INVALID_ADDRESS = 'a.b.c.d';
+var VALID_DEVICE = '01:ab:23:cd:45:ef';
+var INVALID_DEVICE = '67:gh:89:ij:01:kl';
+var VALID_HOST = 'ABC';
+var INVALID_HOST = '@ABC';
 
 describe('Application.validateAddLease', function() {
 

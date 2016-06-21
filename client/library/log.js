@@ -1,17 +1,17 @@
-'use strict';
 
-const Cluster = require('cluster');
-const Pad = require('pad');
-const Utilities = require('util');
-const Winston = require('winston');
 
-const Path = require('./path');
+var Cluster = require('cluster');
+var Pad = require('pad');
+var Utilities = require('util');
+var Winston = require('winston');
 
-const Log = Object.create(Winston);
+var Path = require('./path');
+
+var Log = Object.create(Winston);
 
 Log.format = function(options) {
 
-  const Process = require('./process');
+  var Process = require('./process');
 
   return Utilities.format(  '%s [%s:%d] %s %s',
                             new Date().toISOString(),
@@ -43,11 +43,9 @@ Log.addFile = function(path) {
     'level': 'debug',
     'timestamp': true
   });
-  // this.info('< Log.add(Winston.transports.File, { name: %j, ...})', Path.trim(path));
 };
 
 Log.removeFile = function(path) {
-  // this.info('> Log.remove(%j)', Path.trim(path));
   this.remove(path);
 };
 

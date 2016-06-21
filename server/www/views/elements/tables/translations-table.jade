@@ -1,0 +1,16 @@
+table(id=element.id).uk-table.uk-table-striped.uk-table-condensed.uk-table-hover.uk-margin-remove.v-element.v-table.v-translations-table
+  thead
+    tr
+      th From
+      th To
+      //- th
+  tbody
+    each translation in data
+      tr(data-translation-from=translation.from)
+        td= translation.from
+        td= translation.to
+        //- td
+        //-   a.uk-button.uk-button-mini.uk-border-circle.uk-margin-small-right.v-icon-button
+        //-     i.uk-icon-pencil
+        //-   a.uk-button.uk-button-danger.uk-button-mini.uk-border-circle.v-icon-button
+        //-     i.uk-icon-minus

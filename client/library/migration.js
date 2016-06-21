@@ -1,23 +1,21 @@
-'use strict';
+var Assert = require('assert');
+var Asynchronous = require('async');
+var Utilities = require('util');
 
-const Assert = require('assert');
-const Asynchronous = require('async');
-const Utilities = require('util');
+var Database = require('./database');
+var FileSystem = require('./file-system');
+var Log = require('./log');
+var Package = require('../../package.json');
+var Path = require('./path');
 
-const Database = require('./database');
-const FileSystem = require('./file-system');
-const Log = require('./log');
-const Package = require('../../package.json');
-const Path = require('./path');
+var RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
+var MIGRATIONS_PATH = Path.join(__dirname, 'migrations');
 
-const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
-const MIGRATIONS_PATH = Path.join(__dirname, 'migrations');
-
-const migrationPrototype = Object.create({});
+var migrationPrototype = Object.create({});
 
 migrationPrototype.preInstall = function(connection, callback) {
 
-  let _this = this;
+  var _this = this;
 
   Asynchronous.series([
     function(callback) {
@@ -80,11 +78,11 @@ migrationPrototype.isInstalled = function(connection, callback) {
   });
 };
 
-const Migration = Object.create({});
+var Migration = Object.create({});
 
 Migration.createMigration = function(name, prototype) {
 
-  let migration = Object.create(prototype || migrationPrototype);
+  var migration = Object.create(prototype || migrationPrototype);
 
   Object.defineProperty(migration, 'name', {
     'enumerable': true,
@@ -171,7 +169,7 @@ Migration.installAll = function(connection, callback) {
 
       Asynchronous.eachSeries(fileNames, function(fileName, callback) {
 
-        let filePath = Path.join(MIGRATIONS_PATH, fileName);
+        var filePath = Path.join(MIGRATIONS_PATH, fileName);
 
         Asynchronous.waterfall([
           function(callback) {
