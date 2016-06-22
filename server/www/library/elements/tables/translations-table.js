@@ -1,4 +1,3 @@
-var Asynchronous = require('async');
 var Utilities = require('util');
 
 var Application = require('../../application');
@@ -7,23 +6,6 @@ var Table = require('../table');
 
 var tablePrototype = Table.getElementPrototype();
 var translationsTablePrototype = Object.create(tablePrototype);
-
-translationsTablePrototype.render = function(callback) {
-  Log.info('> TranslationsTable.render(callback)');
-
-  var _this = this;
-
-  Asynchronous.waterfall([
-    function(callback) {
-      Application.GET('/api/translations', callback);
-    },
-    function(data, callback) {
-      tablePrototype.render.call(_this, {
-        'data': data
-      }, callback);
-    }
-  ], callback);
-};
 
 translationsTablePrototype.bind = function() {
   this.getElement().find('tbody > tr').on('click', {

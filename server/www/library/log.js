@@ -1,3 +1,4 @@
+var Is = require('@pwn/is');
 var Pad = require('pad');
 var Utilities = require('util');
 
@@ -7,12 +8,27 @@ Log.log = function() {
 
   var argumentsArray = Array.prototype.slice.call(arguments);
   var level = argumentsArray.shift();
-  var message = Utilities.format.apply(Utilities.format, argumentsArray);
 
-  console.log(  '%s %s %s',
-                new Date().toISOString(),
-                Pad(level.toUpperCase(), 5),
-                message || '');
+  if (Is.string(argumentsArray[0])) {
+
+    var message = Utilities.format.apply(Utilities.format, argumentsArray);
+
+    console.log(  '%s %s %s',
+                  new Date().toISOString(),
+                  Pad(level.toUpperCase(), 5),
+                  message || '');
+
+  }
+  else {
+
+    var object = argumentsArray.shift();
+
+    console.log(  '%s %s ...\n',
+                  new Date().toISOString(),
+                  Pad(level.toUpperCase(), 5));
+    console.log(  object);
+
+  }
 
 };
 

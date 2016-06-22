@@ -1,13 +1,20 @@
+var Is = require('@pwn/is');
+
 var Element = require('../element');
 var Log = require('../log');
 
 var elementPrototype = Element.getElementPrototype();
 var pagePrototype = Object.create(elementPrototype);
 
-pagePrototype.render = function(callback) {
+pagePrototype.render = function(data, callback) {
+
+  if (Is.function(data)) {
+    callback = data;
+    data = {};
+  }
 
   Log.info('> Page.render(callback)');
-  elementPrototype.render.call(this, function(error, content) {
+  elementPrototype.render.call(this, data, function(error, content) {
     if (error)
       callback(error);
     else {

@@ -18,6 +18,7 @@ namespace('data', function() {
   desc('Copy database and log from production');
   task('copy', ['log'], {'async': true}, function () {
     Task.createTask(this.fullName)
+      .addLine()
       .add('echo -n "Copying %s from %s to %s ... "', COPY_SOURCE_DATABASE_PATH, COPY_SOURCE_COMPUTER, Path.trim(COPY_TARGET_DATABASE_PATH))
       .add('scp "%s:%s" %j', COPY_SOURCE_COMPUTER, COPY_SOURCE_DATABASE_PATH, COPY_TARGET_DATABASE_PATH, Task.OPTIONS_STDIO_IGNORE)
       .add('echo    "done"')

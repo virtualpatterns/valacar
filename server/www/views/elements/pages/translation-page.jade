@@ -1,0 +1,38 @@
+div(id=element.id).uk-height-1-1.v-element.v-page.v-translation-page
+  div.uk-container.uk-height-1-1.uk-padding-remove.uk-margin-remove
+    nav.uk-navbar.uk-navbar-attached
+      ul.uk-navbar-nav
+        li
+          a(id='goBack')
+            i.uk-icon-chevron-left.v-left-icon
+            | Back
+      div.uk-navbar-flip
+        ul.uk-navbar-nav
+          li
+            a(id='done')
+              | Done
+      div.uk-navbar-content.uk-navbar-center
+        | Translation
+    div.uk-block.uk-padding-remove.uk-margin.uk-margin-left.uk-margin-right
+      form.uk-form.uk-form-stacked
+        div.uk-form-row
+          label(for='from').uk-form-label
+            | From
+          div.uk-form-controls
+            input(id='from', 
+                  disabled=!!translation.from, 
+                  placeholder='From', 
+                  type='text', 
+                  value=translation.from).uk-width-1-1
+        div.uk-form-row
+          label(for='to').uk-form-label
+            | To
+          div.uk-form-controls
+            input(id='to', 
+                  placeholder='To', 
+                  type='text', 
+                  value=translation.to).uk-width-1-1
+      button( id='delete',
+              class={'uk-hidden': !translation.from},
+              type='button').uk-button.uk-button-danger.uk-border-rounded.uk-margin.uk-width-1-1
+        | Delete translation

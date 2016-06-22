@@ -1,0 +1,43 @@
+body {
+  font-family: 'Raleway', sans-serif;
+}
+
+div.v-default-page > div > div {
+  width: 250px;
+}
+
+i.v-left-icon {
+  padding-right: 5px;
+}
+
+div.uk-navbar-center {
+  padding-top: 3px;
+}
+
+a.v-icon-button {
+  padding-top: 3px;
+}
+
+table.v-translations-table > tbody > tr {
+  cursor: pointer;
+}
+
+div.v-translation-page div.uk-block {
+  margin-top: 13px;
+}
+
+div.v-translation-page label.uk-form-label {
+  margin-bottom: 3px;
+}
+
+div.v-translation-page div.uk-form-row {
+  margin-top: 10px;
+}
+
+div.v-translation-page div.uk-form-row:first-child {
+  margin-top: 0px;
+}
+
+div.v-translation-page div.uk-block button.uk-button {
+  margin-top: 20px;
+}

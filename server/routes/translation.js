@@ -55,19 +55,6 @@ Translation.createRoutes = function(server, databasePath, options) {
     });
   });
 
-  // server.post('/api/translations', function(request, response, next) {
-  //   Log.info('> server.post("/api/translations", function(request, response, next) { ... })\n\nrequest.headers\n---------------\n%s\n\nrequest.params\n--------------\n%s\n', Utilities.inspect(request.headers), Utilities.inspect(request.params));
-  //   Application.postTranslation(request.params.from, request.params.to, databasePath, options, function(row, callback) {
-  //     response.header('Location', Utilities.format('/api/translations/%s', row.from));
-  //     response.send(201, row);
-  //     callback(null);
-  //   }, function(error) {
-  //     if (error)
-  //       response.send(error);
-  //     next();
-  //   });
-  // });
-
   server.del('/api/translations/:from', function(request, response, next) {
     Log.info('> server.del("/api/translations/:from", function(request, response, next) { ... })\n\nrequest.headers\n---------------\n%s\n\nrequest.params\n--------------\n%s\n', Utilities.inspect(request.headers), Utilities.inspect(request.params));
     Application.deleteTranslation(request.params.from, databasePath, options, function(error, numberOfChanges) {
@@ -76,7 +63,7 @@ Translation.createRoutes = function(server, databasePath, options) {
       else if (numberOfChanges <= 0)
         response.send(404);
       else
-        response.send(200);
+        response.send(204);
       next();
     });
   });

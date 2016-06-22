@@ -240,8 +240,8 @@ describe('DELETE /api/translations', function() {
     ], callback);
   });
 
-  it('should respond to DELETE /api/translations/from05 with 200 OK', function(callback) {
-    Application.isDELETEStatusCode('/api/translations/from05', 200, callback);
+  it('should respond to DELETE /api/translations/from05 with 204 No Content', function(callback) {
+    Application.isDELETEStatusCode('/api/translations/from05', 204, callback);
   });
 
   it('should respond to DELETE /api/translations@from09 (an invalid translation) with 500 Internal Server Error', function(callback) {

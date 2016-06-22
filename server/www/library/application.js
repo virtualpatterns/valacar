@@ -128,7 +128,7 @@ Application.ifNotError = function(ifNotFn) {
     if (error) {
       Log.error('> Element.ifNotError(ifNotFn) { ... }');
       Log.error('    error.message=%j', error.message);
-      alert(error.message);
+      UIkit.modal.alert(error.message);
     }
     else if (ifNotFn) {
 
@@ -149,7 +149,7 @@ Application.request = function(method, path, requestData, callback) {
   }
 
   if (requestData)
-    Log.info('> Application.request(%j, %j, requestData, callback) { ... }\n%s\n\n', method, path, Utilities.inspect(requestData));
+    Log.info('> Application.request(%j, %j, requestData, callback) { ... }\n\n%s\n\n', method, path, Utilities.inspect(requestData));
   else
     Log.info('> Application.request(%j, %j, requestData, callback) { ... }', method, path);
 
@@ -159,26 +159,43 @@ Application.request = function(method, path, requestData, callback) {
   settings.dataType = 'json';
 
   if (requestData) {
-    settings.data = requestData;
+
+    Assert.ok(jQuery.isPlainObject(requestData), 'jQuery.isPlainObject(requestData) should be true but it is instead false.');
+
+    settings.data = JSON.stringify(requestData);
+    settings.contentType = 'application/json';
     settings.processData = false;
+
   }
 
   Log.info('> jQuery.ajax(settings)\n\n%s\n\n', Utilities.inspect(settings));
   jQuery.ajax(settings)
-    .done(function(data) {
-      Log.info('< Application.request(%j, %j, requestData, callback) { ... }\n\n%j\n\n', method, path, data);
-      callback(null, data);
+    .done(function(responseData) {
+      Log.info('< Application.request(%j, %j, requestData, callback) { ... }\n\n%j\n\n', method, path, Utilities.inspect(responseData));
+      callback(null, responseData);
     })
     .fail(function(request, status, error) {
-      Log.info('< Application.request(%j, %j, requestData, callback) { ... }', method, path);
+      Log.error('< Application.request(%j, %j, requestData, callback) { ... }', method, path);
       Log.error('    request.status=%j', request.status);
       Log.error('    request.statusText=%j', request.statusText);
-      callback(new URIError(Utilities.format('An error occurred with the request %s %j (%d %s).', method, path, request.status, request.statusText)));
+      Log.error('    request.responseJSON.message=%j', (request.responseJSON && request.responseJSON.message) ? request.responseJSON.message : '(none)');
+      Log.error(request);
+      callback(new URIError((request.responseJSON && request.responseJSON.message) ? request.responseJSON.message : Utilities.format('An error occurred with the request %s %j (%d %s).', method, path, request.status, request.statusText)));
+      // callback(new URIError(Utilities.format('An error occurred with the request %s %j (%d %s ... %s).', method, path, request.status, request.statusText)));
     });
+
 };
 
 Application.GET = function(path, callback) {
   this.request('GET', path, callback);
+};
+
+Application.POST = function(path, data, callback) {
+  this.request('POST', path, data, callback);
+};
+
+Application.DELETE = function(path, callback) {
+  this.request('DELETE', path, callback);
 };
 
 module.exports = Application;

@@ -41,6 +41,8 @@ elementPrototype.render = function(data, callback) {
   jQuery.get(_this.templateURL)
     .done(function(templateData) {
 
+      var content = null;
+
       try {
 
         var options = {
@@ -58,15 +60,15 @@ elementPrototype.render = function(data, callback) {
         data.element = _this;
 
         Log.info('> templateFn(data)\n\n%s\n\n', Utilities.inspect(data));
-        var content = templateFn(data);
+        content = templateFn(data);
         Log.info('< templateFn(data)\n%s\n\n', content);
-
-        callback(null, content);
 
       } catch (error) {
         Log.error('< Element.render(data, callback)\n\n%s\n\n', error.message);
         callback(new URIError(Utilities.format('An error occurred rendering the element template at %j.', _this.templateURL)));
       }
+
+      callback(null, content);
 
     })
     .fail(function(request, status, error) {
