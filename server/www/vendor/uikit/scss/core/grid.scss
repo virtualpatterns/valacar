@@ -253,7 +253,7 @@ $grid-divider-border-width:                      1px !default;
 .uk-grid-divider > [class*='uk-width-8-']:nth-child(n+2),
 .uk-grid-divider > [class*='uk-width-9-']:nth-child(n+2) { border-left: $grid-divider-border-width solid $grid-divider-border; }
 
-/* Tabvar and bigger */
+/* Tablet and bigger */
 @media (min-width: $breakpoint-medium) {
 
     .uk-grid-divider > [class*='uk-width-medium-']:not(.uk-width-medium-1-1):nth-child(n+2) { border-left: $grid-divider-border-width solid $grid-divider-border; }
@@ -358,7 +358,7 @@ $grid-divider-border-width:                      1px !default;
 
 }
 
-/* Tabvar and bigger */
+/* Tablet and bigger */
 @media (min-width: $breakpoint-medium) {
 
     .uk-grid-width-medium-1-1 > * { width: 100%; }
@@ -493,7 +493,7 @@ $grid-divider-border-width:                      1px !default;
 
 }
 
-/* Tabvar and bigger */
+/* Tablet and bigger */
 @media (min-width: $breakpoint-medium) {
 
     /* Whole */
@@ -634,7 +634,7 @@ $grid-divider-border-width:                      1px !default;
  * Works only with `uk-width-medium-*`
  */
 
-/* Tabvar and bigger */
+/* Tablet and bigger */
 @media (min-width: $breakpoint-medium) {
 
     [class*='uk-push-'],

@@ -8,71 +8,88 @@ var Pages = require('./collections/pages');
 
 var applicationPrototype = Object.create({});
 
-applicationPrototype.addPage = function(newPage, callback) {
-  Log.info('> Application.addPage(newPage, callback) { ... }');
+applicationPrototype.getElement = function() {
+  var element = jQuery('html');
+  Assert.equal(element.length, 1, 'The value of jQuery("html").length should be 1 but is instead %d.');
+  return element;
+};
 
-  var _this = this;
+applicationPrototype.showPage = function(newPage, callback) {
+  Log.info('> Application.showPage(newPage, callback) { ... }');
+
+  var self = this;
 
   newPage.render(function(error, newContent) {
     if (error)
       callback(error);
     else {
 
-      if (_this.pages.isNotEmpty()) {
+      if (self.pages.isNotEmpty()) {
 
-        var currentPage = _this.pages.top();
+        var currentPage = self.pages.top();
 
-        currentPage.hide();
-        currentPage.triggerHidden({
+        currentPage.hide(false);
+        self.triggerPageHidden({
+          'page': currentPage,
           'isFinal': false
         });
-
         currentPage.unbind();
 
       }
 
-      _this.pages.addToTop(newPage);
-      _this.body.addContent(newContent);
+      self.pages.addToTop(newPage);
+      self.body.addContent(newContent);
 
       newPage.bind();
-
-      newPage.show();
-      newPage.triggerShown({
+      newPage.show(true);
+      self.triggerPageShown({
+        'page': newPage,
         'isInitial': true
       });
+
+      callback(null);
 
     }
   });
 
 };
 
-applicationPrototype.removePage = function() {
-  Log.info('> Application.removePage() { ... }');
+applicationPrototype.triggerPageShown = function(data) {
+  jQuery(this).trigger(new jQuery.Event('pageShown', data));
+};
+
+applicationPrototype.hidePage = function() {
+  Log.info('> Application.hidePage() { ... }');
 
   if (this.pages.isNotAlmostEmpty()) {
 
-    var currentPage = this.pages.removeFromTop();
+    var currentPage = this.pages.top();
 
-    currentPage.hide();
-    currentPage.triggerHidden({
+    currentPage.hide(true);
+    this.triggerPageHidden({
+      'page': currentPage,
       'isFinal': true
     });
-
     currentPage.unbind();
 
     currentPage.removeContent();
+    this.pages.removeFromTop();
 
     var newPage = this.pages.top();
 
     newPage.bind();
-
-    newPage.show();
-    newPage.triggerShown({
+    newPage.show(false);
+    this.triggerPageShown({
+      'page': newPage,
       'isInitial': false
     });
 
   }
 
+};
+
+applicationPrototype.triggerPageHidden = function(data) {
+  jQuery(this).trigger(new jQuery.Event('pageHidden', data));
 };
 
 var Application = Object.create({});

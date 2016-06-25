@@ -1,56 +1,31 @@
-
-
-var Asynchronous = require('async');
-var Stream = require('stream');
-
-var FileSystem = require('../../client/library/file-system');
-var Log = require('../../client/library/log');
-var Path = require('../../client/library/path');
-var Process = require('../../client/library/process');
-
 var Task = require('./task');
 
-var taskPrototype = Object.create(Task.getTaskPrototype());
+var taskPrototype = Task.getTaskPrototype();
+var backgroundTaskPrototype = Object.create(taskPrototype);
 
 var BackgroundTask = Object.create(Task);
 
 BackgroundTask.createOptions = function(stdin, stdout, stderr, callback) {
-
-  var options = {
-    'detached': true,
-    'stdio': [
-      (stdin == Task.INHERIT || stdin == Task.IGNORE) ? stdin : FileSystem.createReadStream(stdin),
-      (stdout == Task.INHERIT || stdout == Task.IGNORE) ? stdout : FileSystem.createWriteStream(stdout),
-      (stderr == Task.INHERIT || stderr == Task.IGNORE) ? stderr : FileSystem.createWriteStream(stderr)
-    ]
-  };
-
-  Asynchronous.each(options.stdio, function(stream, callback) {
-    if (stream instanceof Stream.Writable ||
-        stream instanceof Stream.Readable) {
-      stream.once('open', function() {
-        Log.info('< Stream.Writable.once("open", function() { ... }) Stream.Writable.path=%j', Path.trim(stream.path));
-        callback(null);
-      });
+  Task.createOptions.call(this, stdin, stdout, stderr, function(error, options) {
+    if (error)
+      callback(error);
+    else {
+      options.detached = true;
+      callback(error, options);
     }
-    else
-      callback(null);
-  }, function(error) {
-    callback(error, options);
   });
-
 };
 
 BackgroundTask.createTask = function(name, options, prototype) {
-  return Task.createTask.call(this, name, options, prototype || taskPrototype);
+  return Task.createTask.call(this, name, options, prototype || backgroundTaskPrototype);
 };
 
 BackgroundTask.isTask = function(task) {
-  return taskPrototype.isPrototypeOf(task);
+  return backgroundTaskPrototype.isPrototypeOf(task);
 };
 
 BackgroundTask.getTaskPrototype = function() {
-  return taskPrototype;
+  return backgroundTaskPrototype;
 };
 
 module.exports = BackgroundTask;

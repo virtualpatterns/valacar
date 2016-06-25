@@ -94,7 +94,7 @@ John Firebaugh <john_firebaugh@bigfix.com>
 Sam Bisbee <sam@sbisbee.com>
 Gilmore Davidson <gilmoreorless@gmail.com>
 Brian Brennan <me@brianlovesthings.com>
-Xavier Montilvar <xavierm02.net@gmail.com>
+Xavier Montillet <xavierm02.net@gmail.com>
 Daniel Pihlstrom <sciolist.se@gmail.com>
 Sahab Yazdani <sahab.yazdani+github@gmail.com>
 avaly <github-com@agachi.name>

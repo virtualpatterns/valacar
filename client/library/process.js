@@ -1,5 +1,3 @@
-
-
 var Is = require( '@pwn/is' );
 var Utilities = require('util');
 

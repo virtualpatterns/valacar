@@ -1,8 +1,7 @@
-
-
 var Asynchronous = require('async');
 var ChildProcess = require('child_process');
 var Is = require('@pwn/is');
+var Stream = require('stream');
 var Utilities = require('util');
 
 var FileSystem = require('../../client/library/file-system');
@@ -219,6 +218,36 @@ Task.isTask = function(task) {
 
 Task.getTaskPrototype = function() {
   return taskPrototype;
+};
+
+Task.createOptions = function(stdin, stdout, stderr, callback) {
+
+  var options = {
+    'stdio': [
+      (stdin == Task.INHERIT || stdin == Task.IGNORE) ? stdin : FileSystem.createReadStream(stdin),
+      (stdout == Task.INHERIT || stdout == Task.IGNORE) ? stdout : FileSystem.createWriteStream(stdout, {
+        'flags': 'a'
+      }),
+      (stderr == Task.INHERIT || stderr == Task.IGNORE) ? stderr : FileSystem.createWriteStream(stderr, {
+        'flags': 'a'
+      })
+    ]
+  };
+
+  Asynchronous.each(options.stdio, function(stream, callback) {
+    if (stream instanceof Stream.Writable ||
+        stream instanceof Stream.Readable) {
+      stream.once('open', function() {
+        Log.info('< Stream.Writable.once("open", function() { ... }) Stream.Writable.path=%j', Path.trim(stream.path));
+        callback(null);
+      });
+    }
+    else
+      callback(null);
+  }, function(error) {
+    callback(error, options);
+  });
+
 };
 
 Task.getAddArguments = function(task, options, _arguments) {

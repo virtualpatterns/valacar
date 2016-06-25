@@ -6,31 +6,22 @@ var Log = require('../log');
 var elementPrototype = Element.getElementPrototype();
 var pagePrototype = Object.create(elementPrototype);
 
-pagePrototype.render = function(data, callback) {
-
-  if (Is.function(data)) {
-    callback = data;
-    data = {};
-  }
-
-  Log.info('> Page.render(callback)');
-  elementPrototype.render.call(this, data, function(error, content) {
-    if (error)
-      callback(error);
-    else {
-      content = Element.hide(content);
-      Log.info('< Page.render(callback)\n\n%s\n\n', content);
-      callback(null, content);
-    }
+pagePrototype.show = function(isInitial) {
+  this.getElement()
+    .toggleClass('uk-hidden', false)
+    .toggleClass('v-page-top', true);
+  this.triggerShown({
+    'isInitial': isInitial || false
   });
 };
 
-pagePrototype.triggerShown = function(data) {
-  this.getElement().trigger(new jQuery.Event('shown', data));
-};
-
-pagePrototype.triggerHidden = function(data) {
-  this.getElement().trigger(new jQuery.Event('hidden', data));
+pagePrototype.hide = function(isFinal) {
+  this.getElement()
+    .toggleClass('uk-hidden', true)
+    .toggleClass('v-page-top', false);
+  this.triggerHidden({
+    'isFinal': isFinal || false
+  });
 };
 
 var Page = Object.create(Element);

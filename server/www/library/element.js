@@ -13,12 +13,33 @@ elementPrototype.getElement = function() {
   return element;
 };
 
+elementPrototype.hasElements = function() {
+  return false;
+};
+
+elementPrototype.getElements = function() {
+  return [];
+};
+
 elementPrototype.show = function() {
-  this.getElement().toggleClass('uk-hidden', false);
+  this.getElement()
+    .toggleClass('uk-hidden', false);
+  this.triggerShown();
+};
+
+elementPrototype.triggerShown = function(data) {
+  jQuery(this).trigger(new jQuery.Event('shown', data || {}));
 };
 
 elementPrototype.hide = function() {
-  this.getElement().toggleClass('uk-hidden', true);
+  this.getElement()
+    .toggleClass('uk-hidden', true);
+  this.triggerHidden();
+};
+
+elementPrototype.triggerHidden = function(data) {
+  Log.debug('> Element.triggerHidden(data) { ... }\n\n%s\n\n', Utilities.inspect(data));
+  jQuery(this).trigger(new jQuery.Event('hidden', data || {}));
 };
 
 elementPrototype.addContent = function(content) {
@@ -36,9 +57,9 @@ elementPrototype.render = function(data, callback) {
     data = {};
   }
 
-  var _this = this;
+  var self = this;
 
-  jQuery.get(_this.templateURL)
+  jQuery.get(self.templateURL)
     .done(function(templateData) {
 
       var content = null;
@@ -46,7 +67,7 @@ elementPrototype.render = function(data, callback) {
       try {
 
         var options = {
-          'filename': _this.templateURL,
+          'filename': self.templateURL,
           'doctype': 'html',
           'pretty': true,
           'self': false,
@@ -54,18 +75,19 @@ elementPrototype.render = function(data, callback) {
           'compileDebug':true
         };
 
-        Log.info('> Template.compile(%j, options)\n\n%s\n\n', _this.templateURL, Utilities.inspect(options));
+        Log.info('> Template.compile(%j, options)\n\n%s\n\n', self.templateURL, Utilities.inspect(options));
         var templateFn = Template.compile(templateData, options);
 
-        data.element = _this;
+        data.element = self;
 
         Log.info('> templateFn(data)\n\n%s\n\n', Utilities.inspect(data));
         content = templateFn(data);
-        Log.info('< templateFn(data)\n%s\n\n', content);
+        content = Element.hide(content);
+        Log.info('< templateFn(data)\n\n%s\n\n', content);
 
       } catch (error) {
         Log.error('< Element.render(data, callback)\n\n%s\n\n', error.message);
-        callback(new URIError(Utilities.format('An error occurred rendering the element template at %j.', _this.templateURL)));
+        callback(new URIError(Utilities.format('An error occurred rendering the element template at %j.', self.templateURL)));
       }
 
       callback(null, content);
@@ -75,7 +97,7 @@ elementPrototype.render = function(data, callback) {
       Log.error('< Element.render(data, callback)');
       Log.error('    request.status=%j', request.status);
       Log.error('    request.statusText=%j', request.statusText);
-      callback(new URIError(Utilities.format('An error occurred retrieving the element template from %j (%d %s).', _this.templateURL, request.status, request.statusText)));
+      callback(new URIError(Utilities.format('An error occurred retrieving the element template from %j (%d %s).', self.templateURL, request.status, request.statusText)));
     });
 
 };
@@ -109,20 +131,20 @@ Element.createElement = function(templateURL, prototype) {
 
 };
 
-Element.show = function(content) {
-  return jQuery(content).toggleClass('uk-hidden', false)[0].outerHTML;
-};
-
-Element.hide = function(content) {
-  return jQuery(content).toggleClass('uk-hidden', true)[0].outerHTML;
-};
-
 Element.isElement = function(element) {
   return elementPrototype.isPrototypeOf(element);
 };
 
 Element.getElementPrototype = function() {
   return elementPrototype;
+};
+
+Element.show = function(content) {
+  return jQuery(content).toggleClass('uk-hidden', false)[0].outerHTML;
+};
+
+Element.hide = function(content) {
+  return jQuery(content).toggleClass('uk-hidden', true)[0].outerHTML;
 };
 
 module.exports = Element;

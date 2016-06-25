@@ -1,5 +1,3 @@
-
-
 var Asynchronous = require('async');
 
 var Application = require('../library/application');

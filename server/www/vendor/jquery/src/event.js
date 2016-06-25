@@ -309,7 +309,7 @@ jQuery.event = {
 
 		event.delegateTarget = this;
 
-		// Call the preDispatch hook for the mapped type, and var it bail if desired
+		// Call the preDispatch hook for the mapped type, and let it bail if desired
 		if ( special.preDispatch && special.preDispatch.call( this, event ) === false ) {
 			return;
 		}

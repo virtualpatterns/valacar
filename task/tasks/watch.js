@@ -7,41 +7,56 @@ var Path = require('../../client/library/path');
 var Process = require('../../client/library/process');
 var Task = require('../library/task');
 
-var OPTIONS_STDIO_STDOUT_PATH = Path.join(Process.OUTPUT_PATH, 'watch.out');
-var OPTIONS_STDIO_STDERR_PATH = Path.join(Process.LOG_PATH, Utilities.format('%s.watch.log', Package.name));
-var SOURCE_PATH = Path.join(Process.cwd(), 'server', 'www', 'library', 'index.js');
-var TARGET_PATH = Path.join(Process.cwd(), 'server', 'www', 'library', Utilities.format('%s.js', Package.name));
+var OPTIONS_STDIO_STDOUT_PATH = Path.join(Process.LOG_PATH, Utilities.format('%s.watch.log', Package.name));
 
-var REQUIRE_TEST = Path.join(Process.cwd(), 'server', 'www', 'library', 'test.js');
+var DEFAULT_SOURCE_PATH = Path.join(Process.cwd(), 'server', 'www', 'library', 'default.js');
+var DEFAULT_TARGET_PATH = Path.join(Process.cwd(), 'server', 'www', 'library', 'bundles', 'default.js');
+var TEST_SOURCE_PATH = Path.join(Process.cwd(), 'server', 'www', 'library', 'test.js');
+var TEST_TARGET_PATH = Path.join(Process.cwd(), 'server', 'www', 'library', 'bundles', 'test.js');
 
 namespace('watch', function() {
 
-  desc(Utilities.format('Run watch process once %j, output to %j', Path.trim(SOURCE_PATH), Path.trim(TARGET_PATH)));
+  desc(Utilities.format('Run watch process once %j, output to %j', Path.trim(DEFAULT_SOURCE_PATH), Path.trim(DEFAULT_TARGET_PATH)));
   task('once', ['log'], {'async': true}, function () {
     Task.createTask(this.fullName)
-      .add('browserify %j "--outfile=%s" --debug', SOURCE_PATH, TARGET_PATH)
+      .add('browserify %j "--outfile=%s" --debug', DEFAULT_SOURCE_PATH, DEFAULT_TARGET_PATH)
+      .add('browserify %j "--outfile=%s" --debug', TEST_SOURCE_PATH, TEST_TARGET_PATH)
       .execute(complete, fail);
   });
 
-  desc(Utilities.format('Run the watch process on %j, output to %j', Path.trim(SOURCE_PATH), Path.trim(TARGET_PATH)));
-  task('run', ['log'], {'async': true}, function () {
-    Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
-      .add('watchify %j "--outfile=%s" --debug --verbose', SOURCE_PATH, TARGET_PATH, Task.OPTIONS_STDIO_INHERIT)
-      .execute(complete, fail);
+  namespace('run', function() {
+
+    desc(Utilities.format('Run the watch process on %j, output to %j', Path.trim(DEFAULT_SOURCE_PATH), Path.trim(DEFAULT_TARGET_PATH)));
+    task('default', ['log'], {'async': true}, function () {
+      Task.createTask(this.fullName)
+        .addLine()
+        .add('watchify %j "--outfile=%s" --debug --verbose', DEFAULT_SOURCE_PATH, DEFAULT_TARGET_PATH)
+        .execute(complete, fail);
+    });
+
+    desc(Utilities.format('Run the watch process on %j, output to %j', Path.trim(TEST_SOURCE_PATH), Path.trim(TEST_TARGET_PATH)));
+    task('test', ['log'], {'async': true}, function () {
+      Task.createTask(this.fullName)
+        .addLine()
+        .add('watchify %j "--outfile=%s" --debug --verbose', TEST_SOURCE_PATH, TEST_TARGET_PATH)
+        .execute(complete, fail);
+    });
+
   });
 
-  desc(Utilities.format('Start the watch process on %j, output to %j', Path.trim(SOURCE_PATH), Path.trim(TARGET_PATH)));
+  desc(Utilities.format('Start the watch processes on %j and %j, output to %j and %j', Path.trim(DEFAULT_SOURCE_PATH), Path.trim(TEST_SOURCE_PATH), Path.trim(DEFAULT_TARGET_PATH), Path.trim(TEST_TARGET_PATH)));
   task('start', ['log'], {'async': true}, function () {
 
     var _this = this;
 
     Asynchronous.waterfall([
       function(callback) {
-        BackgroundTask.createOptions(Task.IGNORE, OPTIONS_STDIO_STDOUT_PATH, OPTIONS_STDIO_STDERR_PATH, callback);
+        BackgroundTask.createOptions(Task.IGNORE, OPTIONS_STDIO_STDOUT_PATH, OPTIONS_STDIO_STDOUT_PATH, callback);
       },
       function(options, callback) {
         BackgroundTask.createTask(_this.fullName)
-          .add('watchify %j "--outfile=%s" --debug --verbose', SOURCE_PATH, TARGET_PATH, options)
+          .add('watchify %j "--outfile=%s" --debug --verbose', DEFAULT_SOURCE_PATH, DEFAULT_TARGET_PATH, options)
+          .add('watchify %j "--outfile=%s" --debug --verbose', TEST_SOURCE_PATH, TEST_TARGET_PATH, options)
           .execute(callback);
       }
     ], function(error) {
@@ -55,12 +70,28 @@ namespace('watch', function() {
 
   desc('Stop the watch process');
   task('stop', ['log'], {'async': true}, function () {
-    Task.createTask(this.fullName)
-      .add('pkill -f watchify')
-      .execute(complete, fail);
+
+    var _this = this;
+
+    Asynchronous.waterfall([
+      function(callback) {
+        Task.createOptions(Task.IGNORE, OPTIONS_STDIO_STDOUT_PATH, OPTIONS_STDIO_STDOUT_PATH, callback);
+      },
+      function(options, callback) {
+        Task.createTask(_this.fullName)
+          .add('pkill -fl watchify', options)
+          .execute(callback);
+      }
+    ], function(error) {
+      if (error)
+        fail(error);
+      else
+        complete();
+    });
+
   });
 
-  desc(Utilities.format('Restart the watch process on %j, output to %j', Path.trim(SOURCE_PATH), Path.trim(TARGET_PATH)));
+  desc(Utilities.format('Restart the watch process on %j, output to %j', Path.trim(DEFAULT_SOURCE_PATH), Path.trim(DEFAULT_TARGET_PATH)));
   task('restart', ['log'], {'async': true}, function () {
 
     Asynchronous.eachSeries([

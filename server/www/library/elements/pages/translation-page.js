@@ -24,6 +24,8 @@ translationPagePrototype.render = function(data, callback) {
 
 translationPagePrototype.bind = function() {
 
+  pagePrototype.bind.call(this);
+
   this.getElement().find('#goBack').on('click', {
     'this': this
   }, this.onGoBack);
@@ -44,23 +46,25 @@ translationPagePrototype.unbind = function() {
 
   this.getElement().find('#delete').off('click', this.onDelete);
 
+  pagePrototype.unbind.call(this);
+
 };
 
 translationPagePrototype.onGoBack = function(event) {
   Log.info('> TranslationPage.onGoBack(event) { ... }');
-  window.application.removePage();
+  window.application.hidePage();
 };
 
 translationPagePrototype.onDone = function(event) {
   Log.info('> TranslationPage.onDone(event) { ... }');
 
-  var _this = event.data.this;
+  var self = event.data.this;
 
   Application.POST('/api/translations', {
-    'from': _this.getElement().find('#from').val(),
-    'to': _this.getElement().find('#to').val()
+    'from': self.getElement().find('#from').val(),
+    'to': self.getElement().find('#to').val()
   }, Application.ifNotError(function() {
-    window.application.removePage();
+    window.application.hidePage();
   }));
 
 };
@@ -68,11 +72,11 @@ translationPagePrototype.onDone = function(event) {
 translationPagePrototype.onDelete = function(event) {
   Log.info('> TranslationPage.onDelete(event) { ... }');
 
-  var _this = event.data.this;
+  var self = event.data.this;
 
-  UIkit.modal.confirm(Utilities.format('Are you sure you want to delete the translation from %j to %j?', _this.getElement().find('#from').val(), _this.getElement().find('#to').val()), function(){
-    Application.DELETE(Utilities.format('/api/translations/%s', _this.getElement().find('#from').val()), Application.ifNotError(function() {
-      window.application.removePage();
+  UIkit.modal.confirm(Utilities.format('Are you sure you want to delete the translation from %j to %j?', self.getElement().find('#from').val(), self.getElement().find('#to').val()), function(){
+    Application.DELETE(Utilities.format('/api/translations/%s', self.getElement().find('#from').val()), Application.ifNotError(function() {
+      window.application.hidePage();
     }));
   }, {
     labels: {

@@ -1,0 +1,32 @@
+{
+  "name": "WebConsole-reporter",
+  "homepage": "https://github.com/eeroan/WebConsole-reporter",
+  "authors": [
+    "Eero Anttila <eea@iki.fi>"
+  ],
+  "description": "Web console reporter for Mocha testing framework",
+  "main": "WebConsole.js",
+  "keywords": [
+    "reporter",
+    "mocha",
+    "console"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "ff96efddbe",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "ff96efddbe6ac5d355e430fc146a7f6543938871"
+  },
+  "_source": "https://github.com/eeroan/WebConsole-reporter.git",
+  "_target": "*",
+  "_originalSource": "WebConsole",
+  "_direct": true
+}

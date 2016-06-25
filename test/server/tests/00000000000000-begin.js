@@ -1,5 +1,3 @@
-
-
 var Utilities = require('util');
 var Asynchronous = require('async');
 

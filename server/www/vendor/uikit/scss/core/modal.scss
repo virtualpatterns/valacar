@@ -251,7 +251,7 @@ $modal-caption-color:                            #fff !default;
 /* Modifier: `uk-modal-dialog-large`
  ========================================================================== */
 
-/* Tabvar and bigger */
+/* Tablet and bigger */
 @media (min-width: $breakpoint-medium) {
 
     .uk-modal-dialog-large { width: $modal-dialog-large-width; }

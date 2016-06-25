@@ -1,11 +1,13 @@
 div(id=element.id).uk-height-1-1.v-element.v-page.v-default-page
+  //- button( id='close',
+  //-         type='button').uk-close.uk-align-right
   div.uk-container.uk-height-1-1
     div.uk-container-center
       div.uk-panel.uk-panel-box.uk-margin-large-top
-        div.uk-panel-teaser.uk-text-center
+        div.uk-panel-teaser
           img(src='/www/resources/valacar.png',
               height='100px',
-              width='100px').uk-margin-top.uk-margin-bottom
+              width='100px').uk-align-center.uk-margin-top
         ul.uk-list
           li.uk-margin-small-bottom
             button( id='goLeases',
@@ -15,3 +17,7 @@ div(id=element.id).uk-height-1-1.v-element.v-page.v-default-page
             button( id='goTranslations',
                     type='button').uk-button.uk-button-large.uk-button-primary.uk-border-rounded.uk-width-1-1
               | Translations
+          li.uk-margin-top
+            button( id='goTest',
+                    type='button').uk-button.uk-button-large.uk-button-primary.uk-border-rounded.uk-width-1-1
+              | Go To Tests

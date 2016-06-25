@@ -11,13 +11,25 @@ var TranslationsTable = require('../tables/translations-table');
 var pagePrototype = Page.getElementPrototype();
 var translationsPagePrototype = Object.create(pagePrototype);
 
+translationsPagePrototype.hasElements = function() {
+  return true;
+};
+
+translationsPagePrototype.getElements = function() {
+  return pagePrototype.getElements.call(this).concat([
+    this.translationsTable
+  ]);
+};
+
 translationsPagePrototype.bind = function() {
 
-  this.getElement().on('shown', {
+  pagePrototype.bind.call(this);
+
+  jQuery(this).on('shown', {
     'this': this
   }, this.onShown);
 
-  this.getElement().on('hidden', {
+  jQuery(this).on('hidden', {
     'this': this
   }, this.onHidden);
 
@@ -35,33 +47,37 @@ translationsPagePrototype.unbind = function() {
   this.getElement().find('#addTranslation').off('click', this.onAddTranslation);
   this.getElement().find('#goBack').off('click', this.onGoBack);
 
-  this.getElement().off('hidden', this.onHidden);
-  this.getElement().off('shown', this.onShown);
+  jQuery(this).off('hidden', this.onHidden);
+  jQuery(this).off('shown', this.onShown);
+
+  pagePrototype.unbind.call(this);
 
 };
 
 translationsPagePrototype.onShown = function(event) {
   Log.info('> TranslationsPage.onShown(event) { ... } event.isInitial=%s', event.isInitial);
 
-  var _this = event.data.this;
+  var self = event.data.this;
 
   Asynchronous.waterfall([
     function(callback) {
       Application.GET('/api/translations', callback);
     },
     function(translations, callback) {
-      _this.translationsTable.render({
+      self.translationsTable.render({
         'translations': translations
       }, callback);
     }
   ], Application.ifNotError(function(content) {
 
-    _this.getElement().find('> div').append(content);
-    _this.translationsTable.bind();
+    self.getElement().find('> div').append(content);
 
-    _this.translationsTable.getElement().on('selected', {
-      'this': _this
-    }, _this.onSelected);
+    self.translationsTable.getElement().find('tbody > tr').on('click', {
+      'this': self
+    }, self.onSelected);
+
+    self.translationsTable.bind();
+    self.translationsTable.show();
 
   }));
 
@@ -70,36 +86,38 @@ translationsPagePrototype.onShown = function(event) {
 translationsPagePrototype.onHidden = function(event) {
   Log.info('> TranslationsPage.onHidden(event) { ... } event.isFinal=%s', event.isFinal);
 
-  var _this = event.data.this;
+  var self = event.data.this;
 
-  _this.translationsTable.getElement().off('selected', _this.onSelected);
+  self.translationsTable.hide();
+  self.translationsTable.unbind();
 
-  _this.translationsTable.unbind();
-  _this.translationsTable.removeContent();
+  self.translationsTable.getElement().find('tbody > tr').off('click', self.onSelected);
+
+  self.translationsTable.removeContent();
 
 };
 
 translationsPagePrototype.onGoBack = function(event) {
   Log.info('> TranslationsPage.onGoBack(event) { ... }');
-  window.application.removePage();
+  window.application.hidePage();
 };
 
 translationsPagePrototype.onAddTranslation = function(event) {
   Log.info('> TranslationsPage.onAddTranslation(event) { ... }');
-  window.application.addPage(TranslationPage.createElement({}), Application.ifNotError());
+  window.application.showPage(TranslationPage.createElement({}), Application.ifNotError());
 };
 
 translationsPagePrototype.onSelected = function(event) {
-  Log.info('> TranslationsPage.onSelected(event) { ... } event.translationFrom=%j', event.translationFrom);
+  Log.info('> TranslationsPage.onSelected(event) { ... } event.currentTarget.dataset.translationFrom=%j', event.currentTarget.dataset.translationFrom);
 
-  var _this = event.data.this;
+  var self = event.data.this;
 
   Asynchronous.waterfall([
     function(callback) {
-      Application.GET(Utilities.format('/api/translations/%s', event.translationFrom), callback);
+      Application.GET(Utilities.format('/api/translations/%s', event.currentTarget.dataset.translationFrom), callback);
     },
     function(translation, callback) {
-      window.application.addPage(TranslationPage.createElement(translation), Application.ifNotError());
+      window.application.showPage(TranslationPage.createElement(translation), Application.ifNotError());
     }
   ], Application.ifNotError());
 
@@ -113,7 +131,7 @@ TranslationsPage.createElement = function(templateURL, prototype) {
 
   Object.defineProperty(translationsPage, 'translationsTable', {
     'enumerable': false,
-    'writable': false,
+    'writranslationsTable': false,
     'value': TranslationsTable.createElement()
   });
 

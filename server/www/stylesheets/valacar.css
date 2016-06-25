@@ -10,8 +10,16 @@ i.v-left-icon {
   padding-right: 5px;
 }
 
+i.v-right-icon {
+  padding-left: 5px;
+}
+
 div.uk-navbar-center {
   padding-top: 3px;
+}
+
+div.v-page > div > nav.uk-navbar {
+  background-color: rgb(00a8e6);
 }
 
 a.v-icon-button {

@@ -2924,7 +2924,7 @@ var rootjQuery,
 					context = context instanceof jQuery ? context[ 0 ] : context;
 
 					// Option to run scripts is true for back-compat
-					// Intentionally var the error be thrown if parseHTML is not present
+					// Intentionally let the error be thrown if parseHTML is not present
 					jQuery.merge( this, jQuery.parseHTML(
 						match[ 1 ],
 						context && context.nodeType ? context.ownerDocument || context : document,
@@ -5059,7 +5059,7 @@ jQuery.event = {
 
 		event.delegateTarget = this;
 
-		// Call the preDispatch hook for the mapped type, and var it bail if desired
+		// Call the preDispatch hook for the mapped type, and let it bail if desired
 		if ( special.preDispatch && special.preDispatch.call( this, event ) === false ) {
 			return;
 		}
@@ -9306,7 +9306,7 @@ jQuery.ajaxTransport( function( options ) {
 
 									// Support: IE <=9 only
 									// IE9 has no XHR2 but throws on binary (trac-11426)
-									// For XHR2 non-text, var the caller handle it (gh-2498)
+									// For XHR2 non-text, let the caller handle it (gh-2498)
 									( xhr.responseType || "text" ) !== "text"  ||
 									typeof xhr.responseText !== "string" ?
 										{ binary: xhr.response } :

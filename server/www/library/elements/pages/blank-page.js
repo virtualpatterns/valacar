@@ -4,17 +4,25 @@ var pagePrototype = Page.getElementPrototype();
 var blankPagePrototype = Object.create(pagePrototype);
 
 blankPagePrototype.bind = function() {
+
+  pagePrototype.bind.call(this);
+
   this.getElement().find('#goBack').on('click', {
     'this': this
   }, this.onGoBack);
+
 };
 
 blankPagePrototype.unbind = function() {
+  
   this.getElement().find('#goBack').off('click', this.onGoBack);
+
+  pagePrototype.unbind.call(this);
+
 };
 
 blankPagePrototype.onGoBack = function(event) {
-  window.application.removePage();
+  window.application.hidePage();
 };
 
 var BlankPage = Object.create(Page);

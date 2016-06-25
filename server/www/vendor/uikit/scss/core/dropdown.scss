@@ -149,7 +149,7 @@ $dropdown-scrollable-height:                     200px !default;
 /* Panels */
 .uk-dropdown-grid > [class*='uk-width-'] > .uk-panel + .uk-panel { margin-top: $dropdown-padding; }
 
-/* Tabvar and bigger */
+/* Tablet and bigger */
 @media (min-width: $breakpoint-medium) {
 
     /*
