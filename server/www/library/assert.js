@@ -29,6 +29,39 @@ Assert.existsButton = function(text, callback) {
 
 };
 
+Assert.existsLink = function(text, callback) {
+
+  var argumentsArray = Array.prototype.slice.call(arguments);
+
+  Log.info('> Assert.existsButton(text, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray));
+
+  argumentsArray.unshift('a:visible:contains(%j)');
+  return this.existsSelector.apply(this, argumentsArray);
+
+};
+
+Assert.existsRow = function(text, callback) {
+
+  var argumentsArray = Array.prototype.slice.call(arguments);
+
+  Log.info('> Assert.existsRow(text, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray));
+
+  argumentsArray.unshift('table > tbody > tr:visible:contains(%j)');
+  return this.existsSelector.apply(this, argumentsArray);
+
+};
+
+Assert.notExistsRow = function(text, callback) {
+
+  var argumentsArray = Array.prototype.slice.call(arguments);
+
+  Log.info('> Assert.notExistsRow(text, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray));
+
+  argumentsArray.unshift('table > tbody > tr:visible:contains(%j)');
+  return this.notExistsSelector.apply(this, argumentsArray);
+
+};
+
 Assert.existsSelector = function(selector, callback) {
 
   var argumentsArray = Array.prototype.slice.call(arguments);
@@ -40,6 +73,31 @@ Assert.existsSelector = function(selector, callback) {
 
   try {
     this.equal(results.selected.length, 1, Utilities.format('The selector %j does not exist.', results.selector));
+  }
+  catch (_error) {
+    error = _error;
+  }
+
+  if (results.callback)
+    results.callback(error, results);
+  else if (error)
+    throw error
+
+  return results;
+
+};
+
+Assert.notExistsSelector = function(selector, callback) {
+
+  var argumentsArray = Array.prototype.slice.call(arguments);
+
+  Log.info('> Assert.motExistsSelector(selector, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray));
+
+  var results = this.select.apply(this, argumentsArray);
+  var error = null;
+
+  try {
+    this.equal(results.selected.length, 0, Utilities.format('The selector %j exists.', results.selector));
   }
   catch (_error) {
     error = _error;
@@ -72,6 +130,17 @@ Assert.clickLink = function(text, callback) {
   Log.info('> Assert.clickLink(text, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray));
 
   argumentsArray.unshift('a:visible:contains(%j)');
+  return this.clickSelector.apply(this, argumentsArray);
+
+};
+
+Assert.clickRow = function(text, callback) {
+
+  var argumentsArray = Array.prototype.slice.call(arguments);
+
+  Log.info('> Assert.clickRow(text, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray));
+
+  argumentsArray.unshift('table > tbody > tr:visible:contains(%j)');
   return this.clickSelector.apply(this, argumentsArray);
 
 };
@@ -128,16 +197,32 @@ Assert.select = function(selector, callback) {
 
 };
 
-Assert.waitForPage = function(waitFn, callback) {
-  Log.info('> jQuery(window.application).one("pageShown", function(event) { ... }');
-  jQuery(window.application).one('pageShown', function(event) {
-    Log.info('< jQuery(window.application).one("pageShown", function(event) { ... }');
+Assert.showPage = function(page, callback) {
+  Log.info('> Assert.showPage(page, callback) { ... }');
+  this.waitForPageShown(function(callback) {
+    window.application.showPage(page, callback);
+  }, callback);
+};
+
+Assert.hidePage = function(callback) {
+  Log.info('> Assert.hidePage(callback) { ... }');
+  this.waitForPageShown(function() {
+    window.application.hidePage();
+  }, callback);
+}
+
+Assert.waitForPageShown = function(waitFn, callback) {
+  Log.info('> Assert.waitForPageShown(waitFn, callback) { ... }');
+
+  // Log.debug('> jQuery(window.application).one("v-page-shown", function(event) { ... }');
+  jQuery(window.application).one('v-page-shown', function(event) {
+    // Log.debug('< jQuery(window.application).one("v-page-shown", function(event) { ... }');
     var page = event.page;
     if (page.hasElements()) {
       Asynchronous.each(page.getElements(), function(element, callback) {
-        Log.info('> jQuery(element).one("shown", function(event) { ... }');
-        jQuery(element).one('shown', function(event) {
-          Log.info('< jQuery(element).one("shown", function(event) { ... }');
+        // Log.debug('> jQuery(element).one("v-shown", function(event) { ... }');
+        jQuery(element).one('v-shown', function(event) {
+          // Log.debug('< jQuery(element).one("v-shown", function(event) { ... }');
           callback(null);
         });
       }, callback);
@@ -145,18 +230,41 @@ Assert.waitForPage = function(waitFn, callback) {
     else
       callback(null);
   });
-  waitFn();
+  waitFn(function(error) {
+    if (error) {
+      Log.error('< Assert.waitForPage(waitFn, callback) { ... }');
+      Log.error('    error.message=%j', error.message);
+      UIkit.modal.alert(error.message);
+    }
+  });
+
 };
 
-Assert.showPage = function(page, callback) {
-  window.application.showPage(page, callback);
-};
+Assert.waitForElementsShown = function(waitFn, callback) {
+  Log.info('> Assert.waitForElementsShown(waitFn, callback) { ... }');
 
-Assert.hidePage = function(callback) {
-  window.application.hidePage();
-  if (callback)
+  var page = window.application.getPage();
+  if (page.hasElements()) {
+    Asynchronous.each(page.getElements(), function(element, callback) {
+      Log.debug('> jQuery(element).one("v-shown", function(event) { ... }');
+      jQuery(element).one('v-shown', function(event) {
+        Log.debug('< jQuery(element).one("v-shown", function(event) { ... }');
+        callback(null);
+      });
+    }, callback);
+  }
+  else
     callback(null);
-}
+
+  waitFn(function(error) {
+    if (error) {
+      Log.error('< Assert.waitForPage(waitFn, callback) { ... }');
+      Log.error('    error.message=%j', error.message);
+      UIkit.modal.alert(error.message);
+    }
+  });
+
+};
 
 module.exports = Assert;
 

@@ -26,8 +26,26 @@ Object.defineProperty(Database, 'DATABASE_OPTIONS', {
   }
 });
 
-// Database.openConnection = function(taskFn, callback) {
-//   _Database.openConnection.call(this, this.DATABASE_PATH, this.DATABASE_OPTIONS, taskFn, callback);
-// };
+Database.existTranslations = function(connection, callback) {
+  this.getFile(connection, Path.join(RESOURCES_PATH, 'select-ttranslation-count.sql'), [], function(error, row) {
+    if (error)
+      callback(error);
+    else if (row.cCountOfTranslations <= 0)
+      callback(new Error('No translations exist.'), false);
+    else
+      callback(null, true);
+  });
+};
+
+Database.notExistTranslations = function(connection, callback) {
+  this.existTranslations(connection, function(error, exists) {
+    if (exists)
+      callback(new Error('At least one translation exists.'), false);
+    else if (exists == undefined)
+      callback(error);
+    else
+      callback(null, true);
+  });
+};
 
 module.exports = Database;

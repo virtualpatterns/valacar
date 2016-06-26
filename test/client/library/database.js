@@ -109,7 +109,7 @@ Database.existsTranslation = function(connection, _from, _to, callback) {
 Database.notExistsTranslation = function(connection, _from, _to, callback) {
   this.existsTranslation(connection, _from, _to, function(error, exists) {
     if (exists)
-      callback(new Error(Utilities.format('The translation from %j to %j exists.', _from, _to))), false;
+      callback(new Error(Utilities.format('The translation from %j to %j exists.', _from, _to)), false);
     else if (exists == undefined)
       callback(error);
     else

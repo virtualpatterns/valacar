@@ -8,12 +8,6 @@ var Pages = require('./collections/pages');
 
 var applicationPrototype = Object.create({});
 
-applicationPrototype.getElement = function() {
-  var element = jQuery('html');
-  Assert.equal(element.length, 1, 'The value of jQuery("html").length should be 1 but is instead %d.');
-  return element;
-};
-
 applicationPrototype.showPage = function(newPage, callback) {
   Log.info('> Application.showPage(newPage, callback) { ... }');
 
@@ -55,7 +49,7 @@ applicationPrototype.showPage = function(newPage, callback) {
 };
 
 applicationPrototype.triggerPageShown = function(data) {
-  jQuery(this).trigger(new jQuery.Event('pageShown', data));
+  jQuery(this).trigger(new jQuery.Event('v-page-shown', data));
 };
 
 applicationPrototype.hidePage = function() {
@@ -89,7 +83,18 @@ applicationPrototype.hidePage = function() {
 };
 
 applicationPrototype.triggerPageHidden = function(data) {
-  jQuery(this).trigger(new jQuery.Event('pageHidden', data));
+  jQuery(this).trigger(new jQuery.Event('v-page-hidden', data));
+};
+
+applicationPrototype.getPage = function() {
+  Log.info('> Application.getPage() { ... }');
+
+  if (this.pages.isNotEmpty()) {
+    return this.pages.top();
+  }
+  else
+    return null;
+
 };
 
 var Application = Object.create({});

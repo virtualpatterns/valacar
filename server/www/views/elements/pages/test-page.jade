@@ -1,20 +1,16 @@
-div(id=element.id).uk-height-1-1.v-element.v-page.v-default-page
-  div.uk-container.uk-height-1-1
-    div.uk-container-center
-      div.uk-panel.uk-panel-box.uk-margin-large-top
-        div.uk-panel-teaser
-          img(src='/www/resources/valacar.png',
-              height='100px',
-              width='100px').uk-align-center.uk-margin-top
-        ul.uk-list
+div(id=element.id).uk-height-1-1.v-element.v-page.v-test-page
+  div.uk-container.uk-height-1-1.uk-padding-remove.uk-margin-remove
+    nav(data-uk-sticky).uk-navbar.uk-navbar-attached
+      ul.uk-navbar-nav
+        li
+          a(id='goDefault')
+            i.uk-icon-chevron-left.v-left-icon
+            | Go To Default
+      div.uk-navbar-flip
+        ul.uk-navbar-nav
           li
-            button( id='run',
-                    type='button').uk-button.uk-button-large.uk-button-primary.uk-border-rounded.uk-width-1-1
-              | Run
-            button( id='reload',
-                    type='button').uk-button.uk-button-large.uk-button-primary.uk-border-rounded.uk-width-1-1.uk-hidden
-              | Reload
-          li.uk-margin-small-top
-            button( id='goDefault',
-                    type='button').uk-button.uk-button-large.uk-button-primary.uk-border-rounded.uk-width-1-1
-              | Go To Default
+            a(id='refresh')
+              i.uk-icon-refresh
+      div.uk-navbar-content.uk-navbar-center
+        | Tests
+    div(id='mocha')

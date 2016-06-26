@@ -28,7 +28,7 @@ elementPrototype.show = function() {
 };
 
 elementPrototype.triggerShown = function(data) {
-  jQuery(this).trigger(new jQuery.Event('shown', data || {}));
+  jQuery(this).trigger(new jQuery.Event('v-shown', data || {}));
 };
 
 elementPrototype.hide = function() {
@@ -38,8 +38,8 @@ elementPrototype.hide = function() {
 };
 
 elementPrototype.triggerHidden = function(data) {
-  Log.debug('> Element.triggerHidden(data) { ... }\n\n%s\n\n', Utilities.inspect(data));
-  jQuery(this).trigger(new jQuery.Event('hidden', data || {}));
+  // Log.debug('> Element.triggerHidden(data) { ... }\n\n%s\n\n', Utilities.inspect(data));
+  jQuery(this).trigger(new jQuery.Event('v-hidden', data || {}));
 };
 
 elementPrototype.addContent = function(content) {

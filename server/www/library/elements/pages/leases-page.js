@@ -25,11 +25,11 @@ leasesPagePrototype.bind = function() {
 
   pagePrototype.bind.call(this);
 
-  // jQuery(this).on('shown', {
+  // jQuery(this).on('v-shown', {
   //   'this': this
   // }, this.onShown);
   //
-  // jQuery(this).on('hidden', {
+  // jQuery(this).on('v-hidden', {
   //   'this': this
   // }, this.onHidden);
 
@@ -47,8 +47,8 @@ leasesPagePrototype.unbind = function() {
   this.getElement().find('#addLease').off('click', this.onAddLease);
   this.getElement().find('#goBack').off('click', this.onGoBack);
 
-  // jQuery(this).off('hidden', this.onHidden);
-  // jQuery(this).off('shown', this.onShown);
+  // jQuery(this).off('v-hidden', this.onHidden);
+  // jQuery(this).off('v-shown', this.onShown);
 
   pagePrototype.unbind.call(this);
 

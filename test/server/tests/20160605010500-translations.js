@@ -244,7 +244,7 @@ describe('DELETE /api/translations', function() {
     Application.isDELETEStatusCode('/api/translations/from05', 204, callback);
   });
 
-  it('should respond to DELETE /api/translations@from09 (an invalid translation) with 500 Internal Server Error', function(callback) {
+  it('should respond to DELETE /api/translations/@from09 (an invalid translation) with 500 Internal Server Error', function(callback) {
     Application.isDELETEStatusCode('/api/translations/@from09', 500, callback);
   });
 
@@ -259,6 +259,23 @@ describe('DELETE /api/translations', function() {
       },
       function(statusCode, headers, data, callback) {
         Application.isGETStatusCode('/api/translations/from05', 404, callback);
+      }
+    ], callback);
+  });
+
+  it('should respond to DELETE /api/translations with 204 No Content', function(callback) {
+    Application.isDELETEStatusCode('/api/translations', 204, callback);
+  });
+
+  it.only('should respond to DELETE /api/translations by deleting all translations', function(callback) {
+    Asynchronous.series([
+      function(callback) {
+        Application.DELETE('/api/translations', callback);
+      },
+      function(callback) {
+        Database.openConnection(function(connection, callback) {
+          Database.notExistTranslations(connection, callback);
+        }, callback);
       }
     ], callback);
   });

@@ -8,75 +8,72 @@ testPagePrototype.bind = function() {
 
   pagePrototype.bind.call(this);
 
-  this.getElement().find('#run').on('click', {
+  jQuery(this).on('v-shown', {
     'this': this
-  }, this.onRun);
-
-  this.getElement().find('#reload').on('click', {
-    'this': this
-  }, this.onReload);
+  }, this.onShown);
 
   this.getElement().find('#goDefault').on('click', {
     'this': this
   }, this.onGoDefault);
+  this.getElement().find('#refresh').on('click', {
+    'this': this
+  }, this.onRefresh);
 
 };
 
 testPagePrototype.unbind = function() {
 
+  this.getElement().find('#refresh').off('click', this.onRefresh);
   this.getElement().find('#goDefault').off('click', this.onGoDefault);
-  this.getElement().find('#reload').off('click', this.onReload);
-  this.getElement().find('#run').off('click', this.onRun);
+
+  jQuery(this).off('v-shown', this.onShown);
 
   pagePrototype.unbind.call(this);
 
 };
 
-testPagePrototype.onRun = function(event) {
-  Log.info('> TestPage.onRun(event) { ... }');
+testPagePrototype.onShown = function(event) {
+  Log.info('> TestPage.onShown(event) { ... } event.isInitial=%s', event.isInitial);
 
   var self = event.data.this;
 
-  try {
+  if (event.isInitial) {
 
-    self.getElement()
-      .find('#run')
-      .toggleClass('uk-hidden', true);
+    try {
 
-    mocha.setup({
-      'bail': true,
-      'reporter': WebConsole,
-      'timeout': 5000,
-      'ui': 'bdd'
-    });
+      mocha.setup({
+        'bail': true,
+        // 'reporter': WebConsole,
+        'timeout': 5000,
+        'ui': 'bdd'
+      });
 
-    require('../../../tests/20160622163300-begin');
-    require('../../../tests/20160622173800-default');
-    require('../../../tests/99999999999999-end');
+      require('../../../tests/20160622163300-begin');
+      require('../../../tests/20160622173800-default');
+      require('../../../tests/20160625023000-translations');
+      require('../../../tests/99999999999999-end');
 
-    mocha.run();
+      mocha.run();
 
-    self.getElement()
-      .find('#reload')
-      .toggleClass('uk-hidden', false);
+    }
+    catch (error) {
+      Log.error('> TestPage.onShown(event) { ... }');
+      Log.error('    error.message=%j', error.message);
+      UIkit.modal.alert(error.message);
+    }
 
   }
-  catch (error) {
-    Log.error('> TestPage.onRun(event) { ... }');
-    Log.error('    error.message=%j', error.message);
-    UIkit.modal.alert(error.message);
-  }
 
-};
-
-testPagePrototype.onReload = function(event) {
-  Log.info('> TestPage.onReload(event) { ... }');
-  window.location.href = '/www/test.html';
 };
 
 testPagePrototype.onGoDefault = function(event) {
   Log.info('> TestPage.onGoDefault(event) { ... }');
   window.location.href = '/www/default.html';
+};
+
+testPagePrototype.onRefresh = function(event) {
+  Log.info('> TestPage.onRefresh(event) { ... }');
+  window.location.reload(true);
 };
 
 var TestPage = Object.create(Page);

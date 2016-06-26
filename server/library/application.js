@@ -142,7 +142,7 @@ Application.startWorker = function (address, port, databasePath, options) {
 
   var Static = require('../routes/static');
   var Status = require('../routes/status');
-  var Translation = require('../routes/translation');
+  var Translations = require('../routes/translations');
 
   var server = Server.createServer({
     'name': Utilities.format('%s v%s', Package.name, Package.version)
@@ -153,7 +153,7 @@ Application.startWorker = function (address, port, databasePath, options) {
   server.use(Server.bodyParser());
 
   Status.createRoutes(server, databasePath, options);
-  Translation.createRoutes(server, databasePath, options);
+  Translations.createRoutes(server, databasePath, options);
   Static.createRoutes(server, databasePath, options);
 
   server.listen(port, address);
@@ -172,28 +172,14 @@ Application.stopMaster = function (pidPath) {
 
 Application.getTranslations = function (databasePath, options, callback) {
   this.openDatabase(databasePath, options, function(connection, callback) {
-    Database.allFile(connection, Path.join(RESOURCES_PATH, 'select-ttranslation.sql'), [], function(error, rows) {
-      if (error)
-        callback(error);
-      else {
-        // Log.debug('= Application.getTranslations(databasePath, options, callback) { ... }\n\nrows\n----\n%s\n\n', Utilities.inspect(rows));
-        callback(null, rows);
-      }
-    });
+    Database.allFile(connection, Path.join(RESOURCES_PATH, 'select-ttranslation.sql'), [], callback);
   }, callback);
 };
 
 Application._getTranslation = function (_from, connection, callback) {
   Database.getFile(connection, Path.join(RESOURCES_PATH, 'select-ttranslation-where.sql'), {
     $From: _from
-  }, function(error, row) {
-    if (error)
-      callback(error);
-    else {
-      // Log.debug('= Application._getTranslation(_from, connection, callback) { ... }\n\nrow\n---\n%s\n\n', Utilities.inspect(row));
-      callback(null, row);
-    }
-  });
+  }, callback);
 };
 
 Application.getTranslation = function (_from, databasePath, options, callback) {
@@ -219,18 +205,19 @@ Application.postTranslation = function (_from, _to, databasePath, options, callb
         _this._addTranslation(_from, _to, connection, callback);
       },
       function(callback) {
-        _this._getTranslation(_from, connection, function(error, row) {
-          if (error)
-            callback(error);
-          else {
-            // Log.debug('= Application.postTranslation(_from, _to, databasePath, options, callback) { ... }\n\nrow\n---\n%s\n\n', Utilities.inspect(row));
-            callback(null, row);
-          }
-        });
+        _this._getTranslation(_from, connection, callback);
       }
     ], callback);
   }, callback);
 
+};
+
+Application.deleteTranslations = function (databasePath, options, callback) {
+  this.openDatabase(databasePath, options, function(connection, callback) {
+    Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-ttranslation.sql'), [], function(error) {
+      callback(error, this.changes);
+    });
+  }, callback);
 };
 
 Application.deleteTranslation = function (_from, databasePath, options, callback) {
