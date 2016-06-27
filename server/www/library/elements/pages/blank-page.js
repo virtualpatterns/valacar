@@ -1,13 +1,13 @@
 var Page = require('../page');
 
-var pagePrototype = Page.getElementPrototype();
+var pagePrototype = Page.getContentPrototype();
 var blankPagePrototype = Object.create(pagePrototype);
 
 blankPagePrototype.bind = function() {
 
   pagePrototype.bind.call(this);
 
-  this.getElement().find('#goBack').on('click', {
+  this.getContent().find('#goBack').on('click', {
     'this': this
   }, this.onGoBack);
 
@@ -15,7 +15,7 @@ blankPagePrototype.bind = function() {
 
 blankPagePrototype.unbind = function() {
   
-  this.getElement().find('#goBack').off('click', this.onGoBack);
+  this.getContent().find('#goBack').off('click', this.onGoBack);
 
   pagePrototype.unbind.call(this);
 
@@ -35,7 +35,7 @@ BlankPage.isElement = function(blankPage) {
   return blankPagePrototype.isPrototypeOf(blankPage);
 };
 
-BlankPage.getElementPrototype = function() {
+BlankPage.getContentPrototype = function() {
   return blankPagePrototype;
 };
 

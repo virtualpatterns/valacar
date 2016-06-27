@@ -8,7 +8,7 @@ var Page = require('../page');
 // var LeasePage = require('./lease-page');
 // var LeasesTable = require('../tables/leases-table');
 
-var pagePrototype = Page.getElementPrototype();
+var pagePrototype = Page.getContentPrototype();
 var leasesPagePrototype = Object.create(pagePrototype);
 
 // leasesPagePrototype.hasElements = function() {
@@ -33,10 +33,10 @@ leasesPagePrototype.bind = function() {
   //   'this': this
   // }, this.onHidden);
 
-  this.getElement().find('#goBack').on('click', {
+  this.getContent().find('#goBack').on('click', {
     'this': this
   }, this.onGoBack);
-  this.getElement().find('#addLease').on('click', {
+  this.getContent().find('#addLease').on('click', {
     'this': this
   }, this.onAddLease);
 
@@ -44,8 +44,8 @@ leasesPagePrototype.bind = function() {
 
 leasesPagePrototype.unbind = function() {
 
-  this.getElement().find('#addLease').off('click', this.onAddLease);
-  this.getElement().find('#goBack').off('click', this.onGoBack);
+  this.getContent().find('#addLease').off('click', this.onAddLease);
+  this.getContent().find('#goBack').off('click', this.onGoBack);
 
   // jQuery(this).off('v-hidden', this.onHidden);
   // jQuery(this).off('v-shown', this.onShown);
@@ -70,9 +70,9 @@ leasesPagePrototype.unbind = function() {
 //     }
 //   ], Application.ifNotError(function(content) {
 //
-//     self.getElement().find('> div').append(content);
+//     self.getContent().find('> div').append(content);
 //
-//     self.leasesTable.getElement().find('tbody > tr').on('click', {
+//     self.leasesTable.getContent().find('tbody > tr').on('click', {
 //       'this': self
 //     }, self.onSelected);
 //
@@ -91,7 +91,7 @@ leasesPagePrototype.unbind = function() {
 //   self.leasesTable.hide();
 //   self.leasesTable.unbind();
 //
-//   self.leasesTable.getElement().find('tbody > tr').off('click', self.onSelected);
+//   self.leasesTable.getContent().find('tbody > tr').off('click', self.onSelected);
 //
 //   self.leasesTable.removeContent();
 //
@@ -143,7 +143,7 @@ LeasesPage.isElement = function(leasesPage) {
   return leasesPagePrototype.isPrototypeOf(leasesPage);
 };
 
-LeasesPage.getElementPrototype = function() {
+LeasesPage.getContentPrototype = function() {
   return leasesPagePrototype;
 };
 

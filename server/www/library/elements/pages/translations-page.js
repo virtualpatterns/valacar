@@ -1,25 +1,17 @@
 var Asynchronous = require('async');
+var Is = require('@pwn/is');
 var Utilities = require('util');
 
 var Application = require('../../application');
+var Element = require('../../element');
 var Log = require('../../log');
 var Page = require('../page');
 
 var TranslationPage = require('./translation-page');
 var TranslationsTable = require('../tables/translations-table');
 
-var pagePrototype = Page.getElementPrototype();
+var pagePrototype = Page.getContentPrototype();
 var translationsPagePrototype = Object.create(pagePrototype);
-
-translationsPagePrototype.hasElements = function() {
-  return true;
-};
-
-translationsPagePrototype.getElements = function() {
-  return pagePrototype.getElements.call(this).concat([
-    this.translationsTable
-  ]);
-};
 
 translationsPagePrototype.bind = function() {
 
@@ -33,13 +25,13 @@ translationsPagePrototype.bind = function() {
     'this': this
   }, this.onHidden);
 
-  this.getElement().find('#goBack').on('click', {
+  this.getContent().find('#goBack').on('click', {
     'this': this
   }, this.onGoBack);
-  this.getElement().find('#refresh').on('click', {
+  this.getContent().find('#refresh').on('click', {
     'this': this
   }, this.onRefresh);
-  this.getElement().find('#addTranslation').on('click', {
+  this.getContent().find('#addTranslation').on('click', {
     'this': this
   }, this.onAddTranslation);
 
@@ -47,9 +39,9 @@ translationsPagePrototype.bind = function() {
 
 translationsPagePrototype.unbind = function() {
 
-  this.getElement().find('#addTranslation').off('click', this.onAddTranslation);
-  this.getElement().find('#refresh').off('click', this.onRefresh);
-  this.getElement().find('#goBack').off('click', this.onGoBack);
+  this.getContent().find('#addTranslation').off('click', this.onAddTranslation);
+  this.getContent().find('#refresh').off('click', this.onRefresh);
+  this.getContent().find('#goBack').off('click', this.onGoBack);
 
   jQuery(this).off('v-hidden', this.onHidden);
   jQuery(this).off('v-shown', this.onShown);
@@ -63,27 +55,29 @@ translationsPagePrototype.onShown = function(event) {
 
   var self = event.data.this;
 
-  Asynchronous.waterfall([
-    function(callback) {
-      Application.GET('/api/translations', callback);
-    },
-    function(translations, callback) {
-      self.translationsTable.render({
-        'translations': translations
-      }, callback);
-    }
-  ], Application.ifNotError(function(content) {
+  self.refreshElements(TranslationsTable);
 
-    self.getElement().find('> div').append(content);
-
-    self.translationsTable.getElement().find('tbody > tr').on('click', {
-      'this': self
-    }, self.onSelected);
-
-    self.translationsTable.bind();
-    self.translationsTable.show();
-
-  }));
+  // Asynchronous.waterfall([
+  //   function(callback) {
+  //     Application.GET('/api/translations', callback);
+  //   },
+  //   function(translations, callback) {
+  //     self.translationsTable.render({
+  //       'translations': translations
+  //     }, callback);
+  //   }
+  // ], Application.ifNotError(function(content) {
+  //
+  //   self.getContent().find('> div').append(content);
+  //
+  //   self.translationsTable.getContent().find('tbody > tr').on('click', {
+  //     'this': self
+  //   }, self.onSelected);
+  //
+  //   self.translationsTable.bind();
+  //   self.translationsTable.show();
+  //
+  // }));
 
 };
 
@@ -95,7 +89,7 @@ translationsPagePrototype.onHidden = function(event) {
   self.translationsTable.hide();
   self.translationsTable.unbind();
 
-  self.translationsTable.getElement().find('tbody > tr').off('click', self.onSelected);
+  self.translationsTable.getContent().find('tbody > tr').off('click', self.onSelected);
 
   self.translationsTable.removeContent();
 
@@ -111,34 +105,36 @@ translationsPagePrototype.onRefresh = function(event) {
 
   var self = event.data.this;
 
-  self.translationsTable.hide();
-  self.translationsTable.unbind();
+  self.refreshElements(TranslationsTable);
 
-  self.translationsTable.getElement().find('tbody > tr').off('click', self.onSelected);
-
-  self.translationsTable.removeContent();
-
-  Asynchronous.waterfall([
-    function(callback) {
-      Application.GET('/api/translations', callback);
-    },
-    function(translations, callback) {
-      self.translationsTable.render({
-        'translations': translations
-      }, callback);
-    }
-  ], Application.ifNotError(function(content) {
-
-    self.getElement().find('> div').append(content);
-
-    self.translationsTable.getElement().find('tbody > tr').on('click', {
-      'this': self
-    }, self.onSelected);
-
-    self.translationsTable.bind();
-    self.translationsTable.show();
-
-  }));
+  // self.translationsTable.hide();
+  // self.translationsTable.unbind();
+  //
+  // self.translationsTable.getContent().find('tbody > tr').off('click', self.onSelected);
+  //
+  // self.translationsTable.removeContent();
+  //
+  // Asynchronous.waterfall([
+  //   function(callback) {
+  //     Application.GET('/api/translations', callback);
+  //   },
+  //   function(translations, callback) {
+  //     self.translationsTable.render({
+  //       'translations': translations
+  //     }, callback);
+  //   }
+  // ], Application.ifNotError(function(content) {
+  //
+  //   self.getContent().find('> div').append(content);
+  //
+  //   self.translationsTable.getContent().find('tbody > tr').on('click', {
+  //     'this': self
+  //   }, self.onSelected);
+  //
+  //   self.translationsTable.bind();
+  //   self.translationsTable.show();
+  //
+  // }));
 
 };
 
@@ -163,6 +159,92 @@ translationsPagePrototype.onSelected = function(event) {
 
 };
 
+translationsPagePrototype.hasElements = function() {
+  return true;
+};
+
+translationsPagePrototype.getElements = function(Class) {
+  // Log.debug('< TranslationsPage.getElements(Class) { ... }');
+  return pagePrototype.getElements.call(this, Class).concat(Element.filter([
+    this.translationsTable
+  ], Class));
+};
+
+translationsPagePrototype.refreshElements = function(Class, callback) {
+  Log.info('> TranslationsPage.refreshElements(Class, callback) { ... }');
+
+  if (Is.function(Class)) {
+    callback = Class;
+    Class = null;
+  }
+
+  var self = this;
+
+  // Log.debug('= TranslationsPage.refreshElements(Class, callback) { ... } this.getElements(Class).length=%d', this.getElements(Class).length);
+
+  Asynchronous.each(this.getElements(Class), function(element, callback) {
+    switch (element) {
+      case self.translationsTable:
+        self.refreshTranslationsTable(callback);
+        break;
+    }
+  }, function(error) {
+    if (error)
+      callback(error);
+    else
+      pagePrototype.refreshElements.call(this, Class, callback);
+  });
+
+};
+
+translationsPagePrototype.refreshTranslationsTable = function(callback) {
+  Log.info('> TranslationsPage.refreshTranslationsTable(callback) { ... }');
+
+  var element = this.translationsTable;
+
+  if (element.existsContent()) {
+
+    element.hide();
+    element.unbind();
+
+    element.getContent().find('tbody > tr').off('click', this.onSelected);
+
+    element.removeContent();
+
+  }
+
+  var self = this;
+
+  Asynchronous.waterfall([
+    function(callback) {
+      Application.GET('/api/translations', callback);
+    },
+    function(translations, callback) {
+      element.render({
+        'translations': translations
+      }, callback);
+    }
+  ], function(error, content) {
+
+    if (error)
+      callback(error)
+    else {
+
+      self.getContent().find('> div').append(content);
+
+      element.getContent().find('tbody > tr').on('click', {
+        'this': self
+      }, self.onSelected);
+
+      element.bind();
+      element.show();
+
+    }
+
+  });
+
+};
+
 var TranslationsPage = Object.create(Page);
 
 TranslationsPage.createElement = function(templateURL, prototype) {
@@ -183,7 +265,7 @@ TranslationsPage.isElement = function(translationsPage) {
   return translationsPagePrototype.isPrototypeOf(translationsPage);
 };
 
-TranslationsPage.getElementPrototype = function() {
+TranslationsPage.getContentPrototype = function() {
   return translationsPagePrototype;
 };
 

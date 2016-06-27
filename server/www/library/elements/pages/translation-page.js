@@ -5,7 +5,7 @@ var Application = require('../../application');
 var Log = require('../../log');
 var Page = require('../page');
 
-var pagePrototype = Page.getElementPrototype();
+var pagePrototype = Page.getContentPrototype();
 var translationPagePrototype = Object.create(pagePrototype);
 
 translationPagePrototype.render = function(data, callback) {
@@ -26,14 +26,14 @@ translationPagePrototype.bind = function() {
 
   pagePrototype.bind.call(this);
 
-  this.getElement().find('#goBack').on('click', {
+  this.getContent().find('#goBack').on('click', {
     'this': this
   }, this.onGoBack);
-  this.getElement().find('#done').on('click', {
+  this.getContent().find('#done').on('click', {
     'this': this
   }, this.onDone);
 
-  this.getElement().find('#delete').on('click', {
+  this.getContent().find('#delete').on('click', {
     'this': this
   }, this.onDelete);
 
@@ -41,10 +41,10 @@ translationPagePrototype.bind = function() {
 
 translationPagePrototype.unbind = function() {
 
-  this.getElement().find('#goBack').off('click', this.onGoBack);
-  this.getElement().find('#done').off('click', this.onDone);
+  this.getContent().find('#goBack').off('click', this.onGoBack);
+  this.getContent().find('#done').off('click', this.onDone);
 
-  this.getElement().find('#delete').off('click', this.onDelete);
+  this.getContent().find('#delete').off('click', this.onDelete);
 
   pagePrototype.unbind.call(this);
 
@@ -61,8 +61,8 @@ translationPagePrototype.onDone = function(event) {
   var self = event.data.this;
 
   Application.POST('/api/translations', {
-    'from': self.getElement().find('#from').val(),
-    'to': self.getElement().find('#to').val()
+    'from': self.getContent().find('#from').val(),
+    'to': self.getContent().find('#to').val()
   }, Application.ifNotError(function() {
     window.application.hidePage();
   }));
@@ -74,8 +74,8 @@ translationPagePrototype.onDelete = function(event) {
 
   var self = event.data.this;
 
-  UIkit.modal.confirm(Utilities.format('Are you sure you want to delete the translation from %j to %j?', self.getElement().find('#from').val(), self.getElement().find('#to').val()), function(){
-    Application.DELETE(Utilities.format('/api/translations/%s', self.getElement().find('#from').val()), Application.ifNotError(function() {
+  UIkit.modal.confirm(Utilities.format('Are you sure you want to delete the translation from %j to %j?', self.getContent().find('#from').val(), self.getContent().find('#to').val()), function(){
+    Application.DELETE(Utilities.format('/api/translations/%s', self.getContent().find('#from').val()), Application.ifNotError(function() {
       window.application.hidePage();
     }));
   }, {
@@ -107,7 +107,7 @@ TranslationPage.isElement = function(translationPage) {
   return translationPagePrototype.isPrototypeOf(translationPage);
 };
 
-TranslationPage.getElementPrototype = function() {
+TranslationPage.getContentPrototype = function() {
   return translationPagePrototype;
 };
 

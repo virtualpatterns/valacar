@@ -4,7 +4,7 @@ var Application = require('../../application');
 var Log = require('../../log');
 var Table = require('../table');
 
-var tablePrototype = Table.getElementPrototype();
+var tablePrototype = Table.getContentPrototype();
 var translationsTablePrototype = Object.create(tablePrototype);
 
 var TranslationsTable = Object.create(Table);
@@ -17,7 +17,7 @@ TranslationsTable.isElement = function(translationsTable) {
   return translationsTablePrototype.isPrototypeOf(translationsTable);
 };
 
-TranslationsTable.getElementPrototype = function() {
+TranslationsTable.getContentPrototype = function() {
   return translationsTablePrototype;
 };
 

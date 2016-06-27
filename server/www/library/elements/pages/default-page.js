@@ -5,25 +5,25 @@ var Page = require('../page');
 var LeasesPage = require('./leases-page');
 var TranslationsPage = require('./translations-page');
 
-var pagePrototype = Page.getElementPrototype();
+var pagePrototype = Page.getContentPrototype();
 var defaultPagePrototype = Object.create(pagePrototype);
 
 defaultPagePrototype.bind = function() {
 
   pagePrototype.bind.call(this);
 
-  // this.getElement().find('#close').on('click', {
+  // this.getContent().find('#close').on('click', {
   //   'this': this
   // }, this.onClose);
 
-  this.getElement().find('#goLeases').on('click', {
+  this.getContent().find('#goLeases').on('click', {
     'this': this
   }, this.onGoLeases);
-  this.getElement().find('#goTranslations').on('click', {
+  this.getContent().find('#goTranslations').on('click', {
     'this': this
   }, this.onGoTranslations);
 
-  this.getElement().find('#goTest').on('click', {
+  this.getContent().find('#goTest').on('click', {
     'this': this
   }, this.onGoTest);
 
@@ -31,10 +31,10 @@ defaultPagePrototype.bind = function() {
 
 defaultPagePrototype.unbind = function() {
 
-  this.getElement().find('#goTest').off('click', this.onGoTest);
-  this.getElement().find('#goTranslations').off('click', this.onGoTranslations);
-  this.getElement().find('#goLeases').off('click', this.onGoLeases);
-  // this.getElement().find('#close').off('click', this.onClose);
+  this.getContent().find('#goTest').off('click', this.onGoTest);
+  this.getContent().find('#goTranslations').off('click', this.onGoTranslations);
+  this.getContent().find('#goLeases').off('click', this.onGoLeases);
+  // this.getContent().find('#close').off('click', this.onClose);
 
   pagePrototype.unbind.call(this);
 
@@ -70,7 +70,7 @@ DefaultPage.isElement = function(defaultPage) {
   return defaultPagePrototype.isPrototypeOf(defaultPage);
 };
 
-DefaultPage.getElementPrototype = function() {
+DefaultPage.getContentPrototype = function() {
   return defaultPagePrototype;
 };
 

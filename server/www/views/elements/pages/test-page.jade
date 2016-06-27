@@ -11,6 +11,15 @@ div(id=element.id).uk-height-1-1.v-element.v-page.v-test-page
           li
             a(id='refresh')
               i.uk-icon-refresh
-      div.uk-navbar-content.uk-navbar-center
-        | Tests
+      div.uk-navbar-content.uk-navbar-center.v-status
+        | Running ...
+      div.uk-navbar-content.uk-navbar-center.v-status-failed.uk-hidden
+        | Failed
+        i.uk-icon-close.v-right-icon
+      div.uk-navbar-content.uk-navbar-center.v-status-pending.uk-hidden
+        | Pending
+        i.uk-icon-exclamation.v-right-icon
+      div.uk-navbar-content.uk-navbar-center.v-status-passed.uk-hidden
+        | Passed
+        i.uk-icon-check.v-right-icon
     div(id='mocha')

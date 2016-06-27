@@ -1,7 +1,6 @@
 var Asynchronous = require('async');
 
 var Application = require('./application');
-var Log = require('./log');
 
 var DefaultPage = require('./elements/pages/default-page');
 

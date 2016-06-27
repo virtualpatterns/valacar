@@ -1,7 +1,9 @@
+var Mocha = mocha;
+
 var Log = require('../../log');
 var Page = require('../page');
 
-var pagePrototype = Page.getElementPrototype();
+var pagePrototype = Page.getContentPrototype();
 var testPagePrototype = Object.create(pagePrototype);
 
 testPagePrototype.bind = function() {
@@ -12,10 +14,10 @@ testPagePrototype.bind = function() {
     'this': this
   }, this.onShown);
 
-  this.getElement().find('#goDefault').on('click', {
+  this.getContent().find('#goDefault').on('click', {
     'this': this
   }, this.onGoDefault);
-  this.getElement().find('#refresh').on('click', {
+  this.getContent().find('#refresh').on('click', {
     'this': this
   }, this.onRefresh);
 
@@ -23,8 +25,8 @@ testPagePrototype.bind = function() {
 
 testPagePrototype.unbind = function() {
 
-  this.getElement().find('#refresh').off('click', this.onRefresh);
-  this.getElement().find('#goDefault').off('click', this.onGoDefault);
+  this.getContent().find('#refresh').off('click', this.onRefresh);
+  this.getContent().find('#goDefault').off('click', this.onGoDefault);
 
   jQuery(this).off('v-shown', this.onShown);
 
@@ -41,19 +43,31 @@ testPagePrototype.onShown = function(event) {
 
     try {
 
-      mocha.setup({
-        'bail': true,
-        // 'reporter': WebConsole,
+      Mocha.setup({
         'timeout': 5000,
         'ui': 'bdd'
       });
 
-      require('../../../tests/20160622163300-begin');
-      require('../../../tests/20160622173800-default');
-      require('../../../tests/20160625023000-translations');
-      require('../../../tests/99999999999999-end');
+      require('../../../test/tests/20160622163300-begin');
+      require('../../../test/tests/20160622173800-default');
+      require('../../../test/tests/20160625023000-translations');
+      require('../../../test/tests/99999999999999-end');
 
-      mocha.run();
+      var tests = Mocha.run();
+
+      // 'start'     execution started
+      // 'end'       execution complete
+      // 'suite'     (suite) test suite execution started
+      // 'suite end' (suite) all tests (and sub-suites) have finished
+      // 'test'      (test) test execution started
+      // 'test end'  (test) test completed
+      // 'hook'      (hook) hook execution started
+      // 'hook end'  (hook) hook complete
+      // 'pass'      (test) test passed
+      // 'fail'      (test, err) test failed
+
+      tests.on('start', self.onStarted.bind(this));
+      tests.on('end', self.onFinished.bind(this, tests.stats));
 
     }
     catch (error) {
@@ -71,6 +85,24 @@ testPagePrototype.onGoDefault = function(event) {
   window.location.href = '/www/default.html';
 };
 
+testPagePrototype.onStarted = function() {
+  Log.info('> TestPage.onStarted() { ... }');
+}
+
+testPagePrototype.onFinished = function(status) {
+  Log.info('> TestPage.onFinished() { ... }');
+
+  this.getContent().find('div.v-status').toggleClass('uk-hidden', true);
+
+  if (status.failures > 0)
+    this.getContent().find('div.v-status-failed').toggleClass('uk-hidden', false);
+  else if (status.pending > 0)
+    this.getContent().find('div.v-status-pending').toggleClass('uk-hidden', false);
+  else
+    this.getContent().find('div.v-status-passed').toggleClass('uk-hidden', false);
+
+}
+
 testPagePrototype.onRefresh = function(event) {
   Log.info('> TestPage.onRefresh(event) { ... }');
   window.location.reload(true);
@@ -86,7 +118,7 @@ TestPage.isElement = function(testPage) {
   return testPagePrototype.isPrototypeOf(testPage);
 };
 
-TestPage.getElementPrototype = function() {
+TestPage.getContentPrototype = function() {
   return testPagePrototype;
 };
 

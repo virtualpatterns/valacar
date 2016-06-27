@@ -1,13 +1,10 @@
-var Is = require('@pwn/is');
-
 var Element = require('../element');
-var Log = require('../log');
 
-var elementPrototype = Element.getElementPrototype();
+var elementPrototype = Element.getContentPrototype();
 var pagePrototype = Object.create(elementPrototype);
 
 pagePrototype.show = function(isInitial) {
-  this.getElement()
+  this.getContent()
     .toggleClass('uk-hidden', false)
     .toggleClass('v-page-top', true);
   this.triggerShown({
@@ -16,7 +13,7 @@ pagePrototype.show = function(isInitial) {
 };
 
 pagePrototype.hide = function(isFinal) {
-  this.getElement()
+  this.getContent()
     .toggleClass('uk-hidden', true)
     .toggleClass('v-page-top', false);
   this.triggerHidden({
@@ -34,7 +31,7 @@ Page.isElement = function(page) {
   return pagePrototype.isPrototypeOf(page);
 };
 
-Page.getElementPrototype = function() {
+Page.getContentPrototype = function() {
   return pagePrototype;
 };
 

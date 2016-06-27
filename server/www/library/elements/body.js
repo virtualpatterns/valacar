@@ -1,9 +1,11 @@
 var Element = require('../element');
+var Log = require('../log');
 
-var elementPrototype = Element.getElementPrototype();
+var elementPrototype = Element.getContentPrototype();
 var bodyPrototype = Object.create(elementPrototype);
 
-bodyPrototype.render = function(callback) {
+bodyPrototype.render = function(data, callback) {
+  Log.info('< Body.render(data, callback) { ... }');
   callback(null, '');
 };
 
@@ -17,7 +19,7 @@ Body.isElement = function(body) {
   return bodyPrototype.isPrototypeOf(body);
 };
 
-Body.getElementPrototype = function() {
+Body.getContentPrototype = function() {
   return bodyPrototype;
 };
 
