@@ -7,13 +7,21 @@ var Log = require('../../library/log');
 
 var TestPage = require('../../library/elements/pages/test-page');
 
+var REGEXP_PLACEHOLDER = /%d|%j|%s/g;
+
 var Assert = Object.create(_Assert);
+
+Object.defineProperty(Assert, 'noop', {
+  'enumerable': true,
+  'writable': false,
+  'value': function() {
+    // Log.info('> Assert.noop');
+  }
+});
 
 Assert.onPage = function(text, callback) {
 
   var argumentsArray = Array.prototype.slice.call(arguments);
-
-  // Log.info('> Assert.onPage(text, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray));
 
   argumentsArray.unshift('div.uk-navbar-content:visible:contains(%j)');
   return this.existsSelector.apply(this, argumentsArray);
@@ -24,8 +32,6 @@ Assert.existsButton = function(text, callback) {
 
   var argumentsArray = Array.prototype.slice.call(arguments);
 
-  // Log.info('> Assert.existsButton(text, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray));
-
   argumentsArray.unshift('button:visible:contains(%j)');
   return this.existsSelector.apply(this, argumentsArray);
 
@@ -34,8 +40,6 @@ Assert.existsButton = function(text, callback) {
 Assert.existsLink = function(text, callback) {
 
   var argumentsArray = Array.prototype.slice.call(arguments);
-
-  // Log.info('> Assert.existsButton(text, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray));
 
   argumentsArray.unshift('a:visible:contains(%j)');
   return this.existsSelector.apply(this, argumentsArray);
@@ -55,8 +59,6 @@ Assert.existsRow = function(text, callback) {
 
   var argumentsArray = Array.prototype.slice.call(arguments);
 
-  // Log.info('> Assert.existsRow(text, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray));
-
   argumentsArray.unshift('table > tbody > tr:visible:contains(%j)');
   return this.existsSelector.apply(this, argumentsArray);
 
@@ -66,20 +68,34 @@ Assert.notExistsRow = function(text, callback) {
 
   var argumentsArray = Array.prototype.slice.call(arguments);
 
-  // Log.info('> Assert.notExistsRow(text, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray));
-
   argumentsArray.unshift('table > tbody > tr:visible:contains(%j)');
   return this.notExistsSelector.apply(this, argumentsArray);
 
 };
 
-Assert.existsInput = function(id, value, callback) {
+Assert.existsInput = function(text, callback) {
 
   var argumentsArray = Array.prototype.slice.call(arguments);
 
-  if (Is.function(value))
-    argumentsArray.unshift('input#%s[type="text"]:visible');
-  else if (Is.emptyString(value))
+  argumentsArray.unshift('input[type="text"][value=%j]:visible');
+  return this.existsSelector.apply(this, argumentsArray);
+
+};
+
+Assert.existsInputId = function(id, callback) {
+
+  var argumentsArray = Array.prototype.slice.call(arguments);
+
+  argumentsArray.unshift('input#%s[type="text"]:visible');
+  return this.existsSelector.apply(this, argumentsArray);
+
+};
+
+Assert.existsInputValue = function(id, value, callback) {
+
+  var argumentsArray = Array.prototype.slice.call(arguments);
+
+  if (Is.emptyString(value))
     argumentsArray.unshift('input#%s[type="text"]:visible:not([value])');
   else
     argumentsArray.unshift('input#%s[type="text"][value=%j]:visible');
@@ -88,17 +104,25 @@ Assert.existsInput = function(id, value, callback) {
 
 };
 
+Assert.existsAlert = function(text, callback) {
+
+  var argumentsArray = Array.prototype.slice.call(arguments);
+  argumentsArray.shift();
+  argumentsArray.unshift('div.uk-modal > div.uk-modal-dialog > div > div.uk-modal-content');
+  // argumentsArray.unshift('div.uk-modal > div.uk-modal-dialog > div > div.uk-modal-content:contains(%j)');
+  return this.existsSelector.apply(this, argumentsArray);
+
+};
+
 Assert.existsSelector = function(selector, callback) {
 
   var argumentsArray = Array.prototype.slice.call(arguments);
-
-  // Log.info('> Assert.existsSelector(selector, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray));
 
   var results = this.select.apply(this, argumentsArray);
   var error = null;
 
   try {
-    this.equal(results.selected.length, 1, Utilities.format('The selector %j does not exist.', results.selector));
+    this.equal(results.selected.length, 1, Utilities.format('The selector %j does not exist only once.', results.selector));
   }
   catch (_error) {
     error = _error;
@@ -116,8 +140,6 @@ Assert.existsSelector = function(selector, callback) {
 Assert.notExistsSelector = function(selector, callback) {
 
   var argumentsArray = Array.prototype.slice.call(arguments);
-
-  // Log.info('> Assert.motExistsSelector(selector, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray));
 
   var results = this.select.apply(this, argumentsArray);
   var error = null;
@@ -142,8 +164,6 @@ Assert.clickButton = function(text, callback) {
 
   var argumentsArray = Array.prototype.slice.call(arguments);
 
-  // Log.info('> Assert.clickButton(text, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray));
-
   argumentsArray.unshift('button:visible:contains(%j)');
   return this.clickSelector.apply(this, argumentsArray);
 
@@ -152,8 +172,6 @@ Assert.clickButton = function(text, callback) {
 Assert.clickLink = function(text, callback) {
 
   var argumentsArray = Array.prototype.slice.call(arguments);
-
-  // Log.info('> Assert.clickLink(text, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray));
 
   argumentsArray.unshift('a:visible:contains(%j)');
   return this.clickSelector.apply(this, argumentsArray);
@@ -173,9 +191,16 @@ Assert.clickRow = function(text, callback) {
 
   var argumentsArray = Array.prototype.slice.call(arguments);
 
-  // Log.info('> Assert.clickRow(text, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray));
-
   argumentsArray.unshift('table > tbody > tr:visible:contains(%j)');
+  return this.clickSelector.apply(this, argumentsArray);
+
+};
+
+Assert.clickOk = function(callback) {
+
+  var argumentsArray = Array.prototype.slice.call(arguments);
+
+  argumentsArray.unshift('div.uk-modal > div.uk-modal-dialog > div > div.uk-modal-footer > button.uk-modal-close:contains("Ok")');
   return this.clickSelector.apply(this, argumentsArray);
 
 };
@@ -184,14 +209,52 @@ Assert.clickSelector = function(selector, callback) {
 
   var argumentsArray = Array.prototype.slice.call(arguments);
 
-  // Log.info('> Assert.clickSelector(selector, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray));
+  var results = this.select.apply(this, argumentsArray);
+  var error = null;
+
+  try {
+    this.equal(results.selected.length, 1, Utilities.format('The selector %j cannot be clicked as it does not exist only once.', results.selector));
+    results.selected.click();
+  }
+  catch (_error) {
+    error = _error;
+  }
+
+  if (results.callback)
+    results.callback(error, results);
+  else if (error)
+    throw error
+
+  return results;
+
+};
+
+Assert.inputValue = function(id, value, callback) {
+
+  var argumentsArray = Array.prototype.slice.call(arguments);
+
+  argumentsArray.unshift('input#%s[type="text"]:visible');
+  return this.inputSelector.apply(this, argumentsArray);
+
+};
+
+Assert.inputSelector = function(selector, value, callback) {
+
+  var argumentsArray = Array.prototype.slice.call(arguments);
+
+  selector = argumentsArray.shift();
+  var numberOfPlaceholders = selector.match(REGEXP_PLACEHOLDER).length;
+
+  value = argumentsArray.splice(numberOfPlaceholders, 1)[0];
+
+  argumentsArray.unshift(selector);
 
   var results = this.select.apply(this, argumentsArray);
   var error = null;
 
   try {
-    this.equal(results.selected.length, 1, Utilities.format('The selector %j cannot be clicked as it does not exist.', results.selector));
-    results.selected.click();
+    this.equal(results.selected.length, 1, Utilities.format('The selector %j cannot be input as it does not exist only once.', results.selector));
+    results.selected.val(value);
   }
   catch (_error) {
     error = _error;
@@ -211,8 +274,6 @@ Assert.select = function(selector, callback) {
   var argumentsArray = Array.prototype.slice.call(arguments);
   var _selector = null;
   var _callback = null;
-
-  // Log.info('> Assert.select(selector, callback)\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray));
 
   if (!argumentsArray[argumentsArray.length - 1])
     argumentsArray.pop();
@@ -269,26 +330,16 @@ Assert.hideAllPages = function(callback) {
 Assert.waitForPageShown = function(waitFn, callback) {
   Log.info('> Assert.waitForPageShown(waitFn, callback) { ... }');
 
-  // Log.debug('> jQuery(window.application).one("v-page-shown", function(event) { ... }');
+  var self = this;
+
+  // Log.info('> jQuery(window.application).one("v-page-shown", function(event) { ... }');
   jQuery(window.application).one('v-page-shown', function(event) {
-    // Log.debug('< jQuery(window.application).one("v-page-shown", function(event) { ... }');
-    var page = event.page;
-    if (page.hasElements()) {
-      Asynchronous.each(page.getElements(), function(element, callback) {
-        // Log.debug('> jQuery(element).one("v-shown", function(event) { ... }');
-        jQuery(element).one('v-shown', function(event) {
-          // Log.debug('< jQuery(element).one("v-shown", function(event) { ... }');
-          Log.info('< Assert.waitForPageShown(waitFn, callback) { ... }');
-          callback(null);
-        });
-      }, callback);
-    }
-    else
-      callback(null);
+    // Log.info('< jQuery(window.application).one("v-page-shown", function(event) { ... }');
+    self.waitForElementsShown(event.page, null, Assert.noop, callback);
   });
   waitFn(function(error) {
     if (error) {
-      Log.error('< Assert.waitForPage(waitFn, callback) { ... }');
+      Log.error('< Assert.waitForPageShown(waitFn, callback) { ... }');
       Log.error('    error.message=%j', error.message);
       UIkit.modal.alert(error.message);
     }
@@ -296,26 +347,86 @@ Assert.waitForPageShown = function(waitFn, callback) {
 
 };
 
-Assert.waitForElementsShown = function(waitFn, callback) {
-  Log.info('> Assert.waitForElementsShown(waitFn, callback) { ... }');
+Assert.waitForElementsShown = function(page, Class, waitFn, callback) {
+                              // function(      Class, waitFn, callback) { ... Is.function(Class)
+                              // function(             waitFn, callback) { ... Is.function(page)
+  Log.info('> Assert.waitForElementsShown(page, Class, waitFn, callback) { ... } Is.function(page)=%s Is.function(Class)=%s', Is.function(page), Is.function(Class));
 
-  var page = window.application.getPage();
-  if (page.hasElements()) {
-    Asynchronous.each(page.getElements(), function(element, callback) {
-      // Log.debug('> jQuery(element).one("v-shown", function(event) { ... }');
+  if (Is.function(page)) {
+    callback = Class;
+    waitFn = page;
+    Class = null;
+    page = window.application.getPage();
+  }
+  else if (Is.function(Class)) {
+    callback = waitFn;
+    waitFn = Class;
+    Class = page;
+    page = window.application.getPage();
+  }
+
+  if (page.hasElements(Class)) {
+    Asynchronous.each(page.getElements(Class), function(element, callback) {
+      // Log.info('> jQuery(element).one("v-shown", function(event) { ... }');
       jQuery(element).one('v-shown', function(event) {
-        // Log.debug('< jQuery(element).one("v-shown", function(event) { ... }');
-        Log.info('< Assert.waitForElementsShown(waitFn, callback) { ... }');
+        // Log.info('< jQuery(element).one("v-shown", function(event) { ... }');
         callback(null);
       });
     }, callback);
   }
-  else
+  else {
+    // Log.info('< Assert.waitForElementsShown(page, Class, waitFn, callback) { ... }');
     callback(null);
+  }
 
   waitFn(function(error) {
     if (error) {
-      Log.error('< Assert.waitForElementsShown(waitFn, callback) { ... }');
+      Log.error('< Assert.waitForElementsShown(page, Class, waitFn, callback) { ... }');
+      Log.error('    error.message=%j', error.message);
+      UIkit.modal.alert(error.message);
+    }
+  });
+
+};
+
+Assert.waitForModalShown = function(waitFn, callback) {
+  Log.info('> Assert.waitForModalShown(waitFn, callback) { ... }');
+
+  var self = this;
+
+  // Log.info('> jQuery(window.application).one("v-modal-shown", function(event) { ... }');
+  jQuery(window.application).one('v-modal-shown', function(event) {
+    // Log.info('< jQuery(window.application).one("v-modal-shown", function(event) { ... }');
+    // setTimeout(function() {
+      callback(null);
+    // }, 5000);
+  });
+
+  waitFn(function(error) {
+    if (error) {
+      Log.error('< Assert.waitForModalShown(waitFn, callback) { ... }');
+      Log.error('    error.message=%j', error.message);
+      UIkit.modal.alert(error.message);
+    }
+  });
+
+};
+
+Assert.waitForModalHidden = function(waitFn, callback) {
+  Log.info('> Assert.waitForModalHidden(waitFn, callback) { ... }');
+
+  var self = this;
+
+  // Log.info('> jQuery(window.application).one("v-modal-hidden", function(event) { ... }');
+  jQuery(window.application).one('v-modal-hidden', function(event) {
+    // Log.info('< jQuery(window.application).one("v-modal-hidden", function(event) { ... }');
+    // setTimeout(function() {
+      callback(null);
+    // }, 5000);
+  });
+  waitFn(function(error) {
+    if (error) {
+      Log.error('< Assert.waitForModalHidden(waitFn, callback) { ... }');
       Log.error('    error.message=%j', error.message);
       UIkit.modal.alert(error.message);
     }

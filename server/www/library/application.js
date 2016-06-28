@@ -97,6 +97,14 @@ applicationPrototype.getPage = function() {
 
 };
 
+applicationPrototype.triggerModalShown = function(data) {
+  jQuery(this).trigger(new jQuery.Event('v-modal-shown', data));
+};
+
+applicationPrototype.triggerModalHidden = function(data) {
+  jQuery(this).trigger(new jQuery.Event('v-modal-hidden', data));
+};
+
 var Application = Object.create({});
 
 Application.createApplication = function(prototype, callback) {
@@ -126,6 +134,8 @@ Application.createApplication = function(prototype, callback) {
 
   Assert.equal(actualId, expectedId, Utilities.format('The <body/> element id (%s) is not the expected value (%s).', actualId, expectedId));
 
+  application.body.bind();
+
   Application.GET('/api/status', function(error, data) {
     if (error)
       callback(error);
@@ -148,8 +158,8 @@ Application.getApplicationPrototype = function() {
 Application.ifNotError = function(ifNotFn) {
   return function(error) {
     if (error) {
-      Log.error('> Element.ifNotError(ifNotFn) { ... }');
-      Log.error('    error.message=%j', error.message);
+      // Log.error('> Application.ifNotError(ifNotFn) { ... }');
+      // Log.error('    error.message=%j', error.message);
       UIkit.modal.alert(error.message);
     }
     else if (ifNotFn) {
@@ -194,14 +204,17 @@ Application.request = function(method, path, requestData, callback) {
   jQuery.ajax(settings)
     .done(function(responseData) {
       Log.info('< Application.request(%j, %j, requestData, callback) { ... }\n\n%j\n\n', method, path, Utilities.inspect(responseData));
-      callback(null, responseData);
+      if (responseData)
+        callback(null, responseData);
+      else
+        callback(null);
     })
     .fail(function(request, status, error) {
       Log.error('< Application.request(%j, %j, requestData, callback) { ... }', method, path);
       Log.error('    request.status=%j', request.status);
       Log.error('    request.statusText=%j', request.statusText);
       Log.error('    request.responseJSON.message=%j', (request.responseJSON && request.responseJSON.message) ? request.responseJSON.message : '(none)');
-      Log.error(request);
+      // Log.error(request);
       callback(new URIError((request.responseJSON && request.responseJSON.message) ? request.responseJSON.message : Utilities.format('An error occurred with the request %s %j (%d %s).', method, path, request.status, request.statusText)));
       // callback(new URIError(Utilities.format('An error occurred with the request %s %j (%d %s ... %s).', method, path, request.status, request.statusText)));
     });
@@ -213,6 +226,7 @@ Application.GET = function(path, callback) {
 };
 
 Application.POST = function(path, data, callback) {
+  // Log.debug('> Application.POST(%j, data, callback) { ... }\n\n%s\n\n', path, Utilities.inspect(data));
   this.request('POST', path, data, callback);
 };
 

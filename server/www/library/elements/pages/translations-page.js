@@ -21,6 +21,10 @@ translationsPagePrototype.bind = function() {
     'this': this
   }, this.onShown);
 
+  // jQuery(this.translationsTable).on('v-shown', {
+  //   'this': this
+  // }, this.onRefreshed);
+
   jQuery(this).on('v-hidden', {
     'this': this
   }, this.onHidden);
@@ -44,6 +48,7 @@ translationsPagePrototype.unbind = function() {
   this.getContent().find('#goBack').off('click', this.onGoBack);
 
   jQuery(this).off('v-hidden', this.onHidden);
+  // jQuery(this.translationsTable).off('v-shown', this.onRefreshed);
   jQuery(this).off('v-shown', this.onShown);
 
   pagePrototype.unbind.call(this);
@@ -52,33 +57,8 @@ translationsPagePrototype.unbind = function() {
 
 translationsPagePrototype.onShown = function(event) {
   Log.info('> TranslationsPage.onShown(event) { ... } event.isInitial=%s', event.isInitial);
-
   var self = event.data.this;
-
   self.refreshElements(TranslationsTable);
-
-  // Asynchronous.waterfall([
-  //   function(callback) {
-  //     Application.GET('/api/translations', callback);
-  //   },
-  //   function(translations, callback) {
-  //     self.translationsTable.render({
-  //       'translations': translations
-  //     }, callback);
-  //   }
-  // ], Application.ifNotError(function(content) {
-  //
-  //   self.getContent().find('> div').append(content);
-  //
-  //   self.translationsTable.getContent().find('tbody > tr').on('click', {
-  //     'this': self
-  //   }, self.onSelected);
-  //
-  //   self.translationsTable.bind();
-  //   self.translationsTable.show();
-  //
-  // }));
-
 };
 
 translationsPagePrototype.onHidden = function(event) {
@@ -102,41 +82,13 @@ translationsPagePrototype.onGoBack = function(event) {
 
 translationsPagePrototype.onRefresh = function(event) {
   Log.info('> TranslationsPage.onRefresh(event) { ... }');
-
   var self = event.data.this;
-
   self.refreshElements(TranslationsTable);
-
-  // self.translationsTable.hide();
-  // self.translationsTable.unbind();
-  //
-  // self.translationsTable.getContent().find('tbody > tr').off('click', self.onSelected);
-  //
-  // self.translationsTable.removeContent();
-  //
-  // Asynchronous.waterfall([
-  //   function(callback) {
-  //     Application.GET('/api/translations', callback);
-  //   },
-  //   function(translations, callback) {
-  //     self.translationsTable.render({
-  //       'translations': translations
-  //     }, callback);
-  //   }
-  // ], Application.ifNotError(function(content) {
-  //
-  //   self.getContent().find('> div').append(content);
-  //
-  //   self.translationsTable.getContent().find('tbody > tr').on('click', {
-  //     'this': self
-  //   }, self.onSelected);
-  //
-  //   self.translationsTable.bind();
-  //   self.translationsTable.show();
-  //
-  // }));
-
 };
+
+// translationsPagePrototype.onRefreshed = function(event) {
+//   Log.debug('> TranslationsPage.onRefreshed(event) { ... }');
+// };
 
 translationsPagePrototype.onAddTranslation = function(event) {
   Log.info('> TranslationsPage.onAddTranslation(event) { ... }');

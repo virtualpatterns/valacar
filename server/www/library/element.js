@@ -77,8 +77,8 @@ elementPrototype.render = function(data, callback) {
         Log.info('< templateFn(data)\n\n%s\n\n', content);
 
       } catch (error) {
-        Log.error('< Element.render(data, callback)');
-        Log.error('    error.message=%j', error.message);
+        // Leave it like this!
+        Log.error('< Element.render(data, callback)\n\n%s\n\n', error.message);
         callback(new URIError(Utilities.format('An error occurred rendering the element template at %j.', self.templateURL)));
       }
 

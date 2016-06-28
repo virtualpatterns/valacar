@@ -44,13 +44,15 @@ testPagePrototype.onShown = function(event) {
     try {
 
       Mocha.setup({
-        'timeout': 5000,
+        'bail': true,
+        'timeout': 30000,
         'ui': 'bdd'
       });
 
       require('../../../test/tests/20160622163300-begin');
       require('../../../test/tests/20160622173800-default');
       require('../../../test/tests/20160625023000-translations');
+      require('../../../test/tests/20160627004000-translation');
       require('../../../test/tests/99999999999999-end');
 
       var tests = Mocha.run();
@@ -66,7 +68,6 @@ testPagePrototype.onShown = function(event) {
       // 'pass'      (test) test passed
       // 'fail'      (test, err) test failed
 
-      tests.on('start', self.onStarted.bind(this));
       tests.on('end', self.onFinished.bind(this, tests.stats));
 
     }

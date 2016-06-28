@@ -1,25 +1,28 @@
 var Asynchronous = require('async');
+var Utilities = require('util');
 
 var Application = require('../../library/application');
 var Assert = require('../library/assert');
 var Log = require('../../library/log');
 
 var TranslationsPage = require('../../library/elements/pages/translations-page');
+var TranslationsTable = require('../../library/elements/tables/translations-table');
 
 describe('TranslationsPage', function() {
 
   beforeEach(function(callback) {
-    Asynchronous.series([
+    Asynchronous.waterfall([
       function(callback) {
-        Application.POST('/api/translations', {
-          'from': 'from00',
-          'to': 'to00'
-        }, callback);
+        Application.GET('/api/translations', callback);
+      },
+      function(translations, callback) {
+        if (translations.length > 0)
+          Application.DELETE('/api/translations', callback);
+        else
+          callback(null);
       },
       function(callback) {
-        Application.DELETE('/api/translations', callback);
-      },
-      function(callback) {
+        // Log.debug('> Assert.showPage(TranslationsPage.createElement(), callback)');
         Assert.showPage(TranslationsPage.createElement(), callback);
       }
     ], callback);
@@ -54,11 +57,11 @@ describe('TranslationsPage', function() {
     });
 
     it('should contain a blank from on the Translation page when the Add button is clicked', function() {
-      Assert.existsInput('from', '');
+      Assert.existsInputValue('from', '');
     });
 
     it('should contain a blank to on the Translation page when the Add button is clicked', function() {
-      Assert.existsInput('from', '');
+      Assert.existsInputValue('to', '');
     });
 
     afterEach(function(callback) {
@@ -101,7 +104,7 @@ describe('TranslationsPage', function() {
           }, callback);
         },
         function(callback) {
-          Assert.waitForElementsShown(function() {
+          Assert.waitForElementsShown(TranslationsTable, function() {
             Assert.clickLinkId('refresh');
           }, callback);
         }
@@ -132,7 +135,7 @@ describe('TranslationsPage', function() {
           Application.DELETE('/api/translations/from02', callback);
         },
         function(callback) {
-          Assert.waitForElementsShown(function() {
+          Assert.waitForElementsShown(TranslationsTable, function() {
             Assert.clickLinkId('refresh');
           }, callback);
         }
@@ -149,7 +152,7 @@ describe('TranslationsPage', function() {
 
   });
 
-  describe('TranslationsPage to TranslationsPage on Selected', function() {
+  describe('TranslationsPage to TranslationPage on Selected', function() {
 
     beforeEach(function(callback) {
       Asynchronous.series([
@@ -160,7 +163,7 @@ describe('TranslationsPage', function() {
           }, callback);
         },
         function(callback) {
-          Assert.waitForElementsShown(function() {
+          Assert.waitForElementsShown(TranslationsTable, function() {
             Assert.clickLinkId('refresh');
           }, callback);
         },
@@ -177,11 +180,11 @@ describe('TranslationsPage', function() {
     });
 
     it('should contain the from from03 on the Translation page when the from03 translation is clicked', function() {
-      Assert.existsInput('from', 'from03');
+      Assert.existsInputValue('from', 'from03');
     });
 
     it('should contain the to to03 on the Translation page when the from03 translation is clicked', function() {
-      Assert.existsInput('to', 'to03');
+      Assert.existsInputValue('to', 'to03');
     });
 
     afterEach(function(callback) {
@@ -225,7 +228,7 @@ describe('TranslationsPage', function() {
 
   });
 
-  after(function(callback) {
+  afterEach(function(callback) {
     Assert.hideAllPages(callback);
   });
 
