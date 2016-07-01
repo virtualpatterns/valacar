@@ -17,24 +17,18 @@ task('log', function () {
   Log.addFile(LOG_PATH);
 });
 
+desc(Utilities.format('Hard-link %j to "%s/Library/Logs/%s"', Path.trim(Process.LOG_PATH), Process.env['HOME'], Package.name));
 task('default', ['log'], {'async': true}, function () {
   Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
     .add('jake --tasks', Task.OPTIONS_STDIO_INHERIT)
     .execute(complete, fail);
 });
 
-task('clean', {'async': true}, function () {
-  FileSystemTask.createTask(this.fullName)
-    .removeFile(Path.join(Process.LOG_PATH, Utilities.format('%s.jake.log', Package.name)))
-    .removeFile(Path.join(Process.LOG_PATH, Utilities.format('%s.mocha.log', Package.name)))
-    .removeFile(Path.join(Process.LOG_PATH, Utilities.format('%s.log', Package.name)))
-    .removeFile(Path.join(Process.LOG_PATH, Utilities.format('%s.master.log', Package.name)))
-    .removeFile(Path.join(Process.LOG_PATH, Utilities.format('%s.worker.log', Package.name)))
-    .removeFile(Path.join(Process.LOG_PATH, Utilities.format('%s.test.log', Package.name)))
-    .removeFile(Path.join(Process.LOG_PATH, Utilities.format('%s.master.test.log', Package.name)))
-    .removeFile(Path.join(Process.LOG_PATH, Utilities.format('%s.worker.test.log', Package.name)))
-    .execute(complete, fail);
+desc('Delete log files');
+task('clean', ['clean:watch', 'clean:client', 'clean:server', 'clean:test'], function () {
 });
+
+require('./tasks/clean')
 
 desc(Utilities.format('Hard-link %j to "%s/Library/Logs/%s"', Path.trim(Process.LOG_PATH), Process.env['HOME'], Package.name));
 task('link', ['log'], {'async': true}, function () {

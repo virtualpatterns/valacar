@@ -14,85 +14,70 @@ var Assert = Object.create(_Assert);
 Object.defineProperty(Assert, 'noop', {
   'enumerable': true,
   'writable': false,
-  'value': function() {
-    // Log.info('> Assert.noop');
-  }
+  'value': function() {}
 });
 
 Assert.onPage = function(text, callback) {
-
   var argumentsArray = Array.prototype.slice.call(arguments);
-
   argumentsArray.unshift('div.uk-navbar-content:visible:contains(%j)');
   return this.existsSelector.apply(this, argumentsArray);
-
 };
 
 Assert.existsButton = function(text, callback) {
-
   var argumentsArray = Array.prototype.slice.call(arguments);
-
   argumentsArray.unshift('button:visible:contains(%j)');
   return this.existsSelector.apply(this, argumentsArray);
+};
 
+Assert.notExistsButton = function(text, callback) {
+  var argumentsArray = Array.prototype.slice.call(arguments);
+  argumentsArray.unshift('button:visible:contains(%j)');
+  return this.notExistsSelector.apply(this, argumentsArray);
 };
 
 Assert.existsLink = function(text, callback) {
-
   var argumentsArray = Array.prototype.slice.call(arguments);
-
   argumentsArray.unshift('a:visible:contains(%j)');
   return this.existsSelector.apply(this, argumentsArray);
-
 };
 
 Assert.existsLinkId = function(id, callback) {
-
   var argumentsArray = Array.prototype.slice.call(arguments);
-
   argumentsArray.unshift('a#%s:visible');
   return this.existsSelector.apply(this, argumentsArray);
+};
 
+Assert.notExistsLinkId = function(id, callback) {
+  var argumentsArray = Array.prototype.slice.call(arguments);
+  argumentsArray.unshift('a:visible:contains(%j)');
+  return this.notExistsSelector.apply(this, argumentsArray);
 };
 
 Assert.existsRow = function(text, callback) {
-
   var argumentsArray = Array.prototype.slice.call(arguments);
-
   argumentsArray.unshift('table > tbody > tr:visible:contains(%j)');
   return this.existsSelector.apply(this, argumentsArray);
-
 };
 
 Assert.notExistsRow = function(text, callback) {
-
   var argumentsArray = Array.prototype.slice.call(arguments);
-
   argumentsArray.unshift('table > tbody > tr:visible:contains(%j)');
   return this.notExistsSelector.apply(this, argumentsArray);
-
 };
 
 Assert.existsInput = function(text, callback) {
-
   var argumentsArray = Array.prototype.slice.call(arguments);
-
   argumentsArray.unshift('input[type="text"][value=%j]:visible');
   return this.existsSelector.apply(this, argumentsArray);
-
 };
 
 Assert.existsInputId = function(id, callback) {
-
   var argumentsArray = Array.prototype.slice.call(arguments);
-
   argumentsArray.unshift('input#%s[type="text"]:visible');
   return this.existsSelector.apply(this, argumentsArray);
-
 };
 
 Assert.existsInputValue = function(id, value, callback) {
-
   var argumentsArray = Array.prototype.slice.call(arguments);
 
   if (Is.emptyString(value))
@@ -105,24 +90,25 @@ Assert.existsInputValue = function(id, value, callback) {
 };
 
 Assert.existsAlert = function(text, callback) {
-
   var argumentsArray = Array.prototype.slice.call(arguments);
-  argumentsArray.shift();
-  argumentsArray.unshift('div.uk-modal > div.uk-modal-dialog > div > div.uk-modal-content');
-  // argumentsArray.unshift('div.uk-modal > div.uk-modal-dialog > div > div.uk-modal-content:contains(%j)');
+  argumentsArray.unshift('div.uk-modal > div.uk-modal-dialog > div:has(div.uk-modal-footer > button.uk-modal-close:contains("Ok")) > div.uk-modal-content:contains(%j)');
   return this.existsSelector.apply(this, argumentsArray);
+};
 
+Assert.existsConfirmation = function(text, callback) {
+  var argumentsArray = Array.prototype.slice.call(arguments);
+  argumentsArray.unshift('div.uk-modal > div.uk-modal-dialog > div:has(div.uk-modal-footer > button.js-modal-confirm-cancel:contains("No")):has(div.uk-modal-footer > button.js-modal-confirm:contains("Yes")) > div.uk-modal-content:contains(%j)');
+  return this.existsSelector.apply(this, argumentsArray);
 };
 
 Assert.existsSelector = function(selector, callback) {
 
   var argumentsArray = Array.prototype.slice.call(arguments);
-
   var results = this.select.apply(this, argumentsArray);
   var error = null;
 
   try {
-    this.equal(results.selected.length, 1, Utilities.format('The selector %j does not exist only once.', results.selector));
+    this.equal(results.selected.length, 1, Utilities.format('The selector %j does not exist at most once.', results.selector));
   }
   catch (_error) {
     error = _error;
@@ -161,59 +147,55 @@ Assert.notExistsSelector = function(selector, callback) {
 };
 
 Assert.clickButton = function(text, callback) {
-
   var argumentsArray = Array.prototype.slice.call(arguments);
-
   argumentsArray.unshift('button:visible:contains(%j)');
   return this.clickSelector.apply(this, argumentsArray);
-
 };
 
 Assert.clickLink = function(text, callback) {
-
   var argumentsArray = Array.prototype.slice.call(arguments);
-
   argumentsArray.unshift('a:visible:contains(%j)');
   return this.clickSelector.apply(this, argumentsArray);
-
 };
 
 Assert.clickLinkId = function(id, callback) {
-
   var argumentsArray = Array.prototype.slice.call(arguments);
-
   argumentsArray.unshift('a#%s:visible');
   return this.clickSelector.apply(this, argumentsArray);
-
 };
 
 Assert.clickRow = function(text, callback) {
-
   var argumentsArray = Array.prototype.slice.call(arguments);
-
   argumentsArray.unshift('table > tbody > tr:visible:contains(%j)');
   return this.clickSelector.apply(this, argumentsArray);
-
 };
 
 Assert.clickOk = function(callback) {
-
   var argumentsArray = Array.prototype.slice.call(arguments);
-
   argumentsArray.unshift('div.uk-modal > div.uk-modal-dialog > div > div.uk-modal-footer > button.uk-modal-close:contains("Ok")');
   return this.clickSelector.apply(this, argumentsArray);
+};
 
+Assert.clickYes = function(callback) {
+  var argumentsArray = Array.prototype.slice.call(arguments);
+  argumentsArray.unshift('div.uk-modal > div.uk-modal-dialog > div > div.uk-modal-footer > button.js-modal-confirm:contains("Yes")');
+  return this.clickSelector.apply(this, argumentsArray);
+};
+
+Assert.clickNo = function(callback) {
+  var argumentsArray = Array.prototype.slice.call(arguments);
+  argumentsArray.unshift('div.uk-modal > div.uk-modal-dialog > div > div.uk-modal-footer > button.js-modal-confirm-cancel:contains("No")');
+  return this.clickSelector.apply(this, argumentsArray);
 };
 
 Assert.clickSelector = function(selector, callback) {
 
   var argumentsArray = Array.prototype.slice.call(arguments);
-
   var results = this.select.apply(this, argumentsArray);
   var error = null;
 
   try {
-    this.equal(results.selected.length, 1, Utilities.format('The selector %j cannot be clicked as it does not exist only once.', results.selector));
+    this.equal(results.selected.length, 1, Utilities.format('The selector %j cannot be clicked as it does not exist at most once.', results.selector));
     results.selected.click();
   }
   catch (_error) {
@@ -230,12 +212,9 @@ Assert.clickSelector = function(selector, callback) {
 };
 
 Assert.inputValue = function(id, value, callback) {
-
   var argumentsArray = Array.prototype.slice.call(arguments);
-
   argumentsArray.unshift('input#%s[type="text"]:visible');
   return this.inputSelector.apply(this, argumentsArray);
-
 };
 
 Assert.inputSelector = function(selector, value, callback) {
@@ -244,16 +223,14 @@ Assert.inputSelector = function(selector, value, callback) {
 
   selector = argumentsArray.shift();
   var numberOfPlaceholders = selector.match(REGEXP_PLACEHOLDER).length;
-
   value = argumentsArray.splice(numberOfPlaceholders, 1)[0];
-
   argumentsArray.unshift(selector);
 
   var results = this.select.apply(this, argumentsArray);
   var error = null;
 
   try {
-    this.equal(results.selected.length, 1, Utilities.format('The selector %j cannot be input as it does not exist only once.', results.selector));
+    this.equal(results.selected.length, 1, Utilities.format('The selector %j cannot be input as it does not exist at most once.', results.selector));
     results.selected.val(value);
   }
   catch (_error) {
@@ -272,43 +249,43 @@ Assert.inputSelector = function(selector, value, callback) {
 Assert.select = function(selector, callback) {
 
   var argumentsArray = Array.prototype.slice.call(arguments);
-  var _selector = null;
-  var _callback = null;
 
-  if (!argumentsArray[argumentsArray.length - 1])
+  if (!argumentsArray[argumentsArray.length - 1]) {
     argumentsArray.pop();
+    callback = null;
+  }
   else if (Is.function(argumentsArray[argumentsArray.length - 1]))
-    _callback = argumentsArray.pop();
+    callback = argumentsArray.pop();
+  else
+    callback = null;
 
-  var _selector = Utilities.format.apply(Utilities.format, argumentsArray);
-  var selected = jQuery(_selector);
+  selector = Utilities.format.apply(Utilities.format, argumentsArray);
+  var selected = jQuery(selector);
 
-  Log.info('> jQuery(%j).length=%d', _selector, selected.length);
+  Log.info('> jQuery(%j).length=%d', selector, selected.length);
 
   return {
-    'selector': _selector,
+    'selector': selector,
     'selected': selected,
-    'callback': _callback
+    'callback': callback
   };
 
 };
 
 Assert.showPage = function(page, callback) {
-  Log.info('> Assert.showPage(page, callback) { ... }');
+  // Log.info('> Assert.showPage(page, callback) { ... }');
   this.waitForPageShown(function(callback) {
     window.application.showPage(page, callback);
   }, callback);
 };
 
 Assert.hidePage = function(callback) {
-  Log.info('> Assert.hidePage(callback) { ... }');
   this.waitForPageShown(function() {
     window.application.hidePage();
   }, callback);
 }
 
 Assert.hideAllPages = function(callback) {
-  Log.info('> Assert.hideAllPages(callback) { ... }');
 
   var self = this;
 
@@ -332,11 +309,10 @@ Assert.waitForPageShown = function(waitFn, callback) {
 
   var self = this;
 
-  // Log.info('> jQuery(window.application).one("v-page-shown", function(event) { ... }');
   jQuery(window.application).one('v-page-shown', function(event) {
-    // Log.info('< jQuery(window.application).one("v-page-shown", function(event) { ... }');
     self.waitForElementsShown(event.page, null, Assert.noop, callback);
   });
+
   waitFn(function(error) {
     if (error) {
       Log.error('< Assert.waitForPageShown(waitFn, callback) { ... }');
@@ -348,9 +324,6 @@ Assert.waitForPageShown = function(waitFn, callback) {
 };
 
 Assert.waitForElementsShown = function(page, Class, waitFn, callback) {
-                              // function(      Class, waitFn, callback) { ... Is.function(Class)
-                              // function(             waitFn, callback) { ... Is.function(page)
-  Log.info('> Assert.waitForElementsShown(page, Class, waitFn, callback) { ... } Is.function(page)=%s Is.function(Class)=%s', Is.function(page), Is.function(Class));
 
   if (Is.function(page)) {
     callback = Class;
@@ -365,19 +338,17 @@ Assert.waitForElementsShown = function(page, Class, waitFn, callback) {
     page = window.application.getPage();
   }
 
+  Log.info('> Assert.waitForElementsShown(page, Class, waitFn, callback) { ... }');
+
   if (page.hasElements(Class)) {
     Asynchronous.each(page.getElements(Class), function(element, callback) {
-      // Log.info('> jQuery(element).one("v-shown", function(event) { ... }');
       jQuery(element).one('v-shown', function(event) {
-        // Log.info('< jQuery(element).one("v-shown", function(event) { ... }');
         callback(null);
       });
     }, callback);
   }
-  else {
-    // Log.info('< Assert.waitForElementsShown(page, Class, waitFn, callback) { ... }');
+  else
     callback(null);
-  }
 
   waitFn(function(error) {
     if (error) {
@@ -394,12 +365,8 @@ Assert.waitForModalShown = function(waitFn, callback) {
 
   var self = this;
 
-  // Log.info('> jQuery(window.application).one("v-modal-shown", function(event) { ... }');
   jQuery(window.application).one('v-modal-shown', function(event) {
-    // Log.info('< jQuery(window.application).one("v-modal-shown", function(event) { ... }');
-    // setTimeout(function() {
-      callback(null);
-    // }, 5000);
+    callback(null);
   });
 
   waitFn(function(error) {
@@ -417,12 +384,8 @@ Assert.waitForModalHidden = function(waitFn, callback) {
 
   var self = this;
 
-  // Log.info('> jQuery(window.application).one("v-modal-hidden", function(event) { ... }');
   jQuery(window.application).one('v-modal-hidden', function(event) {
-    // Log.info('< jQuery(window.application).one("v-modal-hidden", function(event) { ... }');
-    // setTimeout(function() {
-      callback(null);
-    // }, 5000);
+    callback(null);
   });
   waitFn(function(error) {
     if (error) {

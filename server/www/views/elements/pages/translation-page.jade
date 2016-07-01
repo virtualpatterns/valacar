@@ -9,6 +9,10 @@ div(id=element.id).uk-height-1-1.v-element.v-page.v-translation-page
       div.uk-navbar-flip
         ul.uk-navbar-nav
           li
+            a(  id='delete',
+                class={'uk-hidden': !element.translation.from})
+              i.uk-icon-trash
+          li
             a(id='done')
               | Done
       div.uk-navbar-content.uk-navbar-center
@@ -20,10 +24,10 @@ div(id=element.id).uk-height-1-1.v-element.v-page.v-translation-page
             | From
           div.uk-form-controls
             input(id='from', 
-                  disabled=!!translation.from, 
+                  disabled=!!element.translation.from, 
                   placeholder='From', 
                   type='text', 
-                  value=translation.from).uk-width-1-1
+                  value=element.translation.from).uk-width-1-1
         div.uk-form-row
           label(for='to').uk-form-label
             | To
@@ -31,8 +35,8 @@ div(id=element.id).uk-height-1-1.v-element.v-page.v-translation-page
             input(id='to', 
                   placeholder='To', 
                   type='text', 
-                  value=translation.to).uk-width-1-1
-      button( id='delete',
-              class={'uk-hidden': !translation.from},
-              type='button').uk-button.uk-button-danger.uk-margin.uk-width-1-1
-        | Delete translation
+                  value=element.translation.to).uk-width-1-1
+      //- button( id='delete',
+      //-         class={'uk-hidden': !element.translation.from},
+      //-         type='button').uk-button.uk-button-danger.uk-margin.uk-width-1-1
+      //-   | Delete translation

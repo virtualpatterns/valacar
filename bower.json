@@ -18,7 +18,8 @@
     "async": "^1.5.2",
     "uikit": "^2.26.3",
     "util": "^3.46.1",
-    "underscore.string": "^3.3.4"
+    "underscore.string": "^3.3.4",
+    "human-format": "^0.6.0"
   },
   "devDependencies": {
     "mocha": "^2.5.3"

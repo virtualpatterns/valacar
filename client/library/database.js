@@ -158,6 +158,7 @@ Database.startTransaction = function(connection, transactionName, taskFn, callba
 }
 
 Database.runFile = function(connection, path, parameters, callback) {
+  Log.info('> SQLite.Database.runFile(connection, %j, parameters, callback)\n\n%s\n', path, Utilities.inspect(parameters));
 
   Asynchronous.waterfall([
     function(callback) {
@@ -169,7 +170,7 @@ Database.runFile = function(connection, path, parameters, callback) {
     if (error)
       callback(error)
     else {
-      Log.info('> SQLite.Database.run(statement, %j, callback)\n\n%s', parameters, statement);
+      Log.info('= SQLite.Database.runFile(connection, path, parameters, callback)\n\n%s', statement);
       connection.run(statement, parameters, callback);
     }
   });
@@ -177,6 +178,7 @@ Database.runFile = function(connection, path, parameters, callback) {
 }
 
 Database.getFile = function(connection, path, parameters, callback) {
+  Log.info('> SQLite.Database.getFile(connection, %j, parameters, callback)\n\n%s\n', path, Utilities.inspect(parameters));
 
   Asynchronous.waterfall([
     function(callback) {
@@ -188,7 +190,7 @@ Database.getFile = function(connection, path, parameters, callback) {
     if (error)
       callback(error);
     else {
-      Log.info('> SQLite.Database.get(statement, %j, callback)\n\n%s', parameters, statement);
+      Log.info('= SQLite.Database.getFile(connection, path, parameters, callback)\n\n%s', statement);
       connection.get(statement, parameters, function(error, row) {
         if (error)
           callback(error);
@@ -203,6 +205,7 @@ Database.getFile = function(connection, path, parameters, callback) {
 }
 
 Database.allFile = function(connection, path, parameters, callback) {
+  Log.info('> SQLite.Database.allFile(connection, %j, parameters, callback)\n\n%s\n', path, Utilities.inspect(parameters));
 
   Asynchronous.waterfall([
     function(callback) {
@@ -214,7 +217,7 @@ Database.allFile = function(connection, path, parameters, callback) {
     if (error)
       callback(error);
     else {
-      Log.info('> SQLite.Database.all(statement, %j, callback)\n\n%s', parameters, statement);
+      Log.info('= SQLite.Database.allFile(connection, path, parameters, callback)\n\n%s', statement);
       connection.all(statement, parameters, callback);
     }
   });

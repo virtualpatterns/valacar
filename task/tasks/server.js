@@ -10,17 +10,17 @@ var Task = require('../library/task');
 
 var PORT = 31470;
 var DATABASE_PATH = Path.join(Process.DATA_PATH, Utilities.format('%s.db', Package.name));
-var MASTER_LOG_PATH = Path.join(Process.LOG_PATH, Utilities.format('%s.master.%s', Package.name, 'log'));
-var WORKER_LOG_PATH = Path.join(Process.LOG_PATH, Utilities.format('%s.worker.%s', Package.name, 'log'));
-var MASTER_PID_PATH = Path.join(Process.PID_PATH, Utilities.format('%s.master.%s', Package.name, 'pid'));
+var MASTER_LOG_PATH = Path.join(Process.LOG_PATH, Utilities.format('%s.master.log', Package.name));
+var WORKER_LOG_PATH = Path.join(Process.LOG_PATH, Utilities.format('%s.worker.log', Package.name));
+var MASTER_PID_PATH = Path.join(Process.PID_PATH, Utilities.format('%s.master.pid', Package.name));
 var NUMBER_OF_WORKERS = 1;
-var WAIT_DURATION = 10000;
+var WAIT_DURATION = 240000;
 var WAIT_TIMEOUT = 1000;
 
 namespace('server', function() {
 
   desc(Utilities.format('Run server on %j, log to %j, pid to %j', Path.trim(DATABASE_PATH), Path.trim(MASTER_LOG_PATH), Path.trim(MASTER_PID_PATH)));
-  task('run', ['clean', 'log'], {'async': true}, function (numberOfWorkers) {
+  task('run', ['log', 'clean:server'], {'async': true}, function (numberOfWorkers) {
     Task.createTask(this.fullName)
       .add('./server.js start %j  --port %d \
                                   --masterLogPath %j \
@@ -36,7 +36,7 @@ namespace('server', function() {
   });
 
   desc(Utilities.format('Start server on %j, log to %j, pid to %j', Path.trim(DATABASE_PATH), Path.trim(MASTER_LOG_PATH), Path.trim(MASTER_PID_PATH)));
-  task('start', ['clean', 'log'], {'async': true}, function (numberOfWorkers) {
+  task('start', ['log', 'clean:server'], {'async': true}, function (numberOfWorkers) {
     Task.createTask(this.fullName)
       .add('./server.js start %j  --fork \
                                   --port %d \

@@ -1,7 +1,6 @@
-
-
 var Asynchronous = require('async');
 var Assert = require('assert');
+var Is = require('@pwn/is');
 var Table = require('cli-table');
 var Utilities = require('util');
 
@@ -149,15 +148,22 @@ Application.validateAddLease = function(address, device, host, callback) {
 
 };
 
+Application._addLease = function(address, device, host, connection, callback) {
+  Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-tlease-static.sql'), {
+    $Address: address,
+    $From: Database.MINIMUM_DATE.toISOString(),
+    $To: Database.MINIMUM_DATE.toISOString(),
+    $Device: device,
+    $Host: host
+  }, callback);
+};
+
 Application.addLease = function(address, device, host, databasePath, options, callback) {
-  this.openDatabase(databasePath, options, function(connection, callback) {
-    Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-tlease-static.sql'), {
-      $Address: address,
-      $From: Database.MINIMUM_DATE.toISOString(),
-      $To: Database.MINIMUM_DATE.toISOString(),
-      $Device: device,
-      $Host: host
-    }, callback);
+
+  var _this = this;
+
+  _this.openDatabase(databasePath, options, function(connection, callback) {
+    _this._addLease(address, device, host, connection, callback);
   }, callback);
 };
 
@@ -240,9 +246,27 @@ Application.dumpLeasesWhere = function(filter, databasePath, options, callback) 
   this.openDatabase(databasePath, options, function(connection, callback) {
     Asynchronous.waterfall([
       function(callback) {
+
+        var _filter = filter;
+
+        try {
+
+          _filter = new Date(_filter);
+
+          // Leave it like this ... required to complete validation!
+          Log.info('=   _filter.toISOString()=%j', _filter.toISOString());
+
+        }
+        catch (error) {
+          Log.error('< Application.dumpLeasesWhere(%j, %j, options, callback) { ... }', _filter, Path.trim(databasePath));
+          Log.error('    error.message=%j\n\n%s\n\n', error.message, error.stack);
+          _filter = filter;
+        }
+
         Database.allFile(connection, Path.join(RESOURCES_PATH, 'select-tlease-where.sql'), {
-          $Filter: Utilities.format('%%%s%%', filter)
+          $Filter: Is.date(_filter) ? _filter.toISOString() : Utilities.format('%%%s%%', _filter)
         }, callback);
+
       },
       function(rows, callback) {
 
@@ -250,7 +274,7 @@ Application.dumpLeasesWhere = function(filter, databasePath, options, callback) 
           head: [
             'IP Address',
             'From/To',
-            'Device'
+            'Device/Host'
           ],
           colWidths: [
             15,
@@ -268,7 +292,8 @@ Application.dumpLeasesWhere = function(filter, databasePath, options, callback) 
           table.push([
             row.cAddress,
             isStatic ? '' : Utilities.format('%s\n%s', cFrom, cTo),
-            row.cHost ? row.cHost : row.cDevice
+            Utilities.format('%s\n%s', row.cDevice, row.cHost)
+            // row.cHost ? row.cHost : row.cDevice
           ]);
 
         });

@@ -22,7 +22,6 @@ describe('TranslationsPage', function() {
           callback(null);
       },
       function(callback) {
-        // Log.debug('> Assert.showPage(TranslationsPage.createElement(), callback)');
         Assert.showPage(TranslationsPage.createElement(), callback);
       }
     ], callback);
@@ -229,7 +228,7 @@ describe('TranslationsPage', function() {
   });
 
   afterEach(function(callback) {
-    Assert.hideAllPages(callback);
+    Assert.hidePage(callback);
   });
 
 });

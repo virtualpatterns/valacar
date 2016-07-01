@@ -1,0 +1,12 @@
+table(id=element.id).uk-table.uk-table-striped.uk-table-condensed.uk-table-hover.uk-margin-remove.v-element.v-table.v-leases-table
+  thead
+    tr
+      th IP Address
+      th From/To
+      th Device
+  tbody
+    each lease in leases
+      tr(data-lease-id=lease.id)
+        td= lease.address
+        td= lease.fromToAsString
+        td= lease.deviceHostAsString

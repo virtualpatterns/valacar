@@ -1,5 +1,3 @@
-
-
 var Asynchronous = require('async');
 var HTTP = require('http');
 var Utilities = require('util');
@@ -65,7 +63,7 @@ describe('GET /api/translations', function() {
       callback(null, data.filter(function(translation) {
         return  translation.from == 'tv4622148de6a5' &&
                 translation.to == '(TV)';
-      }));
+      }).length > 0);
     }, callback);
   });
 
@@ -267,14 +265,14 @@ describe('DELETE /api/translations', function() {
     Application.isDELETEStatusCode('/api/translations', 204, callback);
   });
 
-  it.only('should respond to DELETE /api/translations by deleting all translations', function(callback) {
+  it('should respond to DELETE /api/translations by deleting all translations', function(callback) {
     Asynchronous.series([
       function(callback) {
         Application.DELETE('/api/translations', callback);
       },
       function(callback) {
         Database.openConnection(function(connection, callback) {
-          Database.notExistTranslations(connection, callback);
+          Database.notExistsTranslations(connection, callback);
         }, callback);
       }
     ], callback);

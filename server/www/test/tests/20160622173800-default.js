@@ -102,7 +102,7 @@ describe('DefaultPage', function() {
   });
 
   afterEach(function(callback) {
-    Assert.hideAllPages(callback);
+    Assert.hidePage(callback);
   });
 
 });

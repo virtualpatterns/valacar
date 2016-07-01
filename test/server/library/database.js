@@ -26,7 +26,7 @@ Object.defineProperty(Database, 'DATABASE_OPTIONS', {
   }
 });
 
-Database.existTranslations = function(connection, callback) {
+Database.existsTranslations = function(connection, callback) {
   this.getFile(connection, Path.join(RESOURCES_PATH, 'select-ttranslation-count.sql'), [], function(error, row) {
     if (error)
       callback(error);
@@ -37,10 +37,32 @@ Database.existTranslations = function(connection, callback) {
   });
 };
 
-Database.notExistTranslations = function(connection, callback) {
-  this.existTranslations(connection, function(error, exists) {
+Database.notExistsTranslations = function(connection, callback) {
+  this.existsTranslations(connection, function(error, exists) {
     if (exists)
       callback(new Error('At least one translation exists.'), false);
+    else if (exists == undefined)
+      callback(error);
+    else
+      callback(null, true);
+  });
+};
+
+Database.existsLeases = function(connection, callback) {
+  this.getFile(connection, Path.join(RESOURCES_PATH, 'select-tlease-count.sql'), [], function(error, row) {
+    if (error)
+      callback(error);
+    else if (row.cCountOfLeases <= 0)
+      callback(new Error('No leases exist.'), false);
+    else
+      callback(null, true);
+  });
+};
+
+Database.notExistsLeases = function(connection, callback) {
+  this.existsLeases(connection, function(error, exists) {
+    if (exists)
+      callback(new Error('At least one lease exists.'), false);
     else if (exists == undefined)
       callback(error);
     else

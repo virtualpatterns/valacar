@@ -5,6 +5,6 @@ table(id=element.id).uk-table.uk-table-striped.uk-table-condensed.uk-table-hover
       th To
   tbody
     each translation in translations
-      tr(data-translation-from=translation.from)
+      tr(data-translation-id=translation.id)
         td= translation.from
         td= translation.to

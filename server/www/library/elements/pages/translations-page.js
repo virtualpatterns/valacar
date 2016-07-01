@@ -96,13 +96,14 @@ translationsPagePrototype.onAddTranslation = function(event) {
 };
 
 translationsPagePrototype.onSelected = function(event) {
-  Log.info('> TranslationsPage.onSelected(event) { ... } event.currentTarget.dataset.translationFrom=%j', event.currentTarget.dataset.translationFrom);
+  Log.info('> TranslationsPage.onSelected(event) { ... }\n\n%s\n\n', Utilities.inspect(JSON.parse(event.currentTarget.dataset.translationId)));
 
   var self = event.data.this;
+  var translationId = JSON.parse(event.currentTarget.dataset.translationId);
 
   Asynchronous.waterfall([
     function(callback) {
-      Application.GET(Utilities.format('/api/translations/%s', event.currentTarget.dataset.translationFrom), callback);
+      Application.GET(Utilities.format('/api/translations/%s', translationId.from), callback);
     },
     function(translation, callback) {
       window.application.showPage(TranslationPage.createElement(translation), Application.ifNotError());
@@ -152,7 +153,8 @@ translationsPagePrototype.refreshElements = function(Class, callback) {
 translationsPagePrototype.refreshTranslationsTable = function(callback) {
   Log.info('> TranslationsPage.refreshTranslationsTable(callback) { ... }');
 
-  var element = this.translationsTable;
+  var self = this;
+  var element = self.translationsTable;
 
   if (element.existsContent()) {
 
@@ -165,11 +167,17 @@ translationsPagePrototype.refreshTranslationsTable = function(callback) {
 
   }
 
-  var self = this;
-
   Asynchronous.waterfall([
     function(callback) {
       Application.GET('/api/translations', callback);
+    },
+    function(translations, callback) {
+      callback(null, translations.map(function(translation) {
+        translation.id = {
+          'from': translation.from
+        };
+        return translation;
+      }));
     },
     function(translations, callback) {
       element.render({

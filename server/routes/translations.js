@@ -48,8 +48,8 @@ Translations.createRoutes = function(server, databasePath, options) {
         // Log.debug('= server.post("/api/translations", function(request, response, next) { ... })\n\nrow\n---\n%s\n', Utilities.inspect(row));
         response.header('Location', Utilities.format('/api/translations/%s', row.from));
         response.send(201, row);
-        next();
       }
+      next();
     });
   });
 

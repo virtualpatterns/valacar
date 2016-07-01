@@ -1,14 +1,10 @@
-
-
 var Task = require('../library/task');
 
 desc('Run all application and server tests');
-task('test', ['clean', 'log'], {'async': true}, function () {
+task('test', ['log', 'clean:test'], {'async': true}, function () {
   Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
-    .add('mocha --require test/index.js \
-                test/client/tests', Task.OPTIONS_STDIO_INHERIT)
-    .add('mocha --require test/index.js \
-                --timeout 0 \
+    .add('mocha test/client/tests', Task.OPTIONS_STDIO_INHERIT)
+    .add('mocha --timeout 0 \
                 test/server/tests', Task.OPTIONS_STDIO_INHERIT)
     .execute(complete, fail);
 });
@@ -16,20 +12,18 @@ task('test', ['clean', 'log'], {'async': true}, function () {
 namespace('test', function() {
 
   desc('Run all application tests');
-  task('client', ['clean', 'log'], {'async': true}, function () {
+  task('client', ['log', 'clean:test:client'], {'async': true}, function () {
     Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
-      .add('mocha --require test/index.js \
-                  test/client/tests', Task.OPTIONS_STDIO_INHERIT)
+      .add('mocha test/client/tests', Task.OPTIONS_STDIO_INHERIT)
       .execute(complete, fail);
   });
 
   require('./test/client')
 
   desc('Run all API server tests');
-  task('server', ['clean', 'log'], {'async': true}, function () {
+  task('server', ['log', 'clean:test:server'], {'async': true}, function () {
     Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
-      .add('mocha --require test/index.js \
-                  --timeout 0 \
+      .add('mocha --timeout 0 \
                   test/server/tests', Task.OPTIONS_STDIO_INHERIT)
       .execute(complete, fail);
   });

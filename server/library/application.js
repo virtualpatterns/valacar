@@ -17,7 +17,7 @@ var RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'res
 var TYPEOF_FUNCTION = 'function';
 var TYPEOF_NUMBER = 'number';
 var TYPEOF_STRING = 'string';
-var WAIT_DURATION = 60000;
+var WAIT_DURATION = 120000;
 var WAIT_TIMEOUT = 1000;
 
 var Application = Object.create(_Application);
@@ -140,6 +140,7 @@ Application.startMaster = function (numberOfWorkers, pidPath) {
 Application.startWorker = function (address, port, databasePath, options) {
   Log.info('> Application.startWorker(%j, %d, %j, %j) { ... }', address, port, Path.trim(databasePath), options, {});
 
+  var Leases = require('../routes/leases');
   var Static = require('../routes/static');
   var Status = require('../routes/status');
   var Translations = require('../routes/translations');
@@ -154,9 +155,14 @@ Application.startWorker = function (address, port, databasePath, options) {
 
   Status.createRoutes(server, databasePath, options);
   Translations.createRoutes(server, databasePath, options);
+  Leases.createRoutes(server, databasePath, options);
   Static.createRoutes(server, databasePath, options);
 
   server.listen(port, address);
+
+  Cluster.worker.on('disconnect', function() {
+    Log.info('< Worker.on("disconnect", function() { ... }) process.pid=%d', Process.pid);
+  });
 
   Process.once('uncaughtException', function(error) {
     Log.error('> Process.once("uncaughtException", function(error) { ... })\n\n%s\n', error.stack);
@@ -230,6 +236,73 @@ Application.deleteTranslation = function (_from, databasePath, options, callback
     },
     function(callback) {
       _this.removeTranslation(_from, databasePath, options, callback);
+    }
+  ], callback);
+
+};
+
+Application.getLeases = function (databasePath, options, callback) {
+  this.openDatabase(databasePath, options, function(connection, callback) {
+    Database.allFile(connection, Path.join(RESOURCES_PATH, 'select-tlease.sql'), [], callback);
+  }, callback);
+};
+
+Application._getLease = function (address, _from, _to, connection, callback) {
+  Database.getFile(connection, Path.join(RESOURCES_PATH, 'select-tlease-where.sql'), {
+    $Address: address,
+    $From: _from.toISOString(),
+    $To: _to.toISOString()
+  }, callback);
+};
+
+Application.getLease = function (address, _from, _to, databasePath, options, callback) {
+
+  var _this = this;
+
+  _this.openDatabase(databasePath, options, function(connection, callback) {
+    _this._getLease(address, _from, _to, connection, callback);
+  }, callback);
+
+};
+
+Application.postLease = function (address, device, host, databasePath, options, callback) {
+
+  var _this = this;
+
+  _this.openDatabase(databasePath, options, function(connection, callback) {
+    Asynchronous.waterfall([
+      function(callback) {
+        _this.validateAddLease(address, device, host, callback);
+      },
+      function(callback) {
+        _this._addLease(address, device, host, connection, callback);
+      },
+      function(callback) {
+        _this._getLease(address, Database.MINIMUM_DATE, Database.MINIMUM_DATE, connection, callback);
+      }
+    ], callback);
+  }, callback);
+
+};
+
+Application.deleteLeases = function (databasePath, options, callback) {
+  this.openDatabase(databasePath, options, function(connection, callback) {
+    Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-tlease.sql'), [], function(error) {
+      callback(error, this.changes);
+    });
+  }, callback);
+};
+
+Application.deleteLease = function (address, databasePath, options, callback) {
+
+  var _this = this;
+
+  Asynchronous.waterfall([
+    function(callback) {
+      _this.validateRemoveLease(address, callback);
+    },
+    function(callback) {
+      _this.removeLease(address, databasePath, options, callback);
     }
   ], callback);
 

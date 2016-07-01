@@ -19,6 +19,7 @@ namespace('watch', function() {
   desc(Utilities.format('Run watch process once %j, output to %j', Path.trim(DEFAULT_SOURCE_PATH), Path.trim(DEFAULT_TARGET_PATH)));
   task('once', ['log'], {'async': true}, function () {
     Task.createTask(this.fullName)
+      .addExistsProcess('watchify')
       .add('browserify %j "--outfile=%s" --debug', DEFAULT_SOURCE_PATH, DEFAULT_TARGET_PATH)
       .add('browserify %j "--outfile=%s" --debug', TEST_SOURCE_PATH, TEST_TARGET_PATH)
       .execute(complete, fail);
@@ -45,7 +46,7 @@ namespace('watch', function() {
   });
 
   desc(Utilities.format('Start the watch processes on %j and %j, output to %j and %j', Path.trim(DEFAULT_SOURCE_PATH), Path.trim(TEST_SOURCE_PATH), Path.trim(DEFAULT_TARGET_PATH), Path.trim(TEST_TARGET_PATH)));
-  task('start', ['log'], {'async': true}, function () {
+  task('start', ['log', 'clean:watch'], {'async': true}, function () {
 
     var _this = this;
 
@@ -55,8 +56,11 @@ namespace('watch', function() {
       },
       function(options, callback) {
         BackgroundTask.createTask(_this.fullName)
+          .addExistsProcess('watchify')
+          .add('echo "Starting PID\'s ... "', options)
           .add('watchify %j "--outfile=%s" --debug --verbose', DEFAULT_SOURCE_PATH, DEFAULT_TARGET_PATH, options)
           .add('watchify %j "--outfile=%s" --debug --verbose', TEST_SOURCE_PATH, TEST_TARGET_PATH, options)
+          .add('pgrep -f watchify', options)
           .execute(callback);
       }
     ], function(error) {
@@ -79,7 +83,9 @@ namespace('watch', function() {
       },
       function(options, callback) {
         Task.createTask(_this.fullName)
-          .add('pkill -fl watchify', options)
+          .add('echo "Killing PID\'s ... "', options)
+          .add('pgrep -f watchify', options)
+          .add('pkill -f watchify', options)
           .execute(callback);
       }
     ], function(error) {

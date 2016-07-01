@@ -49,6 +49,56 @@ describe('TranslationPage', function() {
       Assert.existsInputValue('to', '');
     });
 
+    it('should not contain a delete link', function() {
+      Assert.notExistsLinkId('delete');
+    });
+
+    afterEach(function(callback) {
+      Assert.hidePage(callback);
+    });
+
+  });
+
+  describe('TranslationPage (existing translation)', function() {
+
+    beforeEach(function(callback) {
+      Asynchronous.waterfall([
+        function(callback) {
+          Application.POST('/api/translations', {
+            'from': 'from01',
+            'to': 'to01'
+          }, callback);
+        },
+        function(translation, callback) {
+          Assert.showPage(TranslationPage.createElement(translation), callback);
+        }
+      ], callback);
+    });
+
+    it('should be on the Translation page', function() {
+      Assert.onPage('Translation');
+    });
+
+    it('should contain a link labelled Back', function() {
+      Assert.existsLink('Back');
+    });
+
+    it('should contain a link labelled Done', function() {
+      Assert.existsLink('Done');
+    });
+
+    it('should contain an input for from containing "from01"', function() {
+      Assert.existsInputValue('from', 'from01');
+    });
+
+    it('should contain an input for to containing "to01"', function() {
+      Assert.existsInputValue('to', 'to01');
+    });
+
+    it('should contain a delete link', function() {
+      Assert.existsLinkId('delete');
+    });
+
     afterEach(function(callback) {
       Assert.hidePage(callback);
     });
@@ -63,10 +113,10 @@ describe('TranslationPage', function() {
           Assert.showPage(TranslationPage.createElement({}), callback);
         },
         function(callback) {
-          Assert.inputValue('from', 'from01', callback);
+          Assert.inputValue('from', 'from02', callback);
         },
         function(callback) {
-          Assert.inputValue('to', 'to01', callback);
+          Assert.inputValue('to', 'to02', callback);
         },
         function(callback) {
           Assert.clickLink('Done', callback);
@@ -74,23 +124,23 @@ describe('TranslationPage', function() {
       ], callback);
     });
 
-    it('should save the from "from01" for the translation "from01" to "to01"', function(callback) {
-      Application.GET('/api/translations/from01', function(error, translation) {
+    it('should save the from "from02" for the translation "from02" to "to02"', function(callback) {
+      Application.GET('/api/translations/from02', function(error, translation) {
         if (error)
           callback(error);
         else {
-          Assert.equal(translation.from, 'from01');
+          Assert.equal(translation.from, 'from02');
           callback(null);
         }
       });
     });
 
-    it('should save the to "to01" for the translation "from01" to "to01"', function(callback) {
-      Application.GET('/api/translations/from01', function(error, translation) {
+    it('should save the to "to02" for the translation "from02" to "to02"', function(callback) {
+      Application.GET('/api/translations/from02', function(error, translation) {
         if (error)
           callback(error);
         else {
-          Assert.equal(translation.to, 'to01');
+          Assert.equal(translation.to, 'to02');
           callback(null);
         }
       });
@@ -106,10 +156,10 @@ describe('TranslationPage', function() {
           Assert.showPage(TranslationPage.createElement({}), callback);
         },
         function(callback) {
-          Assert.inputValue('from', '@from02', callback);
+          Assert.inputValue('from', '@from03', callback);
         },
         function(callback) {
-          Assert.inputValue('to', 'to02', callback);
+          Assert.inputValue('to', 'to03', callback);
         },
         function(callback) {
           Assert.waitForModalShown(function() {
@@ -119,8 +169,8 @@ describe('TranslationPage', function() {
       ], callback);
     });
 
-    it('should display the alert "The translation from \'@from02\' is invalid."', function() {
-      Assert.existsAlert('The translation from "@from02" is invalid.');
+    it('should display the alert "The translation from \'@from03\' is invalid."', function() {
+      Assert.existsAlert('The translation from "@from03" is invalid.');
     });
 
     afterEach(function(callback) {
@@ -138,184 +188,128 @@ describe('TranslationPage', function() {
 
   });
 
-  // describe('TranslationPage to TranslationsPage on Done', function() {
-  //
-  //   beforeEach(function(callback) {
-  //     Assert.waitForPageShown(function() {
-  //       Assert.clickLink('Done');
-  //     }, callback);
-  //   });
-  //
-  //   it('should go to the Translations page when the Done button is clicked', function() {
-  //     Assert.onPage('Translation');
-  //   });
-  //
-  //   afterEach(function(callback) {
-  //     Assert.hidePage(callback);
-  //   });
-  //
-  // });
-  //
-  // describe('TranslationPage to TranslationPage on Done and Back', function() {
-  //
-  //   beforeEach(function(callback) {
-  //     Asynchronous.series([
-  //       function(callback) {
-  //         Assert.waitForPageShown(function() {
-  //           Assert.clickLink('Done');
-  //         }, callback);
-  //       },
-  //       function(callback) {
-  //         Assert.waitForPageShown(function() {
-  //           Assert.clickLink('Back');
-  //         }, callback);
-  //       }
-  //     ], callback);
-  //   });
-  //
-  //   it('should return to the Translations page when the Done and Back buttons are clicked', function() {
-  //     Assert.onPage('Translations');
-  //   });
-  //
-  // });
-  //
-  // describe('TranslationPage POST/Refresh', function() {
-  //
-  //   beforeEach(function(callback) {
-  //     Asynchronous.series([
-  //       function(callback) {
-  //         Application.POST('/api/translations', {
-  //           'from': 'from01',
-  //           'to': 'to01'
-  //         }, callback);
-  //       },
-  //       function(callback) {
-  //         Assert.waitForElementsShown(function() {
-  //           Assert.clickLinkId('refresh');
-  //         }, callback);
-  //       }
-  //     ], callback);
-  //   });
-  //
-  //   it('should show the translation from from01', function() {
-  //     Assert.existsRow('from01');
-  //   });
-  //
-  //   it('should show the translation to to01', function() {
-  //     Assert.existsRow('to01');
-  //   });
-  //
-  // });
-  //
-  // describe('TranslationPage DELETE/Refresh', function() {
-  //
-  //   beforeEach(function(callback) {
-  //     Asynchronous.series([
-  //       function(callback) {
-  //         Application.POST('/api/translations', {
-  //           'from': 'from02',
-  //           'to': 'to02'
-  //         }, callback);
-  //       },
-  //       function(callback) {
-  //         Application.DELETE('/api/translations/from02', callback);
-  //       },
-  //       function(callback) {
-  //         Assert.waitForElementsShown(function() {
-  //           Assert.clickLinkId('refresh');
-  //         }, callback);
-  //       }
-  //     ], callback);
-  //   });
-  //
-  //   it('should not show the translation from from02', function() {
-  //     Assert.notExistsRow('from02');
-  //   });
-  //
-  //   it('should not show the translation to to02', function() {
-  //     Assert.notExistsRow('to02');
-  //   });
-  //
-  // });
-  //
-  // describe('TranslationPage to TranslationsPage on Selected', function() {
-  //
-  //   beforeEach(function(callback) {
-  //     Asynchronous.series([
-  //       function(callback) {
-  //         Application.POST('/api/translations', {
-  //           'from': 'from03',
-  //           'to': 'to03'
-  //         }, callback);
-  //       },
-  //       function(callback) {
-  //         Assert.waitForElementsShown(function() {
-  //           Assert.clickLinkId('refresh');
-  //         }, callback);
-  //       },
-  //       function(callback) {
-  //         Assert.waitForPageShown(function() {
-  //           Assert.clickRow('from03');
-  //         }, callback);
-  //       },
-  //     ], callback);
-  //   });
-  //
-  //   it('should go to the Translation page when the from03 translation is clicked', function() {
-  //     Assert.onPage('Translation');
-  //   });
-  //
-  //   it('should contain the from from03 on the Translation page when the from03 translation is clicked', function() {
-  //     Assert.existsInput('from', 'from03');
-  //   });
-  //
-  //   it('should contain the to to03 on the Translation page when the from03 translation is clicked', function() {
-  //     Assert.existsInput('to', 'to03');
-  //   });
-  //
-  //   afterEach(function(callback) {
-  //     Assert.hidePage(callback);
-  //   });
-  //
-  // });
-  //
-  //
-  // describe('TranslationPage to TranslationPage on Selected and Back', function() {
-  //
-  //   beforeEach(function(callback) {
-  //     Asynchronous.series([
-  //       function(callback) {
-  //         Application.POST('/api/translations', {
-  //           'from': 'from04',
-  //           'to': 'to04'
-  //         }, callback);
-  //       },
-  //       function(callback) {
-  //         Assert.waitForElementsShown(function() {
-  //           Assert.clickLinkId('refresh');
-  //         }, callback);
-  //       },
-  //       function(callback) {
-  //         Assert.waitForPageShown(function() {
-  //           Assert.clickRow('from04');
-  //         }, callback);
-  //       },
-  //       function(callback) {
-  //         Assert.waitForPageShown(function() {
-  //           Assert.clickLink('Back');
-  //         }, callback);
-  //       },
-  //     ], callback);
-  //   });
-  //
-  //   it('should return to the Translations page when the from02 translation and Back button are clicked', function() {
-  //     Assert.onPage('Translations');
-  //   });
-  //
-  // });
+  describe('TranslationPage (existing translation) on Delete', function() {
 
-  // afterEach(function(callback) {
-  //   Assert.hideAllPages(callback);
-  // });
+    beforeEach(function(callback) {
+      Asynchronous.waterfall([
+        function(callback) {
+          Application.POST('/api/translations', {
+            'from': 'from04',
+            'to': 'to04'
+          }, callback);
+        },
+        function(translation, callback) {
+          Assert.showPage(TranslationPage.createElement(translation), callback);
+        },
+        function(callback) {
+          Assert.waitForModalShown(function() {
+            Assert.clickLinkId('delete');
+          }, callback);
+        }
+      ], callback);
+    });
+
+    it('should display the confirmation "Are you sure you want to delete the translation from \'from04\' to \'to04\'?"', function() {
+      Assert.existsConfirmation('Are you sure you want to delete the translation from "from04" to "to04"?');
+    });
+
+    afterEach(function(callback) {
+      Asynchronous.series([
+        function(callback) {
+          Assert.waitForModalHidden(function() {
+            Assert.clickNo();
+          }, callback);
+        },
+        function(callback) {
+          Assert.hidePage(callback);
+        }
+      ], callback);
+    });
+
+  });
+
+  describe('TranslationPage (existing translation) on Delete and Yes', function() {
+
+    beforeEach(function(callback) {
+      Asynchronous.waterfall([
+        function(callback) {
+          Application.POST('/api/translations', {
+            'from': 'from05',
+            'to': 'to05'
+          }, callback);
+        },
+        function(translation, callback) {
+          Assert.showPage(TranslationPage.createElement(translation), callback);
+        },
+        function(callback) {
+          Assert.waitForModalShown(function() {
+            Assert.clickLinkId('delete');
+          }, callback);
+        },
+        function(callback) {
+          Assert.waitForModalHidden(function() {
+            Assert.clickYes();
+          }, callback);
+        }
+      ], callback);
+    });
+
+    it('should delete the translation', function(callback) {
+      Asynchronous.waterfall([
+        function(callback) {
+          Application.GET('/api/translations', callback);
+        },
+        function(translations, callback) {
+          Assert.equal(translations.length, 0);
+          callback(null);
+        }
+      ], callback);
+    });
+
+  });
+
+  describe('TranslationPage (existing translation) on Delete and No', function() {
+
+    beforeEach(function(callback) {
+      Asynchronous.waterfall([
+        function(callback) {
+          Application.POST('/api/translations', {
+            'from': 'from06',
+            'to': 'to06'
+          }, callback);
+        },
+        function(translation, callback) {
+          Assert.showPage(TranslationPage.createElement(translation), callback);
+        },
+        function(callback) {
+          Assert.waitForModalShown(function() {
+            Assert.clickLinkId('delete');
+          }, callback);
+        },
+        function(callback) {
+          Assert.waitForModalHidden(function() {
+            Assert.clickNo();
+          }, callback);
+        }
+      ], callback);
+    });
+
+    it('should not delete the translation', function(callback) {
+      Asynchronous.waterfall([
+        function(callback) {
+          Application.GET('/api/translations', callback);
+        },
+        function(translations, callback) {
+          Assert.equal(translations.length, 1);
+          callback(null);
+        }
+      ], callback);
+    });
+
+    afterEach(function(callback) {
+      Assert.hidePage(callback);
+    });
+
+  });
 
 });

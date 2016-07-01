@@ -29,4 +29,11 @@ WHERE   ( tLease.cFrom = tLease.cTo OR
                               tLeaseExpiring.cFrom < tLease.cTo )
 ORDER
 BY      tLease.cTo ASC,
-        tLease.cHost;
+        CASE
+          WHEN NOT tDeviceTranslation.cTo IS NULL THEN
+            tDeviceTranslation.cTo
+          WHEN NOT tHostTranslation.cTo IS NULL THEN
+            tHostTranslation.cTo
+          ELSE
+            tLease.cHost
+        END;

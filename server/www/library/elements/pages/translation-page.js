@@ -8,20 +8,6 @@ var Page = require('../page');
 var pagePrototype = Page.getContentPrototype();
 var translationPagePrototype = Object.create(pagePrototype);
 
-translationPagePrototype.render = function(data, callback) {
-
-  if (Is.function(data)) {
-    callback = data;
-    data = {};
-  }
-
-  data.translation = this.translation;
-
-  Log.info('> Page.render(data, callback)\n\n%s\n\n', Utilities.inspect(data));
-  pagePrototype.render.call(this, data, callback);
-
-};
-
 translationPagePrototype.bind = function() {
 
   pagePrototype.bind.call(this);

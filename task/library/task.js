@@ -12,9 +12,12 @@ var Process = require('../../client/library/process');
 var ArgumentError = require('../../client/library/errors/argument-error');
 var ProcessError = require('../../client/library/errors/process-error');
 
+var Utilities = require('util');
+
 var REGEXP_PLACEHOLDER = /%d|%j|%s/g;
 var REGEXP_SPLIT = /(?:[^\s"]+|"[^"]*")+/g;
 var REGEXP_QUOTE = /^"|"$/g;
+var RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
 
 var taskPrototype = Object.create({});
 
@@ -58,13 +61,14 @@ taskPrototype.add = function(task, options) {
         });
 
         _process.once('close', function(code) {
-          Log.info('< [%s] ChildProcess.spawn(%j, %j, options)', _this.name, argumentsObject.command, argumentsObject.arguments);
           if (error) {
-            Log.info('         error.message=%j\n\n%s\n\n', error.message, error.stack);
+            Log.error('< [%s] ChildProcess.spawn(%j, %j, options)', _this.name, argumentsObject.command, argumentsObject.arguments);
+            Log.error('         error.message=%j\n\n%s\n\n', error.message, error.stack);
             callback(error);
           }
           else if (code > 0) {
-            Log.info('         code=%d', code);
+            Log.error('< [%s] ChildProcess.spawn(%j, %j, options)', _this.name, argumentsObject.command, argumentsObject.arguments);
+            Log.error('         code=%d', code);
             callback(new ProcessError(Utilities.format('The command returned a non-zero result (code=%d).', code), code));
           }
           else {
@@ -100,6 +104,10 @@ taskPrototype.add = function(task, options) {
 
   return this;
 
+};
+
+taskPrototype.addExistsProcess = function(match, options) {
+  return this.add(Utilities.format('%j %j', Path.join(RESOURCES_PATH, 'exists-process.sh'), match), options || Task.OPTIONS_STDIO_INHERIT);
 };
 
 taskPrototype.addLine = function(options) {

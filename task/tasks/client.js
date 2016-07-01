@@ -1,7 +1,6 @@
-
-
 var Utilities = require('util');
 
+var Log = require('../../client/library/log');
 var Package = require('../../package.json');
 var Path = require('../../client/library/path');
 var Process = require('../../client/library/process');
@@ -16,7 +15,7 @@ var IMPORT_TARGET_LEASES_PATH = Path.join(Process.DATA_PATH, 'dhcpd.leases');
 namespace('client', function() {
 
   desc(Utilities.format('Install to %j, log to %j', Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));
-  task('install', ['clean', 'log'], {'async': true}, function () {
+  task('install', ['log'], {'async': true}, function () {
     Task.createTask(this.fullName)
       .addLine()
       .add('./client.js install %j --logPath %j', DATABASE_PATH, LOG_PATH)
@@ -24,7 +23,7 @@ namespace('client', function() {
   });
 
   desc(Utilities.format('Uninstall from %j, log to %j', Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));
-  task('uninstall', ['clean', 'log'], {'async': true}, function () {
+  task('uninstall', ['log'], {'async': true}, function () {
     Task.createTask(this.fullName)
       .addLine()
       .add('./client.js uninstall %j --logPath %j', DATABASE_PATH, LOG_PATH)
@@ -32,7 +31,7 @@ namespace('client', function() {
   });
 
   desc(Utilities.format('Import from %j on %j to %j, log to %j', IMPORT_SOURCE_LEASES_PATH, IMPORT_SOURCE_COMPUTER, Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));
-  task('import', ['clean', 'log'], {'async': true}, function () {
+  task('import', ['log'], {'async': true}, function () {
     Task.createTask(this.fullName)
       .addLine()
       .add('echo -n "Copying %s from %s to %s ... "', IMPORT_SOURCE_LEASES_PATH, IMPORT_SOURCE_COMPUTER, Path.trim(IMPORT_TARGET_LEASES_PATH))
@@ -43,7 +42,7 @@ namespace('client', function() {
   });
 
   desc(Utilities.format('Clean at %j, log to %j', Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));
-  task('_clean', ['clean', 'log'], {'async': true}, function () {
+  task('_clean', ['log'], {'async': true}, function () {
     Task.createTask(this.fullName)
       .addLine()
       .add('./client.js clean %j --logPath %j', DATABASE_PATH, LOG_PATH)
@@ -53,7 +52,7 @@ namespace('client', function() {
   namespace('dump', function() {
 
     desc(Utilities.format('Dump leases in %j, log to %j', Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));
-    task('leases', ['clean', 'log'], {'async': true}, function () {
+    task('leases', ['log'], {'async': true}, function () {
       Task.createTask(this.fullName)
         .addLine()
         .add('./client.js dumpLeases %j --logPath %j', DATABASE_PATH, LOG_PATH)
@@ -63,23 +62,35 @@ namespace('client', function() {
     namespace('leases', function() {
 
       desc(Utilities.format('Dump leases matching filter in %j, log to %j', Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));
-      task('where', ['clean', 'log'], {'async': true}, function (filter) {
+      task('where', ['log'], {'async': true}, function (filter) {
+
+        var _filter = filter;
+
+        // try {
+        //   _filter = new Date(_filter).toISOString();
+        // }
+        // catch (error) {
+        //   Log.error('< [%s] _filter = new Date(%j).toISOString()', this.fullName, _filter);
+        //   Log.error('         error.message=%j\n\n%s\n\n', error.message, error.stack);
+        //   _filter = filter;
+        // }
+        
         Task.createTask(this.fullName)
           .addLine()
           .add(function(callback) {
-            if (!filter)
+            if (!_filter)
               callback(new Error('A filter must be provided (e.g. jake run:dump:leases:where[PIGWIDGEON]).'));
             else
               callback(null);
           })
-          .add('./client.js dumpLeasesWhere %j %j --logPath %j', filter, DATABASE_PATH, LOG_PATH)
+          .add('./client.js dumpLeasesWhere %j %j --logPath %j', _filter, DATABASE_PATH, LOG_PATH)
           .execute(complete, fail);
       });
 
     });
 
     desc(Utilities.format('Dump translations in %j, log to %j', Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));
-    task('translations', ['clean', 'log'], {'async': true}, function () {
+    task('translations', ['log'], {'async': true}, function () {
       Task.createTask(this.fullName)
         .addLine()
         .add('./client.js dumpTranslations %j --logPath %j', DATABASE_PATH, LOG_PATH)
