@@ -119,18 +119,18 @@ Database.notExistsTranslation = function(connection, _from, _to, callback) {
 
 Database.delete = function(callback) {
 
-  var _this = this;
+  var self = this;
 
-  // Log.info('> FileSystem.access(%j, FileSystem.F_OK, callback)', Path.trim(_this.DATABASE_PATH));
-  FileSystem.access(_this.DATABASE_PATH, FileSystem.F_OK, function(error) {
-    // Log.info('< FileSystem.access(%j, FileSystem.F_OK, callback)', Path.trim(_this.DATABASE_PATH));
+  // Log.info('> FileSystem.access(%j, FileSystem.F_OK, callback)', Path.trim(self.DATABASE_PATH));
+  FileSystem.access(self.DATABASE_PATH, FileSystem.F_OK, function(error) {
+    // Log.info('< FileSystem.access(%j, FileSystem.F_OK, callback)', Path.trim(self.DATABASE_PATH));
     if (error) {
       // Log.info('    error.message=%j\n\n%s\n\n', error.message, error.stack);
       callback(null);
     }
     else {
-      Log.info('> FileSystem.unlink(%j, callback)', Path.trim(_this.DATABASE_PATH));
-      FileSystem.unlink(_this.DATABASE_PATH, callback);
+      Log.info('> FileSystem.unlink(%j, callback)', Path.trim(self.DATABASE_PATH));
+      FileSystem.unlink(self.DATABASE_PATH, callback);
     }
   });
 

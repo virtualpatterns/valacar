@@ -118,26 +118,26 @@ Application.executeCommand = function(command, callback) {
 
 Application.executeStart = function(callback) {
 
-  var _this = this;
+  var self = this;
 
   Asynchronous.series([
     function(callback) {
-      _this.executeCommand(Utilities.format('start %j --fork \
+      self.executeCommand(Utilities.format('start %j --fork \
                                                       --address %s \
                                                       --port %d \
                                                       --masterLogPath %j \
                                                       --workerLogPath %j \
                                                       --masterPIDPath %j \
-                                                      --numberOfWorkers %d',  _this.DATABASE_PATH,
-                                                                              _this.ADDRESS,
-                                                                              _this.PORT,
-                                                                              _this.MASTER_LOG_PATH,
-                                                                              _this.WORKER_LOG_PATH,
-                                                                              _this.MASTER_PID_PATH,
-                                                                              _this.NUMBER_OF_WORKERS), callback);
+                                                      --numberOfWorkers %d',  self.DATABASE_PATH,
+                                                                              self.ADDRESS,
+                                                                              self.PORT,
+                                                                              self.MASTER_LOG_PATH,
+                                                                              self.WORKER_LOG_PATH,
+                                                                              self.MASTER_PID_PATH,
+                                                                              self.NUMBER_OF_WORKERS), callback);
     },
     function(callback) {
-      FileSystem.waitUntilFileExists(WAIT_TIMEOUT, WAIT_DURATION, _this.MASTER_PID_PATH, callback);
+      FileSystem.waitUntilFileExists(WAIT_TIMEOUT, WAIT_DURATION, self.MASTER_PID_PATH, callback);
     }
   ], callback);
 
@@ -145,16 +145,16 @@ Application.executeStart = function(callback) {
 
 Application.executeStop = function(callback) {
 
-  var _this = this;
+  var self = this;
 
   Asynchronous.series([
     function(callback) {
-      _this.executeCommand(Utilities.format('stop --masterLogPath %j \
-                                                  --masterPIDPath %j',  _this.MASTER_LOG_PATH,
-                                                                        _this.MASTER_PID_PATH), callback);
+      self.executeCommand(Utilities.format('stop --masterLogPath %j \
+                                                  --masterPIDPath %j',  self.MASTER_LOG_PATH,
+                                                                        self.MASTER_PID_PATH), callback);
     },
     function(callback) {
-      FileSystem.waitUntilFileNotExists(WAIT_TIMEOUT, WAIT_DURATION, _this.MASTER_PID_PATH, callback);
+      FileSystem.waitUntilFileNotExists(WAIT_TIMEOUT, WAIT_DURATION, self.MASTER_PID_PATH, callback);
     }
   ], callback);
 
@@ -167,7 +167,7 @@ Application.request = function(method, path, requestData, callback) {
     requestData = null;
   }
 
-  var _this = this;
+  var self = this;
 
   if (requestData)
     Log.info('> Application.request(%j, %j, requestData, callback)\n\n%s\n', method, path, Utilities.inspect(requestData));
@@ -250,11 +250,11 @@ Application.waitUntilReady = function(callback) {
 
   Log.info('> Application.waitUntilReady(callback) { ... }');
 
-  var _this = this;
+  var self = this;
 
   Process.waitUntil(WAIT_TIMEOUT, WAIT_DURATION, function(callback) {
     Log.info('> Application.HEAD("/", callback)');
-    _this.HEAD('/', callback);
+    self.HEAD('/', callback);
   }, function(error) {
     if (error) {
       Log.error('< Application.waitUntilReady(callback) { ... }');
@@ -273,11 +273,11 @@ Application.waitUntilNotReady = function(callback) {
 
   Log.info('> Application.waitUntilNotReady(callback) { ... }');
 
-  var _this = this;
+  var self = this;
 
   Process.waitUntil(WAIT_TIMEOUT, WAIT_DURATION, function(callback) {
     Log.info('> Application.HEAD("/", callback)');
-    _this.HEAD('/', function(error) {
+    self.HEAD('/', function(error) {
       if (error)
         callback(null);
       else

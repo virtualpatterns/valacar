@@ -2,11 +2,28 @@ table(id=element.id).uk-table.uk-table-striped.uk-table-condensed.uk-table-hover
   thead
     tr
       th IP Address
-      th From/To
+      th Expires
       th Device
   tbody
     each lease in leases
       tr(data-lease-id=lease.id)
-        td= lease.address
-        td= lease.fromToAsString
-        td= lease.deviceHostAsString
+        td
+          = lease.address
+        td
+          if lease.isStatic
+            span.uk-text-muted
+              | (never)
+          else
+            = lease.toNowAsString
+            br
+            span.uk-text-small
+              | at 
+              = lease.toAsString
+        td
+          if lease.host
+            = lease.host
+            br
+            span.uk-text-small
+              = lease.device
+          else
+            = lease.device

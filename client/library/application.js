@@ -20,6 +20,7 @@ var TRANSACTION_NAME = 'sDefault';
 var REGEXP_ADDRESS = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 var REGEXP_DEVICE = /^(([A-Fa-f0-9]{2}[:]){5}[A-Fa-f0-9]{2}[,]?)+$/;
 var REGEXP_HOST = /^(?=.{1,255}$)[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|-){0,61}[0-9A-Za-z])?)*\.?$/;
+var REGEXP_TO = /\S+/;
 
 Application.openDatabase = function(databasePath, options, taskFn, callback) {
   Database.openConnection(databasePath, options, function(connection, callback) {
@@ -55,11 +56,13 @@ Application.clean = function(databasePath, options, callback) {
   }, callback);
 };
 
-Application.validateAddTranslation = function(_from, callback) {
+Application.validateAddTranslation = function(_from, _to, callback) {
 
   if (!REGEXP_DEVICE.test(_from) &&
       !REGEXP_HOST.test(_from))
     callback(new ValidationError(Utilities.format('The translation from %j is invalid.', _from)));
+  else if (!REGEXP_TO.test(_to))
+    callback(new ValidationError(Utilities.format('The translation to %j is invalid.', _to)));
   else
     callback(null);
 
@@ -74,16 +77,22 @@ Application._addTranslation = function(_from, _to, connection, callback) {
 
 Application.addTranslation = function(_from, _to, databasePath, options, callback) {
 
-  var _this = this;
+  var self = this;
 
-  _this.openDatabase(databasePath, options, function(connection, callback) {
-    _this._addTranslation(_from, _to, connection, callback);
+  self.openDatabase(databasePath, options, function(connection, callback) {
+    self._addTranslation(_from, _to, connection, callback);
   }, callback);
 
 };
 
 Application.validateRemoveTranslation = function(_from, callback) {
-  this.validateAddTranslation(_from, callback);
+
+  if (!REGEXP_DEVICE.test(_from) &&
+      !REGEXP_HOST.test(_from))
+    callback(new ValidationError(Utilities.format('The translation from %j is invalid.', _from)));
+  else
+    callback(null);
+
 };
 
 Application.removeTranslation = function(_from, databasePath, options, callback) {
@@ -160,10 +169,10 @@ Application._addLease = function(address, device, host, connection, callback) {
 
 Application.addLease = function(address, device, host, databasePath, options, callback) {
 
-  var _this = this;
+  var self = this;
 
-  _this.openDatabase(databasePath, options, function(connection, callback) {
-    _this._addLease(address, device, host, connection, callback);
+  self.openDatabase(databasePath, options, function(connection, callback) {
+    self._addLease(address, device, host, connection, callback);
   }, callback);
 };
 
@@ -190,10 +199,10 @@ Application._removeLease = function(address, connection, callback) {
 
 Application.removeLease = function(address, databasePath, options, callback) {
 
-  var _this = this;
+  var self = this;
 
-  _this.openDatabase(databasePath, options, function(connection, callback) {
-    _this._removeLease(address, connection, callback);
+  self.openDatabase(databasePath, options, function(connection, callback) {
+    self._removeLease(address, connection, callback);
   }, callback);
 
 };

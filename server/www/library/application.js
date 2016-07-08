@@ -1,3 +1,4 @@
+var Asynchronous = require('async');
 var Assert = require('assert');
 var Is = require('@pwn/is');
 var Utilities = require('util');
@@ -48,6 +49,38 @@ applicationPrototype.showPage = function(newPage, callback) {
 
 };
 
+applicationPrototype.waitForPageShown = function(waitFn, callback) {
+  Log.info('> Application.waitForPageShown(waitFn, callback) { ... }');
+
+  var self = this;
+
+  Asynchronous.waterfall([
+    function(callback) {
+      Log.info('> jQuery(self).one("v-page-shown", function(event) { ... }');
+      jQuery(self).one('v-page-shown', function(event) {
+        Log.info('< jQuery(self).one("v-page-shown", function(event) { ... }');
+        callback(null, event.page);
+      });
+    },
+    function(page, callback) {
+      if (page.hasElements()) {
+        Asynchronous.each(page.getElements(), function(element, callback) {
+          Log.info('> jQuery(element).one("v-shown", function(event) { ... }');
+          jQuery(element).one('v-shown', function(event) {
+            Log.info('< jQuery(element).one("v-shown", function(event) { ... }');
+            callback(null);
+          });
+        }, callback);
+      }
+      else
+        callback(null);
+    }
+  ], callback);
+
+  waitFn(Application.ifNotError());
+
+};
+
 applicationPrototype.triggerPageShown = function(data) {
   jQuery(this).trigger(new jQuery.Event('v-page-shown', data));
 };
@@ -78,13 +111,149 @@ applicationPrototype.hidePage = function() {
       'isInitial': false
     });
 
+    return newPage;
+
   }
+
+};
+
+applicationPrototype.waitForPageHidden = function(callback) {
+  Log.info('> Application.waitForPageHidden(callback) { ... }');
+
+  var self = this;
+
+  self.waitForPageShown(function() {
+    self.hidePage();
+  }, callback);
 
 };
 
 applicationPrototype.triggerPageHidden = function(data) {
   jQuery(this).trigger(new jQuery.Event('v-page-hidden', data));
 };
+
+applicationPrototype.showModal = function(modal, options, callback) {
+
+  if (Is.function(options)) {
+    callback = options;
+    options = {};
+  }
+
+  Log.info('> Application.showModal(modal, options, callback) { ... }\n\n%s\n\n', Utilities.inspect(options));
+
+  var self = this;
+
+  modal.render(function(error, content) {
+    if (error)
+      callback(error);
+    else {
+
+      self.pages.addToTop(modal);
+      self.body.addContent(content);
+
+      modal.bind();
+      modal.show(options);
+
+      Log.info('> jQuery(modal).on("v-hidden", function(event) { ... }');
+      jQuery(modal).on('v-hidden', function(event) {
+        Log.info('< jQuery(modal).on("v-hidden", function(event) { ... }');
+        callback(null);
+      });
+
+    }
+  });
+
+};
+
+applicationPrototype.onModalShown = function(event) {
+
+  var modal = jQuery(event.target).data('Modal');
+
+  if (modal) {
+    Log.info('> Application.onModalShown(event) { ... } modal.id=%j', modal.id);
+
+    modal.triggerShown({
+      'isInitial': true
+    });
+    this.triggerModalShown({
+      'modal': modal,
+      'isInitial': true
+    });
+  }
+  else {
+    Log.info('> Application.onModalShown(event) { ... }');
+    this.triggerModalShown();
+  }
+
+};
+
+applicationPrototype.triggerModalShown = function(data) {
+  jQuery(this).trigger(new jQuery.Event('v-modal-shown', data));
+};
+
+applicationPrototype.hideModal = function() {
+  Log.info('> Application.hideModal() { ... }');
+
+  if (this.pages.isNotAlmostEmpty()) {
+    var modal = this.pages.top();
+    modal.hide();
+  }
+
+};
+
+applicationPrototype.onModalHidden = function(event) {
+
+  var modal = jQuery(event.target).data('Modal');
+
+  if (modal) {
+    Log.info('> Application.onModalHidden(event) { ... } modal.id=%j', modal.id);
+
+    modal.unbind();
+
+    modal.removeContent();
+    this.pages.removeFromTop();
+
+    modal.triggerHidden({
+      'isFinal': true
+    });
+    this.triggerModalHidden({
+      'modal': modal,
+      'isFinal': true
+    });
+
+  }
+  else {
+    Log.info('> Application.onModalHidden(event) { ... }');
+    this.triggerModalHidden();
+  }
+
+};
+
+applicationPrototype.triggerModalHidden = function(data) {
+  jQuery(this).trigger(new jQuery.Event('v-modal-hidden', data));
+};
+
+// applicationPrototype.showWaitModal = function(modal, options, callback) {
+//
+//   if (Is.function(options)) {
+//     callback = options;
+//     options = {};
+//   }
+//
+//   var self = this;
+//
+//   Asynchronous.series([
+//     function(callback) {
+//       self.showModal(modal, options, callback);
+//     },
+//     function(lease, callback) {
+//       jQuery(modal).on('v-hidden', function(event) {
+//         callback(null);
+//       });
+//     }
+//   ], callback);
+//
+// };
 
 applicationPrototype.getPage = function() {
   Log.info('> Application.getPage() { ... }');
@@ -95,14 +264,6 @@ applicationPrototype.getPage = function() {
   else
     return null;
 
-};
-
-applicationPrototype.triggerModalShown = function(data) {
-  jQuery(this).trigger(new jQuery.Event('v-modal-shown', data));
-};
-
-applicationPrototype.triggerModalHidden = function(data) {
-  jQuery(this).trigger(new jQuery.Event('v-modal-hidden', data));
 };
 
 var Application = Object.create({});
@@ -202,12 +363,15 @@ Application.request = function(method, path, requestData, callback) {
 
   Log.info('> jQuery.ajax(settings)\n\n%s\n\n', Utilities.inspect(settings));
   jQuery.ajax(settings)
-    .done(function(responseData) {
-      Log.info('< Application.request(%j, %j, requestData, callback) { ... }\n\n%j\n\n', method, path, Utilities.inspect(responseData));
-      if (responseData)
-        callback(null, responseData);
-      else
+    .done(function(responseData, status, request) {
+      if (request.responseJSON) {
+        Log.info('< Application.request(%j, %j, requestData, callback) { ... }\n\n%s\n\n', method, path, Utilities.inspect(request.responseJSON));
+        callback(null, request.responseJSON);
+      }
+      else {
+        Log.info('< Application.request(%j, %j, requestData, callback) { ... }', method, path);
         callback(null);
+      }
     })
     .fail(function(request, status, error) {
       Log.error('< Application.request(%j, %j, requestData, callback) { ... }', method, path);

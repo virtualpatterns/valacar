@@ -4,7 +4,7 @@ var Application = require('../../application');
 var Log = require('../../log');
 var Table = require('../table');
 
-var tablePrototype = Table.getContentPrototype();
+var tablePrototype = Table.getElementPrototype();
 var leasesTablePrototype = Object.create(tablePrototype);
 
 var LeasesTable = Object.create(Table);
@@ -17,7 +17,7 @@ LeasesTable.isElement = function(leasesTable) {
   return leasesTablePrototype.isPrototypeOf(leasesTable);
 };
 
-LeasesTable.getContentPrototype = function() {
+LeasesTable.getElementPrototype = function() {
   return leasesTablePrototype;
 };
 

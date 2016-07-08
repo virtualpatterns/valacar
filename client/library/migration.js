@@ -15,12 +15,12 @@ var migrationPrototype = Object.create({});
 
 migrationPrototype.preInstall = function(connection, callback) {
 
-  var _this = this;
+  var self = this;
 
   Asynchronous.series([
     function(callback) {
       Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-tmigration.sql'), {
-        $Name: _this.name
+        $Name: self.name
       }, function(error) {
         if (!error)
           Assert.ok(this.changes <= 1, Utilities.format('The number of rows deleted from tMigration should be 0 or 1 but is instead %d.', this.changes));
@@ -29,7 +29,7 @@ migrationPrototype.preInstall = function(connection, callback) {
     },
     function(callback) {
       Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-tmigration.sql'), {
-        $Name: _this.name,
+        $Name: self.name,
         $Version: Package.version
       }, callback);
     }

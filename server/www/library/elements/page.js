@@ -1,6 +1,6 @@
 var Element = require('../element');
 
-var elementPrototype = Element.getContentPrototype();
+var elementPrototype = Element.getElementPrototype();
 var pagePrototype = Object.create(elementPrototype);
 
 pagePrototype.show = function(isInitial) {
@@ -31,7 +31,7 @@ Page.isElement = function(page) {
   return pagePrototype.isPrototypeOf(page);
 };
 
-Page.getContentPrototype = function() {
+Page.getElementPrototype = function() {
   return pagePrototype;
 };
 

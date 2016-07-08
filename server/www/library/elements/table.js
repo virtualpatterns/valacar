@@ -1,6 +1,6 @@
 var Element = require('../element');
 
-var elementPrototype = Element.getContentPrototype();
+var elementPrototype = Element.getElementPrototype();
 var tablePrototype = Object.create(elementPrototype);
 
 var Table = Object.create(Element);
@@ -13,7 +13,7 @@ Table.isElement = function(table) {
   return tablePrototype.isPrototypeOf(table);
 };
 
-Table.getContentPrototype = function() {
+Table.getElementPrototype = function() {
   return tablePrototype;
 };
 

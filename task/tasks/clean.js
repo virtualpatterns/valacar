@@ -10,29 +10,29 @@ namespace('clean', function() {
   desc('Delete jake-related log files');
   task('jake', {'async': true}, function () {
     FileSystemTask.createTask(this.fullName)
-      .removeFile(Path.join(Process.LOG_PATH, Utilities.format('%s.jake.log', Package.name)))
+      .addRemoveFile(Path.join(Process.LOG_PATH, Utilities.format('%s.jake.log', Package.name)))
       .execute(complete, fail);
   });
 
   desc('Delete watch-related log files');
-  task('watch', {'async': true}, function () {
+  task('watch', ['log'], {'async': true}, function () {
     FileSystemTask.createTask(this.fullName)
-      .removeFile(Path.join(Process.LOG_PATH, Utilities.format('%s.watch.log', Package.name)))
+      .addRemoveFile(Path.join(Process.LOG_PATH, Utilities.format('%s.watch.log', Package.name)))
       .execute(complete, fail);
   });
 
   desc('Delete client-related log files');
   task('client', ['log'], {'async': true}, function () {
     FileSystemTask.createTask(this.fullName)
-      .removeFile(Path.join(Process.LOG_PATH, Utilities.format('%s.log', Package.name)))
+      .addRemoveFile(Path.join(Process.LOG_PATH, Utilities.format('%s.log', Package.name)))
       .execute(complete, fail);
   });
 
   desc('Delete server-related log files');
   task('server', ['log'], {'async': true}, function () {
     FileSystemTask.createTask(this.fullName)
-      .removeFile(Path.join(Process.LOG_PATH, Utilities.format('%s.master.log', Package.name)))
-      .removeFile(Path.join(Process.LOG_PATH, Utilities.format('%s.worker.log', Package.name)))
+      .addRemoveFile(Path.join(Process.LOG_PATH, Utilities.format('%s.master.log', Package.name)))
+      .addRemoveFile(Path.join(Process.LOG_PATH, Utilities.format('%s.worker.log', Package.name)))
       .execute(complete, fail);
   });
 
@@ -45,18 +45,18 @@ namespace('clean', function() {
     desc('Delete client test-related log files');
     task('client', ['log'], {'async': true}, function () {
       FileSystemTask.createTask(this.fullName)
-          .removeFile(Path.join(Process.LOG_PATH, Utilities.format('%s.mocha.log', Package.name)))
-        .removeFile(Path.join(Process.LOG_PATH, Utilities.format('%s.test.log', Package.name)))
+        .addRemoveFile(Path.join(Process.LOG_PATH, Utilities.format('%s.mocha.log', Package.name)))
+        .addRemoveFile(Path.join(Process.LOG_PATH, Utilities.format('%s.test.log', Package.name)))
         .execute(complete, fail);
     });
 
     desc('Delete server test-related log files');
     task('server', ['log'], {'async': true}, function () {
       FileSystemTask.createTask(this.fullName)
-          .removeFile(Path.join(Process.LOG_PATH, Utilities.format('%s.mocha.log', Package.name)))
-        .removeFile(Path.join(Process.LOG_PATH, Utilities.format('%s.test.log', Package.name)))
-        .removeFile(Path.join(Process.LOG_PATH, Utilities.format('%s.master.test.log', Package.name)))
-        .removeFile(Path.join(Process.LOG_PATH, Utilities.format('%s.worker.test.log', Package.name)))
+        .addRemoveFile(Path.join(Process.LOG_PATH, Utilities.format('%s.mocha.log', Package.name)))
+        .addRemoveFile(Path.join(Process.LOG_PATH, Utilities.format('%s.test.log', Package.name)))
+        .addRemoveFile(Path.join(Process.LOG_PATH, Utilities.format('%s.master.test.log', Package.name)))
+        .addRemoveFile(Path.join(Process.LOG_PATH, Utilities.format('%s.worker.test.log', Package.name)))
         .execute(complete, fail);
     });
 

@@ -16,12 +16,14 @@
   ],
   "dependencies": {
     "async": "^1.5.2",
+    "DateJS": "^1.0.0-rc3",
+    "human-format": "^0.6.0",
+    "mocha": "^2.5.3",
+    "moment": "^2.13.0",
     "uikit": "^2.26.3",
-    "util": "^3.46.1",
     "underscore.string": "^3.3.4",
-    "human-format": "^0.6.0"
+    "util": "^3.46.1"
   },
   "devDependencies": {
-    "mocha": "^2.5.3"
   }
 }

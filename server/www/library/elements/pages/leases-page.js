@@ -7,10 +7,10 @@ var Element = require('../../element');
 var Log = require('../../log');
 var Page = require('../page');
 
-// var LeasePage = require('./lease-page');
+var LeasePage = require('./lease-page');
 var LeasesTable = require('../tables/leases-table');
 
-var pagePrototype = Page.getContentPrototype();
+var pagePrototype = Page.getElementPrototype();
 var leasesPagePrototype = Object.create(pagePrototype);
 
 leasesPagePrototype.bind = function() {
@@ -53,7 +53,7 @@ leasesPagePrototype.unbind = function() {
 leasesPagePrototype.onShown = function(event) {
   Log.info('> LeasesPage.onShown(event) { ... } event.isInitial=%s', event.isInitial);
   var self = event.data.this;
-  self.refreshElements(LeasesTable);
+  self.refreshElements(LeasesTable, Application.ifNotError());
 };
 
 leasesPagePrototype.onHidden = function(event) {
@@ -78,28 +78,38 @@ leasesPagePrototype.onGoBack = function(event) {
 leasesPagePrototype.onRefresh = function(event) {
   Log.info('> LeasesPage.onRefresh(event) { ... }');
   var self = event.data.this;
-  self.refreshElements(LeasesTable);
+  self.refreshElements(LeasesTable, Application.ifNotError());
 };
 
 leasesPagePrototype.onAddLease = function(event) {
   Log.info('> LeasesPage.onAddLease(event) { ... }');
-  // window.application.showPage(LeasePage.createElement({}), Application.ifNotError());
+  window.application.showPage(LeasePage.createElement(LeasePage.Source.createSource({})), Application.ifNotError());
 };
 
 leasesPagePrototype.onSelected = function(event) {
-  Log.info('> LeasesPage.onSelected(event) { ... }\n\n%s\n\n', Utilities.inspect(JSON.parse(event.currentTarget.dataset.leaseId)));
 
-  // var self = event.data.this;
-  // var leaseId = JSON.parse(event.currentTarget.dataset.leaseId);
-  //
-  // Asynchronous.waterfall([
-  //   function(callback) {
-  //     Application.GET(Utilities.format('/api/leases/%s', leaseId.from), callback);
-  //   },
-  //   function(lease, callback) {
-  //     window.application.showPage(LeasePage.createElement(lease), Application.ifNotError());
-  //   }
-  // ], Application.ifNotError());
+  var self = event.data.this;
+  var leaseId = JSON.parse(event.currentTarget.dataset.leaseId);
+
+  Asynchronous.waterfall([
+    function(callback) {
+      Application.GET(Utilities.format('/api/leases/%s/%s/%s', leaseId.address, leaseId.fromAsISOString, leaseId.toAsISOString), callback);
+    },
+    // function(lease, callback) {
+    //   Application.GET(Utilities.format('/api/translations/%s', lease.device), function(error, deviceTranslation) {
+    //     callback(error, lease, deviceTranslation);
+    //   });
+    // },
+    // function(lease, deviceTranslation, callback) {
+    //   Application.GET(Utilities.format('/api/translations/%s', lease.host), function(error, hostTranslation) {
+    //     callback(error, lease, deviceTranslation, hostTranslation);
+    //   });
+    // },
+    function(lease, callback) {
+    // function(lease, deviceTranslation, hostTranslation, callback) {
+      window.application.showPage(LeasePage.createElement(LeasePage.Source.createSource(lease)), callback);
+    }
+  ], Application.ifNotError());
 
 };
 
@@ -108,7 +118,6 @@ leasesPagePrototype.hasElements = function() {
 };
 
 leasesPagePrototype.getElements = function(Class) {
-  // Log.debug('< LeasesPage.getElements(Class) { ... }');
   return pagePrototype.getElements.call(this, Class).concat(Element.filter([
     this.leasesTable
   ], Class));
@@ -123,8 +132,6 @@ leasesPagePrototype.refreshElements = function(Class, callback) {
   }
 
   var self = this;
-
-  // Log.debug('= LeasesPage.refreshElements(Class, callback) { ... } this.getElements(Class).length=%d', this.getElements(Class).length);
 
   Asynchronous.each(this.getElements(Class), function(element, callback) {
     switch (element) {
@@ -164,12 +171,7 @@ leasesPagePrototype.refreshLeasesTable = function(callback) {
     },
     function(leases, callback) {
       callback(null, leases.map(function(lease) {
-        lease.id = {
-          'address': lease.address,
-          'from': lease.from,
-          'to': lease.to
-        };
-        return lease;
+        return LeasePage.Source.createSource(lease);
       }));
     },
     function(leases, callback) {
@@ -218,7 +220,7 @@ LeasesPage.isElement = function(leasesPage) {
   return leasesPagePrototype.isPrototypeOf(leasesPage);
 };
 
-LeasesPage.getContentPrototype = function() {
+LeasesPage.getElementPrototype = function() {
   return leasesPagePrototype;
 };
 

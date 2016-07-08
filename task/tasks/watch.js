@@ -19,7 +19,7 @@ namespace('watch', function() {
   desc(Utilities.format('Run watch process once %j, output to %j', Path.trim(DEFAULT_SOURCE_PATH), Path.trim(DEFAULT_TARGET_PATH)));
   task('once', ['log'], {'async': true}, function () {
     Task.createTask(this.fullName)
-      .addExistsProcess('watchify')
+      // .addExistsProcess('watchify')
       .add('browserify %j "--outfile=%s" --debug', DEFAULT_SOURCE_PATH, DEFAULT_TARGET_PATH)
       .add('browserify %j "--outfile=%s" --debug', TEST_SOURCE_PATH, TEST_TARGET_PATH)
       .execute(complete, fail);
@@ -48,15 +48,15 @@ namespace('watch', function() {
   desc(Utilities.format('Start the watch processes on %j and %j, output to %j and %j', Path.trim(DEFAULT_SOURCE_PATH), Path.trim(TEST_SOURCE_PATH), Path.trim(DEFAULT_TARGET_PATH), Path.trim(TEST_TARGET_PATH)));
   task('start', ['log', 'clean:watch'], {'async': true}, function () {
 
-    var _this = this;
+    var self = this;
 
     Asynchronous.waterfall([
       function(callback) {
         BackgroundTask.createOptions(Task.IGNORE, OPTIONS_STDIO_STDOUT_PATH, OPTIONS_STDIO_STDOUT_PATH, callback);
       },
       function(options, callback) {
-        BackgroundTask.createTask(_this.fullName)
-          .addExistsProcess('watchify')
+        BackgroundTask.createTask(self.fullName)
+          // .addExistsProcess('watchify')
           .add('echo "Starting PID\'s ... "', options)
           .add('watchify %j "--outfile=%s" --debug --verbose', DEFAULT_SOURCE_PATH, DEFAULT_TARGET_PATH, options)
           .add('watchify %j "--outfile=%s" --debug --verbose', TEST_SOURCE_PATH, TEST_TARGET_PATH, options)
@@ -75,14 +75,14 @@ namespace('watch', function() {
   desc('Stop the watch process');
   task('stop', ['log'], {'async': true}, function () {
 
-    var _this = this;
+    var self = this;
 
     Asynchronous.waterfall([
       function(callback) {
         Task.createOptions(Task.IGNORE, OPTIONS_STDIO_STDOUT_PATH, OPTIONS_STDIO_STDOUT_PATH, callback);
       },
       function(options, callback) {
-        Task.createTask(_this.fullName)
+        Task.createTask(self.fullName)
           .add('echo "Killing PID\'s ... "', options)
           .add('pgrep -f watchify', options)
           .add('pkill -f watchify', options)

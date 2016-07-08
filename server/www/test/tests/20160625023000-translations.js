@@ -178,11 +178,11 @@ describe('TranslationsPage', function() {
       Assert.onPage('Translation');
     });
 
-    it('should contain the from from03 on the Translation page when the from03 translation is clicked', function() {
+    it('should contain the From from03 on the Translation page when the from03 translation is clicked', function() {
       Assert.existsInputValue('from', 'from03');
     });
 
-    it('should contain the to to03 on the Translation page when the from03 translation is clicked', function() {
+    it('should contain the To to03 on the Translation page when the from03 translation is clicked', function() {
       Assert.existsInputValue('to', 'to03');
     });
 
@@ -191,7 +191,6 @@ describe('TranslationsPage', function() {
     });
 
   });
-
 
   describe('TranslationsPage to TranslationPage on Selected and Back', function() {
 

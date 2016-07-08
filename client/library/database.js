@@ -29,7 +29,7 @@ Database.openConnection = function(path, options, taskFn, callback) {
 
   Asynchronous.waterfall([
     function(callback) {
-      Log.info('> OPEN %s %j', Path.trim(path), options, {});
+      Log.info('> OPEN %s', Path.trim(path));
       Database.createConnection(path, callback);
     },
     function(connection, callback) {
@@ -55,7 +55,7 @@ Database.openConnection = function(path, options, taskFn, callback) {
 
         connection.close(function(_error) {
           if (!_error)
-            Log.info('< CLOSE %s %j', Path.trim(path), options, {});
+            Log.info('< CLOSE %s', Path.trim(path));
           argumentsArray[0] = error || _error;
           // Log.debug('= Database.openConnection(path, options, taskFn, callback) { ... }\n\nargumentsArray\n--------------\n%s\n\n', Utilities.inspect(argumentsArray, {'depth': null}));
           callback.apply(callback, argumentsArray);

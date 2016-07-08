@@ -1,6 +1,6 @@
 var Page = require('../page');
 
-var pagePrototype = Page.getContentPrototype();
+var pagePrototype = Page.getElementPrototype();
 var blankPagePrototype = Object.create(pagePrototype);
 
 blankPagePrototype.bind = function() {
@@ -35,7 +35,7 @@ BlankPage.isElement = function(blankPage) {
   return blankPagePrototype.isPrototypeOf(blankPage);
 };
 
-BlankPage.getContentPrototype = function() {
+BlankPage.getElementPrototype = function() {
   return blankPagePrototype;
 };
 

@@ -205,7 +205,7 @@ Command
 
     Asynchronous.series([
       function(callback) {
-        Application.validateAddTranslation(_from, callback);
+        Application.validateAddTranslation(_from, _to, callback);
       },
       function(callback) {
         Application.addTranslation(_from, _to, databasePath || DATABASE_PATH, {

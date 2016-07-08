@@ -26,29 +26,29 @@ taskPrototype[tasksSymbol] = [];
 
 taskPrototype.add = function(task, options) {
 
-  var _this = this;
+  var self = this;
   var argumentsObject = Task.getAddArguments(task, options, arguments);
 
-  Log.info('> [%s] Task.add(task, options) { ... }\n\n%s\n\n', _this.name, Utilities.inspect(argumentsObject));
+  Log.info('> [%s] Task.add(task, options) { ... }\n\n%s\n', self.name, Utilities.inspect(argumentsObject));
 
   if (argumentsObject.isCommand) {
 
     this[tasksSymbol].push(function(callback) {
 
-      var _options = argumentsObject.options || _this.options || Task.OPTIONS_STDIO_INHERIT;
+      var _options = argumentsObject.options || self.options || Task.OPTIONS_STDIO_INHERIT;
 
-      Log.debug('> [%s] %s', _this.name, argumentsObject.command.concat(' ', argumentsObject.arguments.map(function(argument) {
+      Log.info('> [%s] %s', self.name, argumentsObject.command.concat(' ', argumentsObject.arguments.map(function(argument) {
         return '"'.concat(argument, '"');
       }).join(' ')));
 
-      Log.info('> [%s] ChildProcess.spawn(%j, %j, options)', _this.name, argumentsObject.command, argumentsObject.arguments);
+      // Log.info('> [%s] ChildProcess.spawn(%j, arguments, options)\n\n%s\n\n', self.name, argumentsObject.command, Utilities.inspect(argumentsObject.arguments));
       var _process = ChildProcess.spawn(argumentsObject.command, argumentsObject.arguments, _options);
 
       if (_options.detached) {
 
         _process.unref();
 
-        Log.info('< [%s] ChildProcess.spawn(%j, %j, options)', _this.name, argumentsObject.command, argumentsObject.arguments);
+        // Log.info('< [%s] ChildProcess.spawn(%j, arguments, options)\n\n%s\n\n', self.name, argumentsObject.command, Utilities.inspect(argumentsObject.arguments));
         callback(null);
 
       }
@@ -62,12 +62,12 @@ taskPrototype.add = function(task, options) {
 
         _process.once('close', function(code) {
           if (error) {
-            Log.error('< [%s] ChildProcess.spawn(%j, %j, options)', _this.name, argumentsObject.command, argumentsObject.arguments);
+            Log.error('< [%s] ChildProcess.spawn(%j, arguments, options)\n\n%s\n\n', self.name, argumentsObject.command, Utilities.inspect(argumentsObject.arguments));
             Log.error('         error.message=%j\n\n%s\n\n', error.message, error.stack);
             callback(error);
           }
           else if (code > 0) {
-            Log.error('< [%s] ChildProcess.spawn(%j, %j, options)', _this.name, argumentsObject.command, argumentsObject.arguments);
+            Log.error('< [%s] ChildProcess.spawn(%j, arguments, options)\n\n%s\n\n', self.name, argumentsObject.command, Utilities.inspect(argumentsObject.arguments));
             Log.error('         code=%d', code);
             callback(new ProcessError(Utilities.format('The command returned a non-zero result (code=%d).', code), code));
           }
@@ -83,7 +83,7 @@ taskPrototype.add = function(task, options) {
   }
   else if (argumentsObject.isFunction) {
 
-    var argumentsFunction = argumentsObject.function;
+    var argumentsFunction = argumentsObject.function.bind(this);
 
     if (argumentsObject.function.length == 0) {
       argumentsObject.function = function(callback) {
@@ -98,7 +98,7 @@ taskPrototype.add = function(task, options) {
       };
     }
 
-    this[tasksSymbol].push(argumentsObject.function);
+    this[tasksSymbol].push(argumentsObject.function.bind(this));
 
   }
 
@@ -116,29 +116,30 @@ taskPrototype.addLine = function(options) {
 
 taskPrototype.execute = function(resolve, reject) {
 
-  var _this = this;
+  var self = this;
 
-  _this.add('echo "FINISH %j"', _this.name, _this.options);
+  self.add('echo "FINISH %j"', self.name, self.options);
 
-  Log.info('> [%s] Task.execute(resolve, reject) { ... }', _this.name);
+  Log.info('> [%s] Task.execute(resolve, reject) { ... }', self.name);
   Asynchronous.series(this[tasksSymbol], function(error) {
     if (error) {
-      Log.error('< [%s] Task.execute(resolve, reject) { ... }', _this.name);
+      Log.error('< [%s] Task.execute(resolve, reject) { ... }', self.name);
       Log.error('         error.message=%j\n\n%s\n\n', error.message, error.stack);
       (reject || resolve)(error);
     }
     else
       resolve(null);
   });
+
 };
 
 taskPrototype.executeToLog = function() {
 
-  var _this = this;
+  var self = this;
 
   this.execute(function(error) {
     if (error) {
-      Log.error('< [%s] Task.executeToLog() { ... }', _this.name);
+      Log.error('< [%s] Task.executeToLog() { ... }', self.name);
       Log.error('         error.message=%j\n\n%s\n', error.message, error.stack);
     }
   });
@@ -147,11 +148,11 @@ taskPrototype.executeToLog = function() {
 
 taskPrototype.executeToConsole = function() {
 
-  var _this = this;
+  var self = this;
 
   this.execute(function(error) {
     if (error) {
-      console.error('< [%s] Task.executeToConsole() { ... }', _this.name);
+      console.error('< [%s] Task.executeToConsole() { ... }', self.name);
       console.error('         error.message=%j\n\n%s\n', error.message, error.stack);
     }
   });

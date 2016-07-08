@@ -34,10 +34,10 @@ Object.defineProperty(Application, 'LOG_PATH', {
 
 Application.executeCommand = function(command, callback) {
 
-  var _this = this;
+  var self = this;
 
-  Log.info('> ./client.js %s %j --logPath %j', command, _this.DATABASE_PATH, _this.LOG_PATH);
-  ChildProcess.exec(Utilities.format('./client.js %s %j --logPath %j', command, _this.DATABASE_PATH, _this.LOG_PATH), function(error, stdout, stderr) {
+  Log.info('> ./client.js %s %j --logPath %j', command, self.DATABASE_PATH, self.LOG_PATH);
+  ChildProcess.exec(Utilities.format('./client.js %s %j --logPath %j', command, self.DATABASE_PATH, self.LOG_PATH), function(error, stdout, stderr) {
 
     var _command = command;
     _command = _command.match(REGEXP_SPLIT);
@@ -55,7 +55,7 @@ Application.executeCommand = function(command, callback) {
         FileSystem.writeFile(Path.join(Process.OUTPUT_PATH, Utilities.format('%s.err', _command)), stderr, callback);
       },
       function(callback) {
-        Log.info('< ./client.js %s %j --logPath %j', command, _this.DATABASE_PATH, _this.LOG_PATH);
+        Log.info('< ./client.js %s %j --logPath %j', command, self.DATABASE_PATH, self.LOG_PATH);
         if (error) {
           Log.info('       error.code=%j', error.code);
           Log.info('    error.message=%j', error.message);

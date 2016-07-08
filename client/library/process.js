@@ -182,7 +182,7 @@ Process.exit = function(code) {
 
   Log.info('> Process.exit(%j)', code);
 
-  var _this = this;
+  var self = this;
 
   setTimeout(function() {
     process.exit.call(code);

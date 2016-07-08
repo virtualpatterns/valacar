@@ -144,10 +144,17 @@ describe('POST /api/translations', function() {
     }, 201, callback);
   });
 
-  it('should respond to POST /api/translations with an invalid translation with 500 Internal Server Error', function(callback) {
+  it('should respond to POST /api/translations with an invalid translation from with 500 Internal Server Error', function(callback) {
     Application.isPOSTStatusCode('/api/translations', {
       'from': '@from08',
       'to': 'to08'
+    }, 500, callback);
+  });
+
+  it('should respond to POST /api/translations with an invalid translation to with 500 Internal Server Error', function(callback) {
+    Application.isPOSTStatusCode('/api/translations', {
+      'from': 'from09',
+      'to': ''
     }, 500, callback);
   });
 

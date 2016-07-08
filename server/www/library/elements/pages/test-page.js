@@ -3,7 +3,7 @@ var Mocha = mocha;
 var Log = require('../../log');
 var Page = require('../page');
 
-var pagePrototype = Page.getContentPrototype();
+var pagePrototype = Page.getElementPrototype();
 var testPagePrototype = Object.create(pagePrototype);
 
 testPagePrototype.bind = function() {
@@ -53,6 +53,8 @@ testPagePrototype.onShown = function(event) {
       require('../../../test/tests/20160622173800-default');
       require('../../../test/tests/20160625023000-translations');
       require('../../../test/tests/20160627004000-translation');
+      require('../../../test/tests/20160706232900-leases');
+      // require('../../../test/tests/20160707002900-lease');
       require('../../../test/tests/99999999999999-end');
 
       var tests = Mocha.run();
@@ -68,12 +70,12 @@ testPagePrototype.onShown = function(event) {
       // 'pass'      (test) test passed
       // 'fail'      (test, err) test failed
 
-      tests.on('end', self.onFinished.bind(this, tests.stats));
+      tests.on('end', self.onFinished.bind(self, tests.stats));
 
     }
     catch (error) {
       Log.error('> TestPage.onShown(event) { ... }');
-      Log.error('    error.message=%j', error.message);
+      Log.error('    error.message=%j\n\n%s\n\n', error.message, error.stack);
       UIkit.modal.alert(error.message);
     }
 
@@ -119,7 +121,7 @@ TestPage.isElement = function(testPage) {
   return testPagePrototype.isPrototypeOf(testPage);
 };
 
-TestPage.getContentPrototype = function() {
+TestPage.getElementPrototype = function() {
   return testPagePrototype;
 };
 

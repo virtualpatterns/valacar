@@ -190,28 +190,28 @@ Application._getTranslation = function (_from, connection, callback) {
 
 Application.getTranslation = function (_from, databasePath, options, callback) {
 
-  var _this = this;
+  var self = this;
 
-  _this.openDatabase(databasePath, options, function(connection, callback) {
-    _this._getTranslation(_from, connection, callback);
+  self.openDatabase(databasePath, options, function(connection, callback) {
+    self._getTranslation(_from, connection, callback);
   }, callback);
 
 };
 
 Application.postTranslation = function (_from, _to, databasePath, options, callback) {
 
-  var _this = this;
+  var self = this;
 
-  _this.openDatabase(databasePath, options, function(connection, callback) {
+  self.openDatabase(databasePath, options, function(connection, callback) {
     Asynchronous.waterfall([
       function(callback) {
-        _this.validateAddTranslation(_from, callback);
+        self.validateAddTranslation(_from, _to, callback);
       },
       function(callback) {
-        _this._addTranslation(_from, _to, connection, callback);
+        self._addTranslation(_from, _to, connection, callback);
       },
       function(callback) {
-        _this._getTranslation(_from, connection, callback);
+        self._getTranslation(_from, connection, callback);
       }
     ], callback);
   }, callback);
@@ -228,14 +228,14 @@ Application.deleteTranslations = function (databasePath, options, callback) {
 
 Application.deleteTranslation = function (_from, databasePath, options, callback) {
 
-  var _this = this;
+  var self = this;
 
   Asynchronous.waterfall([
     function(callback) {
-      _this.validateRemoveTranslation(_from, callback);
+      self.validateRemoveTranslation(_from, callback);
     },
     function(callback) {
-      _this.removeTranslation(_from, databasePath, options, callback);
+      self.removeTranslation(_from, databasePath, options, callback);
     }
   ], callback);
 
@@ -257,28 +257,28 @@ Application._getLease = function (address, _from, _to, connection, callback) {
 
 Application.getLease = function (address, _from, _to, databasePath, options, callback) {
 
-  var _this = this;
+  var self = this;
 
-  _this.openDatabase(databasePath, options, function(connection, callback) {
-    _this._getLease(address, _from, _to, connection, callback);
+  self.openDatabase(databasePath, options, function(connection, callback) {
+    self._getLease(address, _from, _to, connection, callback);
   }, callback);
 
 };
 
 Application.postLease = function (address, device, host, databasePath, options, callback) {
 
-  var _this = this;
+  var self = this;
 
-  _this.openDatabase(databasePath, options, function(connection, callback) {
+  self.openDatabase(databasePath, options, function(connection, callback) {
     Asynchronous.waterfall([
       function(callback) {
-        _this.validateAddLease(address, device, host, callback);
+        self.validateAddLease(address, device, host, callback);
       },
       function(callback) {
-        _this._addLease(address, device, host, connection, callback);
+        self._addLease(address, device, host, connection, callback);
       },
       function(callback) {
-        _this._getLease(address, Database.MINIMUM_DATE, Database.MINIMUM_DATE, connection, callback);
+        self._getLease(address, Database.MINIMUM_DATE, Database.MINIMUM_DATE, connection, callback);
       }
     ], callback);
   }, callback);
@@ -295,14 +295,14 @@ Application.deleteLeases = function (databasePath, options, callback) {
 
 Application.deleteLease = function (address, databasePath, options, callback) {
 
-  var _this = this;
+  var self = this;
 
   Asynchronous.waterfall([
     function(callback) {
-      _this.validateRemoveLease(address, callback);
+      self.validateRemoveLease(address, callback);
     },
     function(callback) {
-      _this.removeLease(address, databasePath, options, callback);
+      self.removeLease(address, databasePath, options, callback);
     }
   ], callback);
 

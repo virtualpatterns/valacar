@@ -1,11 +1,44 @@
-var Is = require('@pwn/is');
 var Utilities = require('util');
 
 var Application = require('../../application');
 var Log = require('../../log');
 var Page = require('../page');
 
-var pagePrototype = Page.getContentPrototype();
+var pageSourcePrototype = Page.Source.getSourcePrototype();
+var translationPageSourcePrototype = Object.create(pageSourcePrototype);
+
+var TranslationPageSource = Object.create(Page.Source);
+
+TranslationPageSource.createSourceId = function(translation) {
+  // Log.info('> TranslationPageSource.createSourceId(translation) { ... }\n\n%s\n\n', Utilities.inspect(translation));
+  return {
+    'from': translation.from
+  };
+};
+
+TranslationPageSource.createSource = function(translation, prototype) {
+  // Log.info('> TranslationPageSource.createSource(translation, prototype) { ... }\n\n%s\n\n', Utilities.inspect(translation));
+
+  var translationPageSource = Page.Source.createSource.call(this, this.createSourceId(translation), prototype || translationPageSourcePrototype);
+
+  Object.assign(translationPageSource, translation);
+
+  translationPageSource.isNew = !translationPageSource.inserted
+  translationPageSource.isExisting = translationPageSource.inserted
+
+  return translationPageSource;
+
+};
+
+TranslationPageSource.isSource = function(source) {
+  return translationPageSourcePrototype.isPrototypeOf(source);
+};
+
+TranslationPageSource.getSourcePrototype = function() {
+  return translationPageSourcePrototype;
+};
+
+var pagePrototype = Page.getElementPrototype();
 var translationPagePrototype = Object.create(pagePrototype);
 
 translationPagePrototype.bind = function() {
@@ -45,11 +78,13 @@ translationPagePrototype.onDone = function(event) {
   Log.info('> TranslationPage.onDone(event) { ... }');
 
   var self = event.data.this;
+  var source = Object.assign({}, self.source);
 
-  Application.POST('/api/translations', {
-    'from': self.getContent().find('#from').val(),
-    'to': self.getContent().find('#to').val()
-  }, Application.ifNotError(function() {
+  source.from = self.getContent().find('#from').val();
+  source.to = self.getContent().find('#to').val();
+
+  Application.POST('/api/translations', source, Application.ifNotError(function(translation) {
+    Log.debug('< TranslationPage.onDone(event) { ... }\n\n%s\n\n', Utilities.inspect(translation));
     window.application.hidePage();
   }));
 
@@ -59,9 +94,13 @@ translationPagePrototype.onDelete = function(event) {
   Log.info('> TranslationPage.onDelete(event) { ... }');
 
   var self = event.data.this;
+  var source = Object.assign({}, self.source);
 
-  UIkit.modal.confirm(Utilities.format('Are you sure you want to delete the translation from %j to %j?', self.getContent().find('#from').val(), self.getContent().find('#to').val()), function(){
-    Application.DELETE(Utilities.format('/api/translations/%s', self.getContent().find('#from').val()), Application.ifNotError(function() {
+  source.from = self.getContent().find('#from').val();
+  source.to = self.getContent().find('#to').val();
+
+  UIkit.modal.confirm(Utilities.format('Are you sure you want to delete the translation from %j?', source.from), function(){
+    Application.DELETE(Utilities.format('/api/translations/%s', source.from), Application.ifNotError(function() {
       window.application.hidePage();
     }));
   }, {
@@ -75,14 +114,14 @@ translationPagePrototype.onDelete = function(event) {
 
 var TranslationPage = Object.create(Page);
 
-TranslationPage.createElement = function(translation, templateURL, prototype) {
+TranslationPage.createElement = function(source, templateURL, prototype) {
 
   var translationPage = Page.createElement.call(this, templateURL || '/www/views/elements/pages/translation-page.jade', prototype || translationPagePrototype);
 
-  Object.defineProperty(translationPage, 'translation', {
+  Object.defineProperty(translationPage, 'source', {
     'enumerable': false,
     'writable': false,
-    'value': translation
+    'value': source
   });
 
   return translationPage;
@@ -93,8 +132,10 @@ TranslationPage.isElement = function(translationPage) {
   return translationPagePrototype.isPrototypeOf(translationPage);
 };
 
-TranslationPage.getContentPrototype = function() {
+TranslationPage.getElementPrototype = function() {
   return translationPagePrototype;
 };
+
+TranslationPage.Source = TranslationPageSource;
 
 module.exports = TranslationPage;

@@ -1,7 +1,7 @@
 var Element = require('../element');
 var Log = require('../log');
 
-var elementPrototype = Element.getContentPrototype();
+var elementPrototype = Element.getElementPrototype();
 var bodyPrototype = Object.create(elementPrototype);
 
 bodyPrototype.bind = function() {
@@ -19,21 +19,19 @@ bodyPrototype.bind = function() {
 
 bodyPrototype.unbind = function() {
 
-  this.getContent().off('hide.uk.modal', this.onModalHidden);
-  this.getContent().off('show.uk.modal', this.onModalShown);
+  this.getContent().off('hide.uk.modal', window.application.onModalHidden);
+  this.getContent().off('show.uk.modal', window.application.onModalShown);
 
   elementPrototype.unbind.call(this);
 
 };
 
 bodyPrototype.onModalShown = function(event) {
-  Log.info('> Body.onModalShown(event) { ... }');
-  window.application.triggerModalShown();
+  window.application.onModalShown(event);
 };
 
 bodyPrototype.onModalHidden = function(event) {
-  Log.info('> Body.onModalHidden(event) { ... }');
-  window.application.triggerModalHidden();
+  window.application.onModalHidden(event);
 };
 
 var Body = Object.create(Element);
@@ -46,7 +44,7 @@ Body.isElement = function(body) {
   return bodyPrototype.isPrototypeOf(body);
 };
 
-Body.getContentPrototype = function() {
+Body.getElementPrototype = function() {
   return bodyPrototype;
 };
 

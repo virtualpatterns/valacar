@@ -105,7 +105,7 @@ describe('TranslationPage', function() {
 
   });
 
-  describe('TranslationPage (blank translation) on valid From on Done', function() {
+  describe('TranslationPage (blank translation) on valid From and To on Done', function() {
 
     beforeEach(function(callback) {
       Asynchronous.series([
@@ -188,7 +188,47 @@ describe('TranslationPage', function() {
 
   });
 
-  describe('TranslationPage (existing translation) on Delete', function() {
+  describe('TranslationPage (blank translation) on invalid To on Done', function() {
+
+    beforeEach(function(callback) {
+      Asynchronous.series([
+        function(callback) {
+          Assert.showPage(TranslationPage.createElement({}), callback);
+        },
+        function(callback) {
+          Assert.inputValue('from', 'from03.5', callback);
+        },
+        function(callback) {
+          Assert.inputValue('to', '', callback);
+        },
+        function(callback) {
+          Assert.waitForModalShown(function() {
+            Assert.clickLink('Done');
+          }, callback);
+        }
+      ], callback);
+    });
+
+    it('should display the alert "The translation to \'\' is invalid."', function() {
+      Assert.existsAlert('The translation to "" is invalid.');
+    });
+
+    afterEach(function(callback) {
+      Asynchronous.series([
+        function(callback) {
+          Assert.waitForModalHidden(function() {
+            Assert.clickOk();
+          }, callback);
+        },
+        function(callback) {
+          Assert.hidePage(callback);
+        }
+      ], callback);
+    });
+
+  });
+
+  describe('TranslationPage (existi ng translation) on Delete', function() {
 
     beforeEach(function(callback) {
       Asynchronous.waterfall([
@@ -209,8 +249,8 @@ describe('TranslationPage', function() {
       ], callback);
     });
 
-    it('should display the confirmation "Are you sure you want to delete the translation from \'from04\' to \'to04\'?"', function() {
-      Assert.existsConfirmation('Are you sure you want to delete the translation from "from04" to "to04"?');
+    it('should display the confirmation "Are you sure you want to delete the translation from \'from04\'?"', function() {
+      Assert.existsConfirmation('Are you sure you want to delete the translation from "from04"?');
     });
 
     afterEach(function(callback) {

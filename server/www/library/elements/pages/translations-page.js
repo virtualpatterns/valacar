@@ -10,7 +10,7 @@ var Page = require('../page');
 var TranslationPage = require('./translation-page');
 var TranslationsTable = require('../tables/translations-table');
 
-var pagePrototype = Page.getContentPrototype();
+var pagePrototype = Page.getElementPrototype();
 var translationsPagePrototype = Object.create(pagePrototype);
 
 translationsPagePrototype.bind = function() {
@@ -58,7 +58,7 @@ translationsPagePrototype.unbind = function() {
 translationsPagePrototype.onShown = function(event) {
   Log.info('> TranslationsPage.onShown(event) { ... } event.isInitial=%s', event.isInitial);
   var self = event.data.this;
-  self.refreshElements(TranslationsTable);
+  self.refreshElements(TranslationsTable, Application.ifNotError());
 };
 
 translationsPagePrototype.onHidden = function(event) {
@@ -83,7 +83,7 @@ translationsPagePrototype.onGoBack = function(event) {
 translationsPagePrototype.onRefresh = function(event) {
   Log.info('> TranslationsPage.onRefresh(event) { ... }');
   var self = event.data.this;
-  self.refreshElements(TranslationsTable);
+  self.refreshElements(TranslationsTable, Application.ifNotError());
 };
 
 // translationsPagePrototype.onRefreshed = function(event) {
@@ -92,7 +92,7 @@ translationsPagePrototype.onRefresh = function(event) {
 
 translationsPagePrototype.onAddTranslation = function(event) {
   Log.info('> TranslationsPage.onAddTranslation(event) { ... }');
-  window.application.showPage(TranslationPage.createElement({}), Application.ifNotError());
+  window.application.showPage(TranslationPage.createElement(TranslationPage.Source.createSource({})), Application.ifNotError());
 };
 
 translationsPagePrototype.onSelected = function(event) {
@@ -106,7 +106,7 @@ translationsPagePrototype.onSelected = function(event) {
       Application.GET(Utilities.format('/api/translations/%s', translationId.from), callback);
     },
     function(translation, callback) {
-      window.application.showPage(TranslationPage.createElement(translation), Application.ifNotError());
+      window.application.showPage(TranslationPage.createElement(TranslationPage.Source.createSource(translation)), callback);
     }
   ], Application.ifNotError());
 
@@ -173,10 +173,7 @@ translationsPagePrototype.refreshTranslationsTable = function(callback) {
     },
     function(translations, callback) {
       callback(null, translations.map(function(translation) {
-        translation.id = {
-          'from': translation.from
-        };
-        return translation;
+        return TranslationPage.Source.createSource(translation);
       }));
     },
     function(translations, callback) {
@@ -225,7 +222,7 @@ TranslationsPage.isElement = function(translationsPage) {
   return translationsPagePrototype.isPrototypeOf(translationsPage);
 };
 
-TranslationsPage.getContentPrototype = function() {
+TranslationsPage.getElementPrototype = function() {
   return translationsPagePrototype;
 };
 

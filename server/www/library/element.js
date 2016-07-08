@@ -5,12 +5,42 @@ var Utilities = require('util');
 
 var Log = require('./log');
 
+var elementSourcePrototype = Object.create({});
+
+var ElementSource = Object.create({});
+
+ElementSource.createSourceId = function() {
+  Log.info('> ElementSource.createSourceId() { ... }');
+  return null;
+};
+
+ElementSource.createSource = function(id, prototype) {
+  Log.info('> ElementSource.createSource(prototype) { ... }');
+
+  var elementSource = Object.create(prototype || elementSourcePrototype);
+
+  Object.defineProperty(elementSource, 'id', {
+    'enumerable': true,
+    'writable': false,
+    'value': id
+  });
+
+  return elementSource;
+
+};
+
+ElementSource.isSource = function(elementSource) {
+  return elementSourcePrototype.isPrototypeOf(elementSource);
+};
+
+ElementSource.getSourcePrototype = function() {
+  return elementSourcePrototype;
+};
+
 var elementPrototype = Object.create({});
 
 elementPrototype.show = function() {
   Element.show(this.getContent());
-  // this.getContent()
-  //   .toggleClass('uk-hidden', false);
   this.triggerShown();
 };
 
@@ -20,8 +50,6 @@ elementPrototype.triggerShown = function(data) {
 
 elementPrototype.hide = function() {
   Element.hide(this.getContent());
-  // this.getContent()
-  //   .toggleClass('uk-hidden', true);
   this.triggerHidden();
 };
 
@@ -52,6 +80,7 @@ elementPrototype.render = function(data, callback) {
   jQuery.get(self.templateURL)
     .done(function(templateData) {
 
+      var error = null;
       var content = null;
 
       try {
@@ -76,13 +105,13 @@ elementPrototype.render = function(data, callback) {
         content = Element.hide(content);
         Log.info('< templateFn(data)\n\n%s\n\n', content);
 
-      } catch (error) {
+      } catch (_error) {
         // Leave it like this!
-        Log.error('< Element.render(data, callback)\n\n%s\n\n', error.message);
-        callback(new URIError(Utilities.format('An error occurred rendering the element template at %j.', self.templateURL)));
+        Log.error('< Element.render(data, callback)\n\nerror.message\n-------------\n%s\n\nerror.stack\n-------------\n%s\n\n', _error.message, _error.stack);
+        error = new URIError(Utilities.format('An error occurred rendering the element template at %j.', self.templateURL));
       }
 
-      callback(null, content);
+      callback(error, content);
 
     })
     .fail(function(request, status, error) {
@@ -129,6 +158,8 @@ Object.defineProperty(Element, 'nextId', {
   'value': 0
 });
 
+Element.Source = ElementSource;
+
 Element.createElement = function(templateURL, prototype) {
   Log.info('> Element.createElement(%j, prototype) { ... }', templateURL);
 
@@ -154,7 +185,7 @@ Element.isElement = function(element) {
   return elementPrototype.isPrototypeOf(element);
 };
 
-Element.getContentPrototype = function() {
+Element.getElementPrototype = function() {
   return elementPrototype;
 };
 

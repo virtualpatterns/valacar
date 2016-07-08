@@ -1,0 +1,13 @@
+div(id=element.id).uk-modal.v-element.v-modal.v-lease-instructions-modal
+  div.uk-modal-dialog
+    button( id='close',
+            type='button').uk-close
+    | Add, update, or remove the following lines from 
+    code /etc/dhcp/dhcpd.conf
+    |  ...
+    pre
+      code.
+        host #{element.source.host} {
+          hardware ethernet #{element.source.device};
+          fixed-address #{element.source.address};
+        }

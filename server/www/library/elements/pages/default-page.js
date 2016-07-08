@@ -10,7 +10,7 @@ var Page = require('../page');
 var LeasesPage = require('./leases-page');
 var TranslationsPage = require('./translations-page');
 
-var pagePrototype = Page.getContentPrototype();
+var pagePrototype = Page.getElementPrototype();
 var defaultPagePrototype = Object.create(pagePrototype);
 
 defaultPagePrototype.render = function(data, callback) {
@@ -30,7 +30,7 @@ defaultPagePrototype.render = function(data, callback) {
     else {
 
       data.status = status;
-      
+
       data.status.heap.totalAsString = Readable(data.status.heap.total, {
        scale: 'binary',
        unit: 'B'
@@ -94,6 +94,18 @@ defaultPagePrototype.onShown = function(event) {
   else
     Element.hide(self.getContent().find('#close'));
 
+  // setTimeout(function() {
+  //   Log.info('> DefaultPage.setTimeout(function() { ... }, ...)');
+  //   self.getContent().find('div.uk-panel-teaser')
+  //     .removeClass('uk-animation-slide-left');
+  //     setTimeout(function() {
+  //       Log.info('> DefaultPage.setTimeout(function() { ... }, ...)');
+  //       self.getContent().find('div.uk-panel-teaser')
+  //         .addClass('uk-animation-slide-left')
+  //         .addClass('uk-animation-reverse');
+  //     }, 2500);
+  // }, 5000);
+
 };
 
 defaultPagePrototype.onClose = function(event) {
@@ -126,7 +138,7 @@ DefaultPage.isElement = function(defaultPage) {
   return defaultPagePrototype.isPrototypeOf(defaultPage);
 };
 
-DefaultPage.getContentPrototype = function() {
+DefaultPage.getElementPrototype = function() {
   return defaultPagePrototype;
 };
 

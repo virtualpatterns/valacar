@@ -12,6 +12,10 @@ pagesPrototype.top = function() {
   return this[0];
 };
 
+pagesPrototype.next = function() {
+  return this[1];
+};
+
 pagesPrototype.isNotEmpty = function() {
   return this.length > 0;
 };
