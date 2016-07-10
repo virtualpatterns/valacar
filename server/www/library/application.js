@@ -151,14 +151,14 @@ applicationPrototype.showModal = function(modal, options, callback) {
       self.pages.addToTop(modal);
       self.body.addContent(content);
 
-      modal.bind();
-      modal.show(options);
-
       Log.info('> jQuery(modal).on("v-hidden", function(event) { ... }');
       jQuery(modal).on('v-hidden', function(event) {
         Log.info('< jQuery(modal).on("v-hidden", function(event) { ... }');
         callback(null);
       });
+
+      modal.bind();
+      modal.show(options);
 
     }
   });
@@ -232,28 +232,6 @@ applicationPrototype.onModalHidden = function(event) {
 applicationPrototype.triggerModalHidden = function(data) {
   jQuery(this).trigger(new jQuery.Event('v-modal-hidden', data));
 };
-
-// applicationPrototype.showWaitModal = function(modal, options, callback) {
-//
-//   if (Is.function(options)) {
-//     callback = options;
-//     options = {};
-//   }
-//
-//   var self = this;
-//
-//   Asynchronous.series([
-//     function(callback) {
-//       self.showModal(modal, options, callback);
-//     },
-//     function(lease, callback) {
-//       jQuery(modal).on('v-hidden', function(event) {
-//         callback(null);
-//       });
-//     }
-//   ], callback);
-//
-// };
 
 applicationPrototype.getPage = function() {
   Log.info('> Application.getPage() { ... }');
@@ -334,6 +312,23 @@ Application.ifNotError = function(ifNotFn) {
   };
 };
 
+Application.RequestError = function(method, path, status, statusText) {
+
+  this.name = 'RequestError';
+
+  this.message = Utilities.format('An error occurred with the request %s %j (%d %s).', method, path, status, statusText);
+  this.method = method;
+  this.path = path;
+  this.status = status;
+  this.statusText = statusText;
+
+  this.stack = (new Error()).stack;
+
+}
+
+Application.RequestError.prototype = Object.create(Error.prototype);
+Application.RequestError.prototype.constructor = Application.RequestError;
+
 Application.request = function(method, path, requestData, callback) {
 
   if (Is.function(requestData)) {
@@ -379,7 +374,8 @@ Application.request = function(method, path, requestData, callback) {
       Log.error('    request.statusText=%j', request.statusText);
       Log.error('    request.responseJSON.message=%j', (request.responseJSON && request.responseJSON.message) ? request.responseJSON.message : '(none)');
       // Log.error(request);
-      callback(new URIError((request.responseJSON && request.responseJSON.message) ? request.responseJSON.message : Utilities.format('An error occurred with the request %s %j (%d %s).', method, path, request.status, request.statusText)));
+      callback((request.responseJSON && request.responseJSON.message) ? new Error(request.responseJSON.message) : new Application.RequestError(method, path, request.status, request.statusText));
+      // callback(new URIError((request.responseJSON && request.responseJSON.message) ? request.responseJSON.message : Utilities.format('An error occurred with the request %s %j (%d %s).', method, path, request.status, request.statusText)));
       // callback(new URIError(Utilities.format('An error occurred with the request %s %j (%d %s ... %s).', method, path, request.status, request.statusText)));
     });
 

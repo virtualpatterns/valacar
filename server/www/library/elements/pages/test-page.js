@@ -54,7 +54,7 @@ testPagePrototype.onShown = function(event) {
       require('../../../test/tests/20160625023000-translations');
       require('../../../test/tests/20160627004000-translation');
       require('../../../test/tests/20160706232900-leases');
-      // require('../../../test/tests/20160707002900-lease');
+      require('../../../test/tests/20160707002900-lease');
       require('../../../test/tests/99999999999999-end');
 
       var tests = Mocha.run();

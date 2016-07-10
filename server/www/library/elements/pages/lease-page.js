@@ -18,18 +18,24 @@ var leasePageSourcePrototype = Object.create(pageSourcePrototype);
 var LeasePageSource = Object.create(Page.Source);
 
 LeasePageSource.createSourceId = function(lease) {
-  // Log.info('> LeasePageSource.createSourceId(lease) { ... }\n\n%s\n\n', Utilities.inspect(lease));
-  return {
+  // Log.debug('> LeasePageSource.createSourceId(lease) { ... }\n\n%s\n\n', Utilities.inspect(lease));
+
+  var leaseId = {
     'address': lease.address,
     'from': lease.from,
     'fromAsISOString': (lease.from ? Date.parse(lease.from) : new Date(0)).toISOString(),
     'to': lease.to,
     'toAsISOString': (lease.to ? Date.parse(lease.to) : new Date(0)).toISOString()
   };
+
+  // Log.debug('< LeasePageSource.createSourceId(lease) { ... }\n\n%s\n\n', Utilities.inspect(leaseId));
+
+  return leaseId;
+
 };
 
-LeasePageSource.createSource = function(lease, prototype) {
-  // Log.info('> LeasePageSource.createSource(lease, prototype) { ... }\n\n%s\n\n', Utilities.inspect(lease));
+LeasePageSource.createSource = function(lease, translation, prototype) {
+  // Log.debug('> LeasePageSource.createSource(lease, prototype) { ... }\n\n%s\n\n', Utilities.inspect(lease));
 
   var leasePageSource = Page.Source.createSource.call(this, this.createSourceId(lease), prototype || leasePageSourcePrototype);
 
@@ -46,6 +52,11 @@ LeasePageSource.createSource = function(lease, prototype) {
   leasePageSource.isSystem = (!leasePageSource.isStatic && leasePageSource.inserted)
   leasePageSource.isNewStatic = (leasePageSource.isStatic && !leasePageSource.inserted)
   leasePageSource.isExistingStatic = (leasePageSource.isStatic && leasePageSource.inserted)
+
+  if (translation)
+    leasePageSource.translation = translation;
+
+  // Log.debug('< LeasePageSource.createSource(lease, prototype) { ... }\n\n%s\n\n', Utilities.inspect(leasePageSource));
 
   return leasePageSource;
 
@@ -86,12 +97,16 @@ leasePagePrototype.bind = function() {
   this.getContent().find('#addTranslation').on('click', {
     'this': this
   }, this.onAddTranslation);
+  this.getContent().find('#editTranslation').on('click', {
+    'this': this
+  }, this.onEditTranslation);
 
 
 };
 
 leasePagePrototype.unbind = function() {
 
+  this.getContent().find('#editTranslation').off('click', this.onEditTranslation);
   this.getContent().find('#addTranslation').off('click', this.onAddTranslation);
   this.getContent().find('#copyLease').off('click', this.onAddLease);
   this.getContent().find('#addLease').off('click', this.onAddLease);
@@ -120,8 +135,24 @@ leasePagePrototype.onDone = function(event) {
   source.device = self.getContent().find('#device').val();
   source.host = self.getContent().find('#host').val();
 
-  Application.POST('/api/leases', source, Application.ifNotError(function(lease) {
-    Log.debug('= LeasePage.onDone(event) { ... }\n\n%s\n\n', Utilities.inspect(lease));
+  Asynchronous.waterfall([
+    function(callback) {
+      // Log.debug('> Application.POST("/api/leases", source, function(error, lease) { ... })\n\n%s\n\n', Utilities.inspect(source));
+      Application.POST('/api/leases', source, function(error, lease) {
+        // if (!error)
+          // Log.debug('< Application.POST("/api/leases", source, function(error, lease) { ... })\n\n%s\n\n', Utilities.inspect(lease));
+        callback(error, lease);
+      });
+    },
+    function(lease, callback) {
+      // Log.debug('> window.application.showModal(LeaseInstructionsModal.createElement(LeasePage.Source.createSource(lease)), callback)\n\n%s\n\n', Utilities.inspect(source));
+      window.application.showModal(LeaseInstructionsModal.createElement(LeasePage.Source.createSource(lease)), function(error) {
+        // Log.debug('< window.application.showModal(LeaseInstructionsModal.createElement(LeasePage.Source.createSource(lease)), callback)');
+        callback(error);
+      });
+    }
+  ], Application.ifNotError(function() {
+    // Log.debug('> window.application.hidePage()');
     window.application.hidePage();
   }));
 
@@ -166,8 +197,8 @@ leasePagePrototype.onAddLease = function(event) {
   var lease = {};
 
   lease.address = null;
-  lease.device = self.lease.device;
-  lease.host = self.lease.host;
+  lease.device = self.source.device;
+  lease.host = self.source.host;
 
   Asynchronous.series([
     function(callback) {
@@ -177,20 +208,6 @@ leasePagePrototype.onAddLease = function(event) {
       window.application.showPage(LeasePage.createElement(LeasePage.Source.createSource(lease)), callback);
     }
   ], Application.ifNotError());
-
-  // Asynchronous.series([
-  //   function(callback) {
-  //     window.application.waitForPageShown(function() {
-  //       window.application.hidePage();
-  //     }, callback);
-  //   },
-  //   function(callback) {
-  //     window.application.showPage(LeasePage.createElement(LeasePage.createLease(lease)), callback);
-  //   }
-  // ], Application.ifNotError());
-
-  // window.application.hidePage();
-  // window.application.showPage(LeasePage.createElement(LeasePage.createLease(lease)), Application.ifNotError());
 
 };
 
@@ -202,6 +219,23 @@ leasePagePrototype.onAddTranslation = function(event) {
 
   translation.from = self.source.device;
   translation.to = null;
+
+  Asynchronous.series([
+    function(callback) {
+      window.application.waitForPageHidden(callback);
+    },
+    function(callback) {
+      window.application.showPage(TranslationPage.createElement(TranslationPage.Source.createSource(translation)), callback);
+    }
+  ], Application.ifNotError());
+
+};
+
+leasePagePrototype.onEditTranslation = function(event) {
+  Log.info('> LeasePage.onEditTranslation(event) { ... }');
+
+  var self = event.data.this;
+  var translation = self.source.translation;
 
   Asynchronous.series([
     function(callback) {

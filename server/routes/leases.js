@@ -1,6 +1,7 @@
 var Utilities = require('util');
 
 var Application = require('../library/application');
+var Database = require('../../client/library/database');
 var Log = require('../../client/library/log');
 
 var Leases = Object.create({});
@@ -22,6 +23,24 @@ Leases.createRoutes = function(server, databasePath, options) {
         response.send(rows);
       next();
     });
+  });
+
+  server.get('/api/leases/:address', function(request, response, next) {
+    Log.info('> server.get("/api/leases/:address", function(request, response, next) { ... })\n\nrequest.headers\n---------------\n%s\n\nrequest.params\n--------------\n%s\n', Utilities.inspect(request.headers), Utilities.inspect(request.params));
+
+    var _from = Database.MINIMUM_DATE;
+    var _to = Database.MINIMUM_DATE;
+
+    Application.getLease(request.params.address, _from, _to, databasePath, options, function(error, row) {
+      if (error)
+        response.send(error);
+      else if (row)
+        response.send(row);
+      else
+        response.send(404);
+      next();
+    });
+
   });
 
   server.get('/api/leases/:address/:from/:to', function(request, response, next) {
@@ -57,7 +76,7 @@ Leases.createRoutes = function(server, databasePath, options) {
 
   server.post('/api/leases', function(request, response, next) {
     Log.info('> server.post("/api/leases", function(request, response, next) { ... })\n\nrequest.headers\n---------------\n%s\n\nrequest.params\n--------------\n%s\n', Utilities.inspect(request.headers), Utilities.inspect(request.params));
-    Application.postLease(request.params.address, request.params.device, request.params.host, databasePath, options, function(error, row) {
+    Application.postLease(request.params.address, request.params.from ? new Date(request.params.from) : Database.MINIMUM_DATE, request.params.to ? new Date(request.params.to) : Database.MINIMUM_DATE, request.params.device, request.params.host, databasePath, options, function(error, row) {
       if (error)
         response.send(error);
       else {

@@ -265,7 +265,7 @@ Application.getLease = function (address, _from, _to, databasePath, options, cal
 
 };
 
-Application.postLease = function (address, device, host, databasePath, options, callback) {
+Application.postLease = function (address, _from, _to, device, host, databasePath, options, callback) {
 
   var self = this;
 
@@ -275,10 +275,10 @@ Application.postLease = function (address, device, host, databasePath, options, 
         self.validateAddLease(address, device, host, callback);
       },
       function(callback) {
-        self._addLease(address, device, host, connection, callback);
+        self._addLease(address, _from, _to, device, host, connection, callback);
       },
       function(callback) {
-        self._getLease(address, Database.MINIMUM_DATE, Database.MINIMUM_DATE, connection, callback);
+        self._getLease(address, _from, _to, connection, callback);
       }
     ], callback);
   }, callback);

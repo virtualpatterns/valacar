@@ -26,7 +26,7 @@ describe('TranslationPage', function() {
   describe('TranslationPage (blank translation)', function() {
 
     beforeEach(function(callback) {
-      Assert.showPage(TranslationPage.createElement({}), callback);
+      Assert.showPage(TranslationPage.createElement(TranslationPage.Source.createSource({})), callback);
     });
 
     it('should be on the Translation page', function() {
@@ -70,7 +70,7 @@ describe('TranslationPage', function() {
           }, callback);
         },
         function(translation, callback) {
-          Assert.showPage(TranslationPage.createElement(translation), callback);
+          Assert.showPage(TranslationPage.createElement(TranslationPage.Source.createSource(translation)), callback);
         }
       ], callback);
     });
@@ -110,7 +110,7 @@ describe('TranslationPage', function() {
     beforeEach(function(callback) {
       Asynchronous.series([
         function(callback) {
-          Assert.showPage(TranslationPage.createElement({}), callback);
+          Assert.showPage(TranslationPage.createElement(TranslationPage.Source.createSource({})), callback);
         },
         function(callback) {
           Assert.inputValue('from', 'from02', callback);
@@ -153,7 +153,7 @@ describe('TranslationPage', function() {
     beforeEach(function(callback) {
       Asynchronous.series([
         function(callback) {
-          Assert.showPage(TranslationPage.createElement({}), callback);
+          Assert.showPage(TranslationPage.createElement(TranslationPage.Source.createSource({})), callback);
         },
         function(callback) {
           Assert.inputValue('from', '@from03', callback);
@@ -193,7 +193,7 @@ describe('TranslationPage', function() {
     beforeEach(function(callback) {
       Asynchronous.series([
         function(callback) {
-          Assert.showPage(TranslationPage.createElement({}), callback);
+          Assert.showPage(TranslationPage.createElement(TranslationPage.Source.createSource({})), callback);
         },
         function(callback) {
           Assert.inputValue('from', 'from03.5', callback);
@@ -228,7 +228,7 @@ describe('TranslationPage', function() {
 
   });
 
-  describe('TranslationPage (existi ng translation) on Delete', function() {
+  describe('TranslationPage (existing translation) on Delete', function() {
 
     beforeEach(function(callback) {
       Asynchronous.waterfall([
@@ -239,7 +239,7 @@ describe('TranslationPage', function() {
           }, callback);
         },
         function(translation, callback) {
-          Assert.showPage(TranslationPage.createElement(translation), callback);
+          Assert.showPage(TranslationPage.createElement(TranslationPage.Source.createSource(translation)), callback);
         },
         function(callback) {
           Assert.waitForModalShown(function() {
@@ -279,7 +279,7 @@ describe('TranslationPage', function() {
           }, callback);
         },
         function(translation, callback) {
-          Assert.showPage(TranslationPage.createElement(translation), callback);
+          Assert.showPage(TranslationPage.createElement(TranslationPage.Source.createSource(translation)), callback);
         },
         function(callback) {
           Assert.waitForModalShown(function() {
@@ -319,7 +319,7 @@ describe('TranslationPage', function() {
           }, callback);
         },
         function(translation, callback) {
-          Assert.showPage(TranslationPage.createElement(translation), callback);
+          Assert.showPage(TranslationPage.createElement(TranslationPage.Source.createSource(translation)), callback);
         },
         function(callback) {
           Assert.waitForModalShown(function() {

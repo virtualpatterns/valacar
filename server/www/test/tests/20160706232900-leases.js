@@ -129,6 +129,92 @@ describe('LeasesPage', function() {
 
   });
 
+  describe('LeasesPage POST/Refresh (w/ device translation)', function() {
+
+    beforeEach(function(callback) {
+      Asynchronous.series([
+        function(callback) {
+          Application.POST('/api/leases', {
+            'address': '1.2.3.5',
+            'device': 'aa:11:bb:22:cc:34',
+            'host': 'host01.1'
+          }, callback);
+        },
+        function(callback) {
+          Application.POST('/api/translations', {
+            'from': 'aa:11:bb:22:cc:34',
+            'to': 'host001.1'
+          }, callback);
+        },
+        function(callback) {
+          Assert.waitForElementsShown(LeasesTable, function() {
+            Assert.clickLinkId('refresh');
+          }, callback);
+        }
+      ], callback);
+    });
+
+    it('should show the lease for 1.2.3.5', function() {
+      Assert.existsRow('1.2.3.5');
+    });
+
+    it('should show the lease for aa:11:bb:22:cc:34', function() {
+      Assert.existsRow('aa:11:bb:22:cc:34');
+    });
+
+    it('should not show the lease for host01.1', function() {
+      Assert.notExistsRow('host01.1');
+    });
+
+    it('should show the lease for host001.1', function() {
+      Assert.existsRow('host001.1');
+    });
+
+  });
+
+  describe('LeasesPage POST/Refresh (w/ host translation)', function() {
+
+    beforeEach(function(callback) {
+      Asynchronous.series([
+        function(callback) {
+          Application.POST('/api/leases', {
+            'address': '1.2.3.6',
+            'device': 'aa:11:bb:22:cc:35',
+            'host': 'host01.2'
+          }, callback);
+        },
+        function(callback) {
+          Application.POST('/api/translations', {
+            'from': 'host01.2',
+            'to': 'host001.2'
+          }, callback);
+        },
+        function(callback) {
+          Assert.waitForElementsShown(LeasesTable, function() {
+            Assert.clickLinkId('refresh');
+          }, callback);
+        }
+      ], callback);
+    });
+
+    it('should show the lease for 1.2.3.6', function() {
+      Assert.existsRow('1.2.3.6');
+    });
+
+    it('should show the lease for aa:11:bb:22:cc:35', function() {
+      Assert.existsRow('aa:11:bb:22:cc:35');
+    });
+
+    it('should not show the lease for host01.2', function() {
+      Assert.notExistsRow('host01.2');
+    });
+
+    it('should show the lease for host001.2', function() {
+      Assert.existsRow('host001.2');
+    });
+
+  });
+
   describe('LeasesPage DELETE/Refresh', function() {
 
     beforeEach(function(callback) {
@@ -193,8 +279,8 @@ describe('LeasesPage', function() {
       Assert.onPage('Lease');
     });
 
-    it('should contain the IP Address 3.4.5.6 on the Lease page when the 3.4.5.6 lease is clicked', function() {
-      Assert.existsInputValue('address', '3.4.5.6');
+    it('should contain the disabled IP Address 3.4.5.6 on the Lease page when the 3.4.5.6 lease is clicked', function() {
+      Assert.existsDisabledInputValue('address', '3.4.5.6');
     });
 
     it('should contain the MAC Address cc:33:dd:44:ee:55 on the Lease page when the 3.4.5.6 lease is clicked', function() {

@@ -12,7 +12,20 @@ var RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'res
 
 var Leases = Object.create({});
 
+Leases.insert = function(connection, address, _from, _to, device, host, callback) {
+  Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-tlease.sql'), {
+    $Address: address,
+    $From: _from.toISOString(),
+    $To: _to.toISOString(),
+    $Device: device,
+    $Host: host
+  }, callback);
+};
+
 Leases.import = function(connection, path, callback) {
+
+  var self = this;
+
   Asynchronous.waterfall([
     function(callback) {
       Log.info('> FileSystem.readFile(%j, ...)', path);
@@ -33,18 +46,27 @@ Leases.import = function(connection, path, callback) {
         // Log.info('     device=%j', lease['hardware ethernet']);
         // Log.info('       host=%j', lease['client-hostname']);
 
-        Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-tlease.sql'), {
-          $Address: address,
-          $From: lease['starts'].toISOString(),
-          $To: lease['ends'].toISOString(),
-          $Device: lease['hardware ethernet'],
-          $Host: lease['client-hostname']
-        }, callback);
+        self.insert(  connection,
+                      address,
+                      lease['starts'],
+                      lease['ends'],
+                      lease['hardware ethernet'],
+                      lease['client-hostname'],
+                      callback);
+
+        // Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-tlease.sql'), {
+        //   $Address: address,
+        //   $From: lease['starts'].toISOString(),
+        //   $To: lease['ends'].toISOString(),
+        //   $Device: lease['hardware ethernet'],
+        //   $Host: lease['client-hostname']
+        // }, callback);
 
       }, callback);
 
     }
   ], callback);
+
 };
 
 module.exports = Leases;

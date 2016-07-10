@@ -84,7 +84,7 @@ translationPagePrototype.onDone = function(event) {
   source.to = self.getContent().find('#to').val();
 
   Application.POST('/api/translations', source, Application.ifNotError(function(translation) {
-    Log.debug('< TranslationPage.onDone(event) { ... }\n\n%s\n\n', Utilities.inspect(translation));
+    Log.debug('= TranslationPage.onDone(event) { ... }\n\n%s\n\n', Utilities.inspect(translation));
     window.application.hidePage();
   }));
 

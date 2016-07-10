@@ -80,12 +80,30 @@ describe('GET /api/leases', function() {
     }, callback);
   });
 
+  it('should respond to GET /api/leases/192.168.2.201 with the static lease for JORKINS', function(callback) {
+    Application.isGET('/api/leases/192.168.2.201', function(statusCode, headers, data, callback) {
+      callback(null,  data.address == '192.168.2.201' &&
+                      new Date(data.from).getTime() == Database.MINIMUM_DATE.getTime() &&
+                      new Date(data.to).getTime() == Database.MINIMUM_DATE.getTime() &&
+                      data.device == '08:00:27:66:5c:05' &&
+                      data.host == 'JORKINS');
+    }, callback);
+  });
+
   it('should respond to GET /api/leases/192.168.2.292/1970-01-01T00:00:00.000Z/1970-01-01T00:00:00.000Z (a non-existent lease) with 404 Not Found', function(callback) {
     Application.isGETStatusCode('/api/leases/192.168.2.292/1970-01-01T00:00:00.000Z/1970-01-01T00:00:00.000Z', 404, callback);
   });
 
+  it('should respond to GET /api/leases/192.168.2.292 (a non-existent lease) with 404 Not Found', function(callback) {
+    Application.isGETStatusCode('/api/leases/192.168.2.292', 404, callback);
+  });
+
   it('should respond to GET /api/leases/192-168-2-201/1970-01-01T00:00:00.000Z/1970-01-01T00:00:00.000Z (an invalid address/lease) with 404 Not Found', function(callback) {
     Application.isGETStatusCode('/api/leases/192-168-2-201/1970-01-01T00:00:00.000Z/1970-01-01T00:00:00.000Z', 404, callback);
+  });
+
+  it('should respond to GET /api/leases/192-168-2-201 (an invalid address/lease) with 404 Not Found', function(callback) {
+    Application.isGETStatusCode('/api/leases/192-168-2-201', 404, callback);
   });
 
   it('should respond to GET /api/leases/192-168-2-201/1970.01.01T00-00-00.000R/1970.01.01T00-00-00.000R (an invalid address/from/to/lease) with 500 Internal Server Error', function(callback) {

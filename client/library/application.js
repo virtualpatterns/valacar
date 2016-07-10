@@ -157,23 +157,34 @@ Application.validateAddLease = function(address, device, host, callback) {
 
 };
 
-Application._addLease = function(address, device, host, connection, callback) {
-  Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-tlease-static.sql'), {
-    $Address: address,
-    $From: Database.MINIMUM_DATE.toISOString(),
-    $To: Database.MINIMUM_DATE.toISOString(),
-    $Device: device,
-    $Host: host
-  }, callback);
+Application._addLease = function(address, _from, _to, device, host, connection, callback) {
+
+  Leases.insert(  connection,
+                  address,
+                  _from,
+                  _to,
+                  device,
+                  host,
+                  callback);
+
+  // Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-tlease.sql'), {
+  //   $Address: address,
+  //   $From: _from.toISOString(),
+  //   $To: _to.toISOString(),
+  //   $Device: device,
+  //   $Host: host
+  // }, callback);
+
 };
 
-Application.addLease = function(address, device, host, databasePath, options, callback) {
+Application.addLease = function(address, _from, _to, device, host, databasePath, options, callback) {
 
   var self = this;
 
   self.openDatabase(databasePath, options, function(connection, callback) {
-    self._addLease(address, device, host, connection, callback);
+    self._addLease(address, _from, _to, device, host, connection, callback);
   }, callback);
+
 };
 
 Application.validateRemoveLease = function(address, callback) {

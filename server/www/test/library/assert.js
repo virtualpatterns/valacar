@@ -25,7 +25,13 @@ Assert.onPage = function(text, callback) {
 
 Assert.existsButton = function(text, callback) {
   var argumentsArray = Array.prototype.slice.call(arguments);
-  argumentsArray.unshift('button:visible:contains(%j)');
+  argumentsArray.unshift('button:not([disabled]):visible:contains(%j)');
+  return this.existsSelector.apply(this, argumentsArray);
+};
+
+Assert.existsDisabledButton = function(text, callback) {
+  var argumentsArray = Array.prototype.slice.call(arguments);
+  argumentsArray.unshift('button[disabled]:visible:contains(%j)');
   return this.existsSelector.apply(this, argumentsArray);
 };
 
@@ -39,6 +45,12 @@ Assert.existsLink = function(text, callback) {
   var argumentsArray = Array.prototype.slice.call(arguments);
   argumentsArray.unshift('a:visible:contains(%j)');
   return this.existsSelector.apply(this, argumentsArray);
+};
+
+Assert.notExistsLink = function(text, callback) {
+  var argumentsArray = Array.prototype.slice.call(arguments);
+  argumentsArray.unshift('a:visible:contains(%j)');
+  return this.notExistsSelector.apply(this, argumentsArray);
 };
 
 Assert.existsLinkId = function(id, callback) {
@@ -67,13 +79,13 @@ Assert.notExistsRow = function(text, callback) {
 
 Assert.existsInput = function(text, callback) {
   var argumentsArray = Array.prototype.slice.call(arguments);
-  argumentsArray.unshift('input[type="text"][value=%j]:visible');
+  argumentsArray.unshift('input[type="text"][value=%j]:visible:not([disabled])');
   return this.existsSelector.apply(this, argumentsArray);
 };
 
 Assert.existsInputId = function(id, callback) {
   var argumentsArray = Array.prototype.slice.call(arguments);
-  argumentsArray.unshift('input#%s[type="text"]:visible');
+  argumentsArray.unshift('input#%s[type="text"]:visible:not([disabled])');
   return this.existsSelector.apply(this, argumentsArray);
 };
 
@@ -81,9 +93,21 @@ Assert.existsInputValue = function(id, value, callback) {
   var argumentsArray = Array.prototype.slice.call(arguments);
 
   if (Is.emptyString(value))
-    argumentsArray.unshift('input#%s[type="text"]:visible:not([value])');
+    argumentsArray.unshift('input#%s[type="text"]:visible:not([value][disabled])');
   else
-    argumentsArray.unshift('input#%s[type="text"][value=%j]:visible');
+    argumentsArray.unshift('input#%s[type="text"][value=%j]:visible:not([disabled])');
+
+  return this.existsSelector.apply(this, argumentsArray);
+
+};
+
+Assert.existsDisabledInputValue = function(id, value, callback) {
+  var argumentsArray = Array.prototype.slice.call(arguments);
+
+  if (Is.emptyString(value))
+    argumentsArray.unshift('input#%s[type="text"][disabled]:visible:not([value])');
+  else
+    argumentsArray.unshift('input#%s[type="text"][value=%j][disabled]:visible');
 
   return this.existsSelector.apply(this, argumentsArray);
 
@@ -185,6 +209,12 @@ Assert.clickYes = function(callback) {
 Assert.clickNo = function(callback) {
   var argumentsArray = Array.prototype.slice.call(arguments);
   argumentsArray.unshift('div.uk-modal > div.uk-modal-dialog > div > div.uk-modal-footer > button.js-modal-confirm-cancel:contains("No")');
+  return this.clickSelector.apply(this, argumentsArray);
+};
+
+Assert.clickClose = function(callback) {
+  var argumentsArray = Array.prototype.slice.call(arguments);
+  argumentsArray.unshift('div.uk-modal > div.uk-modal-dialog button.uk-close');
   return this.clickSelector.apply(this, argumentsArray);
 };
 
@@ -366,6 +396,7 @@ Assert.waitForModalShown = function(waitFn, callback) {
   var self = this;
 
   jQuery(window.application).one('v-modal-shown', function(event) {
+    Log.info('< Assert.waitForModalShown(waitFn, callback) { ... }');
     callback(null);
   });
 
@@ -385,8 +416,10 @@ Assert.waitForModalHidden = function(waitFn, callback) {
   var self = this;
 
   jQuery(window.application).one('v-modal-hidden', function(event) {
+    Log.info('< Assert.waitForModalHidden(waitFn, callback) { ... }');
     callback(null);
   });
+
   waitFn(function(error) {
     if (error) {
       Log.error('< Assert.waitForModalHidden(waitFn, callback) { ... }');

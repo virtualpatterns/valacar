@@ -95,19 +95,29 @@ leasesPagePrototype.onSelected = function(event) {
     function(callback) {
       Application.GET(Utilities.format('/api/leases/%s/%s/%s', leaseId.address, leaseId.fromAsISOString, leaseId.toAsISOString), callback);
     },
-    // function(lease, callback) {
-    //   Application.GET(Utilities.format('/api/translations/%s', lease.device), function(error, deviceTranslation) {
-    //     callback(error, lease, deviceTranslation);
-    //   });
-    // },
-    // function(lease, deviceTranslation, callback) {
-    //   Application.GET(Utilities.format('/api/translations/%s', lease.host), function(error, hostTranslation) {
-    //     callback(error, lease, deviceTranslation, hostTranslation);
-    //   });
-    // },
     function(lease, callback) {
-    // function(lease, deviceTranslation, hostTranslation, callback) {
-      window.application.showPage(LeasePage.createElement(LeasePage.Source.createSource(lease)), callback);
+      Application.GET(Utilities.format('/api/translations/%s', lease.device), function(error, deviceTranslation) {
+        if (error instanceof Application.RequestError &&
+            error.status == 404)
+          callback(null, lease, null);
+        else
+          callback(error, lease, deviceTranslation);
+      });
+    },
+    function(lease, deviceTranslation, callback) {
+      if (deviceTranslation)
+        callback(null, lease, deviceTranslation);
+      else
+        Application.GET(Utilities.format('/api/translations/%s', lease.host), function(error, hostTranslation) {
+          if (error instanceof Application.RequestError &&
+              error.status == 404)
+            callback(null, lease, null);
+          else
+            callback(error, lease, hostTranslation);
+        });
+    },
+    function(lease, translation, callback) {
+      window.application.showPage(LeasePage.createElement(LeasePage.Source.createSource(lease, translation)), callback);
     }
   ], Application.ifNotError());
 

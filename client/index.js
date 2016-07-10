@@ -3,6 +3,7 @@ var Command = require('commander');
 var Utilities = require('util');
 
 var Application = require('./library/application');
+var Database = require('./library/database');
 var Log = require('./library/log');
 var Package = require('../package.json');
 var Path = require('./library/path');
@@ -344,13 +345,22 @@ Command
 
     Asynchronous.series([
       function(callback) {
-        Application.validateAddLease(IPAddress, MACAddress, hostName, callback);
+        Application.validateAddLease( IPAddress,
+                                      MACAddress,
+                                      hostName,
+                                      callback);
       },
       function(callback) {
-        Application.addLease(IPAddress, MACAddress, hostName, databasePath || DATABASE_PATH, {
-          'enableTrace': !!options.enableTrace,
-          'enableProfile': !!options.enableProfile
-        }, callback);
+        Application.addLease( IPAddress,
+                              Database.MINIMUM_DATE,
+                              Database.MINIMUM_DATE,
+                              MACAddress,
+                              hostName,
+                              databasePath || DATABASE_PATH, {
+                                'enableTrace': !!options.enableTrace,
+                                'enableProfile': !!options.enableProfile
+                              },
+                              callback);
       }
     ], function (error) {
       if (error) {

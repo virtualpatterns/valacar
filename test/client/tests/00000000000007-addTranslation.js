@@ -13,7 +13,7 @@ var INVALID_FROM = '@1:ab:23:cd:45:ef';
 var VALID_TO = '( ABC\'123.123 )';
 var INVALID_TO = '                                         ';
 
-describe.only('Application.validateAddTranslation', function() {
+describe('Application.validateAddTranslation', function() {
 
   it('should not generate an error for a valid translation', function(callback) {
     Application.validateAddTranslation(VALID_FROM, VALID_TO, callback);
