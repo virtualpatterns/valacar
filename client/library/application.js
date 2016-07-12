@@ -56,49 +56,49 @@ Application.clean = function(databasePath, options, callback) {
   }, callback);
 };
 
-Application.validateAddTranslation = function(_from, _to, callback) {
+Application.validateAddTranslation = function(from, to, callback) {
 
-  if (!REGEXP_DEVICE.test(_from) &&
-      !REGEXP_HOST.test(_from))
-    callback(new ValidationError(Utilities.format('The translation from %j is invalid.', _from)));
-  else if (!REGEXP_TO.test(_to))
-    callback(new ValidationError(Utilities.format('The translation to %j is invalid.', _to)));
+  if (!REGEXP_DEVICE.test(from) &&
+      !REGEXP_HOST.test(from))
+    callback(new ValidationError(Utilities.format('The translation from %j is invalid.', from)));
+  else if (!REGEXP_TO.test(to))
+    callback(new ValidationError(Utilities.format('The translation to %j is invalid.', to)));
   else
     callback(null);
 
 };
 
-Application._addTranslation = function(_from, _to, connection, callback) {
+Application._addTranslation = function(from, to, connection, callback) {
   Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-ttranslation.sql'), {
-    $From: _from,
-    $To: _to
+    $From: from,
+    $To: to
   }, callback);
 };
 
-Application.addTranslation = function(_from, _to, databasePath, options, callback) {
+Application.addTranslation = function(from, to, databasePath, options, callback) {
 
   var self = this;
 
   self.openDatabase(databasePath, options, function(connection, callback) {
-    self._addTranslation(_from, _to, connection, callback);
+    self._addTranslation(from, to, connection, callback);
   }, callback);
 
 };
 
-Application.validateRemoveTranslation = function(_from, callback) {
+Application.validateRemoveTranslation = function(from, callback) {
 
-  if (!REGEXP_DEVICE.test(_from) &&
-      !REGEXP_HOST.test(_from))
-    callback(new ValidationError(Utilities.format('The translation from %j is invalid.', _from)));
+  if (!REGEXP_DEVICE.test(from) &&
+      !REGEXP_HOST.test(from))
+    callback(new ValidationError(Utilities.format('The translation from %j is invalid.', from)));
   else
     callback(null);
 
 };
 
-Application.removeTranslation = function(_from, databasePath, options, callback) {
+Application.removeTranslation = function(from, databasePath, options, callback) {
   this.openDatabase(databasePath, options, function(connection, callback) {
     Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-ttranslation.sql'), {
-      $From: _from
+      $From: from
     }, function(error) {
       if (!error)
         Assert.ok(this.changes <= 1, Utilities.format('The number of rows deleted from tTranslation should be 0 or 1 but is instead %d.', this.changes));
@@ -157,32 +157,32 @@ Application.validateAddLease = function(address, device, host, callback) {
 
 };
 
-Application._addLease = function(address, _from, _to, device, host, connection, callback) {
+Application._addLease = function(address, from, to, device, host, connection, callback) {
 
   Leases.insert(  connection,
                   address,
-                  _from,
-                  _to,
+                  from,
+                  to,
                   device,
                   host,
                   callback);
 
   // Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-tlease.sql'), {
   //   $Address: address,
-  //   $From: _from.toISOString(),
-  //   $To: _to.toISOString(),
+  //   $From: from.toISOString(),
+  //   $To: to.toISOString(),
   //   $Device: device,
   //   $Host: host
   // }, callback);
 
 };
 
-Application.addLease = function(address, _from, _to, device, host, databasePath, options, callback) {
+Application.addLease = function(address, from, to, device, host, databasePath, options, callback) {
 
   var self = this;
 
   self.openDatabase(databasePath, options, function(connection, callback) {
-    self._addLease(address, _from, _to, device, host, connection, callback);
+    self._addLease(address, from, to, device, host, connection, callback);
   }, callback);
 
 };
@@ -196,11 +196,11 @@ Application.validateRemoveLease = function(address, callback) {
 
 };
 
-Application._removeLease = function(address, connection, callback) {
+Application._removeLease = function(address, from, to, connection, callback) {
   Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-tlease-static.sql'), {
     $Address: address,
-    $From: Database.MINIMUM_DATE.toISOString(),
-    $To: Database.MINIMUM_DATE.toISOString()
+    $From: from.toISOString(),
+    $To: to.toISOString()
   }, function(error) {
     if (!error)
       Assert.ok(this.changes <= 1, Utilities.format('The number of rows deleted from tLease should be 0 or 1 but is instead %d.', this.changes));
@@ -208,12 +208,12 @@ Application._removeLease = function(address, connection, callback) {
   });
 };
 
-Application.removeLease = function(address, databasePath, options, callback) {
+Application.removeLease = function(address, from, to, databasePath, options, callback) {
 
   var self = this;
 
   self.openDatabase(databasePath, options, function(connection, callback) {
-    self._removeLease(address, connection, callback);
+    self._removeLease(address, from, to, connection, callback);
   }, callback);
 
 };

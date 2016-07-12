@@ -24,7 +24,7 @@ leaseInstructionsModalPrototype.unbind = function() {
 
 leaseInstructionsModalPrototype.onClose = function(event) {
   Log.info('> LeaseInstructionsModal.onClose(event) { ... }');
-  window.application.hideModal();
+  window.application.hideModal(false);
 };
 
 var LeaseInstructionsModal = Object.create(Modal);

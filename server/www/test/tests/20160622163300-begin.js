@@ -4,7 +4,7 @@ before(function() {
 after(function() {
 });
 
-describe('begin', function() {
+describe('Begin', function() {
   it('should begin the tests', function() {
   });
 });

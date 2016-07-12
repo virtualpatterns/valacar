@@ -3,7 +3,9 @@ var Assert = require('assert');
 var Is = require('@pwn/is');
 var Utilities = require('util');
 
+var AlertModal = require('./elements/modals/alert-modal');
 var Body = require('./elements/body');
+var ConfirmationModal = require('./elements/modals/confirmation-modal');
 var Log = require('./log');
 var Pages = require('./collections/pages');
 
@@ -153,8 +155,8 @@ applicationPrototype.showModal = function(modal, options, callback) {
 
       Log.info('> jQuery(modal).on("v-hidden", function(event) { ... }');
       jQuery(modal).on('v-hidden', function(event) {
-        Log.info('< jQuery(modal).on("v-hidden", function(event) { ... }');
-        callback(null);
+        Log.info('< jQuery(modal).on("v-hidden", function(event) { ... }\n\n%s\n\n', Utilities.inspect(event.results));
+        callback(null, event.results);
       });
 
       modal.bind();
@@ -172,12 +174,9 @@ applicationPrototype.onModalShown = function(event) {
   if (modal) {
     Log.info('> Application.onModalShown(event) { ... } modal.id=%j', modal.id);
 
-    modal.triggerShown({
-      'isInitial': true
-    });
+    modal.triggerShown();
     this.triggerModalShown({
-      'modal': modal,
-      'isInitial': true
+      'modal': modal
     });
   }
   else {
@@ -188,15 +187,15 @@ applicationPrototype.onModalShown = function(event) {
 };
 
 applicationPrototype.triggerModalShown = function(data) {
-  jQuery(this).trigger(new jQuery.Event('v-modal-shown', data));
+  jQuery(this).trigger(new jQuery.Event('v-modal-shown', data || {}));
 };
 
-applicationPrototype.hideModal = function() {
-  Log.info('> Application.hideModal() { ... }');
+applicationPrototype.hideModal = function(results) {
+  Log.info('> Application.hideModal(results) { ... }\n\n%s\n\n', Utilities.inspect(results));
 
   if (this.pages.isNotAlmostEmpty()) {
     var modal = this.pages.top();
-    modal.hide();
+    modal.hide(results);
   }
 
 };
@@ -206,7 +205,10 @@ applicationPrototype.onModalHidden = function(event) {
   var modal = jQuery(event.target).data('Modal');
 
   if (modal) {
-    Log.info('> Application.onModalHidden(event) { ... } modal.id=%j', modal.id);
+
+    var results = jQuery(event.target).data('results');
+
+    Log.info('> Application.onModalHidden(event) { ... } modal.id=%j\n\n%s\n\n', modal.id, Utilities.inspect(results));
 
     modal.unbind();
 
@@ -214,11 +216,11 @@ applicationPrototype.onModalHidden = function(event) {
     this.pages.removeFromTop();
 
     modal.triggerHidden({
-      'isFinal': true
+      'results': results
     });
     this.triggerModalHidden({
       'modal': modal,
-      'isFinal': true
+      'results': results
     });
 
   }
@@ -230,21 +232,43 @@ applicationPrototype.onModalHidden = function(event) {
 };
 
 applicationPrototype.triggerModalHidden = function(data) {
-  jQuery(this).trigger(new jQuery.Event('v-modal-hidden', data));
+  jQuery(this).trigger(new jQuery.Event('v-modal-hidden', data || {}));
+};
+
+applicationPrototype.showAlert = function(message, callback) {
+
+  var argumentsArray = Array.prototype.slice.call(arguments);
+
+  callback = argumentsArray.pop();
+  message = Utilities.format.apply(Utilities.format, argumentsArray);
+
+  this.showModal(AlertModal.createElement(message), callback);
+
+};
+
+applicationPrototype.showConfirmation = function(message, callback) {
+
+  var argumentsArray = Array.prototype.slice.call(arguments);
+
+  callback = argumentsArray.pop();
+  message = Utilities.format.apply(Utilities.format, argumentsArray);
+
+  this.showModal(ConfirmationModal.createElement(message), callback);
+
 };
 
 applicationPrototype.getPage = function() {
-  Log.info('> Application.getPage() { ... }');
-
-  if (this.pages.isNotEmpty()) {
-    return this.pages.top();
-  }
-  else
-    return null;
-
+  // Log.info('> Application.getPage() { ... }');
+  return this.pages.top();
 };
 
 var Application = Object.create({});
+
+Object.defineProperty(Application, 'noop', {
+  'enumerable': true,
+  'writable': false,
+  'value': function() {}
+});
 
 Application.createApplication = function(prototype, callback) {
   Log.info('> Application.createApplication(callback)');
@@ -294,12 +318,59 @@ Application.getApplicationPrototype = function() {
   return applicationPrototype;
 };
 
+Application.alert = function(message) {
+
+  var argumentsArray = Array.prototype.slice.call(arguments);
+  argumentsArray.push(function(error) {
+    if (error) {
+      Log.error('> Application.alert(message) { ... }\n\n%s\n\n', Utilities.inspect(argumentsArray));
+      Log.error('    error.message=%j', error.message);
+      alert(error.message);
+    }
+  })
+
+  window.application.showAlert.apply(window.application, argumentsArray);
+
+};
+
+Application.confirm = function(message, yesFn, noFn) {
+
+  var argumentsArray = Array.prototype.slice.call(arguments);
+
+  if (Is.function(argumentsArray[argumentsArray.length - 2]))
+    noFn = argumentsArray.pop();
+  else
+    noFn = this.noop;
+
+  yesFn = argumentsArray.pop();
+
+  var self = this;
+
+  argumentsArray.push(function(error, isConfirmed) {
+    if (error) {
+      Log.error('> Application.confirm(message, yesFn, noFn) { ... }\n\n%s\n\n', Utilities.inspect(argumentsArray));
+      Log.error('    error.message=%j', error.message);
+      self.alert(error.message);
+    }
+    else if (isConfirmed)
+      yesFn();
+    else
+      noFn();
+  })
+
+  window.application.showConfirmation.apply(window.application, argumentsArray);
+
+};
+
 Application.ifNotError = function(ifNotFn) {
+
+  var self = this;
+
   return function(error) {
     if (error) {
-      // Log.error('> Application.ifNotError(ifNotFn) { ... }');
-      // Log.error('    error.message=%j', error.message);
-      UIkit.modal.alert(error.message);
+      Log.error('> Application.ifNotError(ifNotFn) { ... }');
+      Log.error('    error.message=%j', error.message);
+      self.alert(error.message);
     }
     else if (ifNotFn) {
 
@@ -310,6 +381,7 @@ Application.ifNotError = function(ifNotFn) {
 
     }
   };
+
 };
 
 Application.RequestError = function(method, path, status, statusText) {

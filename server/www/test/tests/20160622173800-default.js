@@ -7,7 +7,7 @@ var DefaultPage = require('../../library/elements/pages/default-page');
 
 describe('DefaultPage', function() {
 
-  beforeEach(function(callback) {
+  before(function(callback) {
     Assert.showPage(DefaultPage.createElement(), callback);
   });
 
@@ -21,7 +21,7 @@ describe('DefaultPage', function() {
 
   describe('DefaultPage to LeasesPage', function() {
 
-    beforeEach(function(callback) {
+    before(function(callback) {
       Assert.waitForPageShown(function() {
         Assert.clickButton('Leases');
       }, callback);
@@ -31,7 +31,7 @@ describe('DefaultPage', function() {
       Assert.onPage('Leases');
     });
 
-    afterEach(function(callback) {
+    after(function(callback) {
       Assert.hidePage(callback);
     });
 
@@ -39,7 +39,7 @@ describe('DefaultPage', function() {
 
   describe('DefaultPage to TranslationsPage', function() {
 
-    beforeEach(function(callback) {
+    before(function(callback) {
       Assert.waitForPageShown(function() {
         Assert.clickButton('Translations');
       }, callback);
@@ -49,7 +49,7 @@ describe('DefaultPage', function() {
       Assert.onPage('Translations');
     });
 
-    afterEach(function(callback) {
+    after(function(callback) {
       Assert.hidePage(callback);
     });
 
@@ -57,7 +57,7 @@ describe('DefaultPage', function() {
 
   describe('DefaultPage to LeasesPage and Back', function() {
 
-    beforeEach(function(callback) {
+    before(function(callback) {
       Asynchronous.series([
         function(callback) {
           Assert.waitForPageShown(function() {
@@ -80,7 +80,7 @@ describe('DefaultPage', function() {
 
   describe('DefaultPage to TranslationsPage and Back', function() {
 
-    beforeEach(function(callback) {
+    before(function(callback) {
       Asynchronous.series([
         function(callback) {
           Assert.waitForPageShown(function() {
@@ -101,7 +101,7 @@ describe('DefaultPage', function() {
 
   });
 
-  afterEach(function(callback) {
+  after(function(callback) {
     Assert.hidePage(callback);
   });
 

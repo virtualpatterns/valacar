@@ -182,36 +182,36 @@ Application.getTranslations = function (databasePath, options, callback) {
   }, callback);
 };
 
-Application._getTranslation = function (_from, connection, callback) {
+Application._getTranslation = function (from, connection, callback) {
   Database.getFile(connection, Path.join(RESOURCES_PATH, 'select-ttranslation-where.sql'), {
-    $From: _from
+    $From: from
   }, callback);
 };
 
-Application.getTranslation = function (_from, databasePath, options, callback) {
+Application.getTranslation = function (from, databasePath, options, callback) {
 
   var self = this;
 
   self.openDatabase(databasePath, options, function(connection, callback) {
-    self._getTranslation(_from, connection, callback);
+    self._getTranslation(from, connection, callback);
   }, callback);
 
 };
 
-Application.postTranslation = function (_from, _to, databasePath, options, callback) {
+Application.postTranslation = function (from, to, databasePath, options, callback) {
 
   var self = this;
 
   self.openDatabase(databasePath, options, function(connection, callback) {
     Asynchronous.waterfall([
       function(callback) {
-        self.validateAddTranslation(_from, _to, callback);
+        self.validateAddTranslation(from, to, callback);
       },
       function(callback) {
-        self._addTranslation(_from, _to, connection, callback);
+        self._addTranslation(from, to, connection, callback);
       },
       function(callback) {
-        self._getTranslation(_from, connection, callback);
+        self._getTranslation(from, connection, callback);
       }
     ], callback);
   }, callback);
@@ -226,16 +226,16 @@ Application.deleteTranslations = function (databasePath, options, callback) {
   }, callback);
 };
 
-Application.deleteTranslation = function (_from, databasePath, options, callback) {
+Application.deleteTranslation = function (from, databasePath, options, callback) {
 
   var self = this;
 
   Asynchronous.waterfall([
     function(callback) {
-      self.validateRemoveTranslation(_from, callback);
+      self.validateRemoveTranslation(from, callback);
     },
     function(callback) {
-      self.removeTranslation(_from, databasePath, options, callback);
+      self.removeTranslation(from, databasePath, options, callback);
     }
   ], callback);
 
@@ -247,25 +247,25 @@ Application.getLeases = function (databasePath, options, callback) {
   }, callback);
 };
 
-Application._getLease = function (address, _from, _to, connection, callback) {
+Application._getLease = function (address, from, to, connection, callback) {
   Database.getFile(connection, Path.join(RESOURCES_PATH, 'select-tlease-where.sql'), {
     $Address: address,
-    $From: _from.toISOString(),
-    $To: _to.toISOString()
+    $From: from.toISOString(),
+    $To: to.toISOString()
   }, callback);
 };
 
-Application.getLease = function (address, _from, _to, databasePath, options, callback) {
+Application.getLease = function (address, from, to, databasePath, options, callback) {
 
   var self = this;
 
   self.openDatabase(databasePath, options, function(connection, callback) {
-    self._getLease(address, _from, _to, connection, callback);
+    self._getLease(address, from, to, connection, callback);
   }, callback);
 
 };
 
-Application.postLease = function (address, _from, _to, device, host, databasePath, options, callback) {
+Application.postLease = function (address, from, to, device, host, databasePath, options, callback) {
 
   var self = this;
 
@@ -275,10 +275,10 @@ Application.postLease = function (address, _from, _to, device, host, databasePat
         self.validateAddLease(address, device, host, callback);
       },
       function(callback) {
-        self._addLease(address, _from, _to, device, host, connection, callback);
+        self._addLease(address, from, to, device, host, connection, callback);
       },
       function(callback) {
-        self._getLease(address, _from, _to, connection, callback);
+        self._getLease(address, from, to, connection, callback);
       }
     ], callback);
   }, callback);
@@ -293,7 +293,7 @@ Application.deleteLeases = function (databasePath, options, callback) {
   }, callback);
 };
 
-Application.deleteLease = function (address, databasePath, options, callback) {
+Application.deleteLease = function (address, from, to, databasePath, options, callback) {
 
   var self = this;
 
@@ -302,7 +302,7 @@ Application.deleteLease = function (address, databasePath, options, callback) {
       self.validateRemoveLease(address, callback);
     },
     function(callback) {
-      self.removeLease(address, databasePath, options, callback);
+      self.removeLease(address, from, to, databasePath, options, callback);
     }
   ], callback);
 

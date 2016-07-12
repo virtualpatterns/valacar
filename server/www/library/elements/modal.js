@@ -22,8 +22,10 @@ modalPrototype.show = function(options) {
 
 };
 
-modalPrototype.hide = function() {
-  Log.info('> Modal.hide() { ... }');
+modalPrototype.hide = function(results) {
+  Log.info('> Modal.hide(results) { ... }\n\n%s\n\n', Utilities.inspect(results));
+
+  this.getContent().data('results', results);
 
   if (this.Modal.isActive())
     this.Modal.hide();

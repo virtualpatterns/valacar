@@ -33,6 +33,7 @@
     "bower": "^1.7.9",
     "browserify": "^13.0.1",
     "browserify-bower": "^0.6.1",
+    "eslint": "^3.0.1",
     "watchify": "^3.7.0"
   }
 }

@@ -3,6 +3,7 @@ var Asynchronous = require('async');
 var Is = require('@pwn/is');
 var Utilities = require('util');
 
+var Application = require('../../library/application');
 var Log = require('../../library/log');
 
 var TestPage = require('../../library/elements/pages/test-page');
@@ -10,12 +11,6 @@ var TestPage = require('../../library/elements/pages/test-page');
 var REGEXP_PLACEHOLDER = /%d|%j|%s/g;
 
 var Assert = Object.create(_Assert);
-
-Object.defineProperty(Assert, 'noop', {
-  'enumerable': true,
-  'writable': false,
-  'value': function() {}
-});
 
 Assert.onPage = function(text, callback) {
   var argumentsArray = Array.prototype.slice.call(arguments);
@@ -115,13 +110,13 @@ Assert.existsDisabledInputValue = function(id, value, callback) {
 
 Assert.existsAlert = function(text, callback) {
   var argumentsArray = Array.prototype.slice.call(arguments);
-  argumentsArray.unshift('div.uk-modal > div.uk-modal-dialog > div:has(div.uk-modal-footer > button.uk-modal-close:contains("Ok")) > div.uk-modal-content:contains(%j)');
+  argumentsArray.unshift('div.uk-modal > div.uk-modal-dialog:has(div.uk-modal-footer > button:contains("Ok")):contains(%j)');
   return this.existsSelector.apply(this, argumentsArray);
 };
 
 Assert.existsConfirmation = function(text, callback) {
   var argumentsArray = Array.prototype.slice.call(arguments);
-  argumentsArray.unshift('div.uk-modal > div.uk-modal-dialog > div:has(div.uk-modal-footer > button.js-modal-confirm-cancel:contains("No")):has(div.uk-modal-footer > button.js-modal-confirm:contains("Yes")) > div.uk-modal-content:contains(%j)');
+  argumentsArray.unshift('div.uk-modal > div.uk-modal-dialog:has(div.uk-modal-footer > button:contains("No")):has(div.uk-modal-footer > button:contains("Yes")):contains(%j)');
   return this.existsSelector.apply(this, argumentsArray);
 };
 
@@ -196,19 +191,19 @@ Assert.clickRow = function(text, callback) {
 
 Assert.clickOk = function(callback) {
   var argumentsArray = Array.prototype.slice.call(arguments);
-  argumentsArray.unshift('div.uk-modal > div.uk-modal-dialog > div > div.uk-modal-footer > button.uk-modal-close:contains("Ok")');
+  argumentsArray.unshift('div.uk-modal > div.uk-modal-dialog > div.uk-modal-footer > button:contains("Ok")');
   return this.clickSelector.apply(this, argumentsArray);
 };
 
 Assert.clickYes = function(callback) {
   var argumentsArray = Array.prototype.slice.call(arguments);
-  argumentsArray.unshift('div.uk-modal > div.uk-modal-dialog > div > div.uk-modal-footer > button.js-modal-confirm:contains("Yes")');
+  argumentsArray.unshift('div.uk-modal > div.uk-modal-dialog > div.uk-modal-footer > button:contains("Yes")');
   return this.clickSelector.apply(this, argumentsArray);
 };
 
 Assert.clickNo = function(callback) {
   var argumentsArray = Array.prototype.slice.call(arguments);
-  argumentsArray.unshift('div.uk-modal > div.uk-modal-dialog > div > div.uk-modal-footer > button.js-modal-confirm-cancel:contains("No")');
+  argumentsArray.unshift('div.uk-modal > div.uk-modal-dialog > div.uk-modal-footer > button:contains("No")');
   return this.clickSelector.apply(this, argumentsArray);
 };
 
@@ -334,22 +329,25 @@ Assert.hideAllPages = function(callback) {
 
 }
 
-Assert.waitForPageShown = function(waitFn, callback) {
-  Log.info('> Assert.waitForPageShown(waitFn, callback) { ... }');
+Assert.waitForPageShown = function(duration, waitFn, callback) {
+
+  if (Is.function(duration)) {
+    callback = waitFn;
+    waitFn = duration;
+    duration = 0;
+  }
+
+  Log.info('> Assert.waitForPageShown(%d, waitFn, callback) { ... }', duration);
 
   var self = this;
 
   jQuery(window.application).one('v-page-shown', function(event) {
-    self.waitForElementsShown(event.page, null, Assert.noop, callback);
+    self.waitForElementsShown(event.page, null, Application.noop, callback);
   });
 
-  waitFn(function(error) {
-    if (error) {
-      Log.error('< Assert.waitForPageShown(waitFn, callback) { ... }');
-      Log.error('    error.message=%j', error.message);
-      UIkit.modal.alert(error.message);
-    }
-  });
+  setTimeout(function() {
+    waitFn(Application.ifNotError());
+  }, duration);
 
 };
 
@@ -380,53 +378,53 @@ Assert.waitForElementsShown = function(page, Class, waitFn, callback) {
   else
     callback(null);
 
-  waitFn(function(error) {
-    if (error) {
-      Log.error('< Assert.waitForElementsShown(page, Class, waitFn, callback) { ... }');
-      Log.error('    error.message=%j', error.message);
-      UIkit.modal.alert(error.message);
-    }
-  });
+  waitFn(Application.ifNotError());
 
 };
 
-Assert.waitForModalShown = function(waitFn, callback) {
-  Log.info('> Assert.waitForModalShown(waitFn, callback) { ... }');
+Assert.waitForModalShown = function(duration, waitFn, callback) {
 
-  var self = this;
+  if (Is.function(duration)) {
+    callback = waitFn;
+    waitFn = duration;
+    duration = 0;
+  }
+
+  Log.info('> Assert.waitForModalShown(%d, waitFn, callback) { ... }', duration);
 
   jQuery(window.application).one('v-modal-shown', function(event) {
-    Log.info('< Assert.waitForModalShown(waitFn, callback) { ... }');
-    callback(null);
+    Log.info('< Assert.waitForModalShown(%d, waitFn, callback) { ... }', duration);
+    setTimeout(function() {
+      callback(null);
+    }, duration);
   });
 
-  waitFn(function(error) {
-    if (error) {
-      Log.error('< Assert.waitForModalShown(waitFn, callback) { ... }');
-      Log.error('    error.message=%j', error.message);
-      UIkit.modal.alert(error.message);
-    }
-  });
+  setTimeout(function() {
+    waitFn(Application.ifNotError());
+  }, duration);
 
 };
 
-Assert.waitForModalHidden = function(waitFn, callback) {
-  Log.info('> Assert.waitForModalHidden(waitFn, callback) { ... }');
+Assert.waitForModalHidden = function(duration, waitFn, callback) {
 
-  var self = this;
+  if (Is.function(duration)) {
+    callback = waitFn;
+    waitFn = duration;
+    duration = 0;
+  }
+
+  Log.info('> Assert.waitForModalHidden(%d, waitFn, callback) { ... }', duration);
 
   jQuery(window.application).one('v-modal-hidden', function(event) {
-    Log.info('< Assert.waitForModalHidden(waitFn, callback) { ... }');
-    callback(null);
+    Log.info('< Assert.waitForModalHidden(%d, waitFn, callback) { ... }', duration);
+    setTimeout(function() {
+      callback(null);
+    }, duration);
   });
 
-  waitFn(function(error) {
-    if (error) {
-      Log.error('< Assert.waitForModalHidden(waitFn, callback) { ... }');
-      Log.error('    error.message=%j', error.message);
-      UIkit.modal.alert(error.message);
-    }
-  });
+  setTimeout(function() {
+    waitFn(Application.ifNotError());
+  }, duration);
 
 };
 

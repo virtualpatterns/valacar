@@ -9,11 +9,11 @@ pagesPrototype.removeFromTop = function() {
 };
 
 pagesPrototype.top = function() {
-  return this[0];
+  return this.isNotEmpty() ? this[0] : null;
 };
 
 pagesPrototype.next = function() {
-  return this[1];
+  return this.isNotAlmostEmpty() ? this[1] : null;
 };
 
 pagesPrototype.isNotEmpty = function() {

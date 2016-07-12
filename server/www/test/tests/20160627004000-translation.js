@@ -9,7 +9,7 @@ var TranslationsPage = require('../../library/elements/pages/translations-page')
 
 describe('TranslationPage', function() {
 
-  beforeEach(function(callback) {
+  before(function(callback) {
     Asynchronous.waterfall([
       function(callback) {
         Application.GET('/api/translations', callback);
@@ -25,7 +25,7 @@ describe('TranslationPage', function() {
 
   describe('TranslationPage (blank translation)', function() {
 
-    beforeEach(function(callback) {
+    before(function(callback) {
       Assert.showPage(TranslationPage.createElement(TranslationPage.Source.createSource({})), callback);
     });
 
@@ -41,11 +41,11 @@ describe('TranslationPage', function() {
       Assert.existsLink('Done');
     });
 
-    it('should contain a blank input for from', function() {
+    it('should contain a blank input for From', function() {
       Assert.existsInputValue('from', '');
     });
 
-    it('should contain a blank input for to', function() {
+    it('should contain a blank input for To', function() {
       Assert.existsInputValue('to', '');
     });
 
@@ -53,7 +53,7 @@ describe('TranslationPage', function() {
       Assert.notExistsLinkId('delete');
     });
 
-    afterEach(function(callback) {
+    after(function(callback) {
       Assert.hidePage(callback);
     });
 
@@ -61,7 +61,7 @@ describe('TranslationPage', function() {
 
   describe('TranslationPage (existing translation)', function() {
 
-    beforeEach(function(callback) {
+    before(function(callback) {
       Asynchronous.waterfall([
         function(callback) {
           Application.POST('/api/translations', {
@@ -87,11 +87,11 @@ describe('TranslationPage', function() {
       Assert.existsLink('Done');
     });
 
-    it('should contain an input for from containing "from01"', function() {
-      Assert.existsInputValue('from', 'from01');
+    it('should contain an input for From', function() {
+      Assert.existsDisabledInputValue('from', 'from01');
     });
 
-    it('should contain an input for to containing "to01"', function() {
+    it('should contain an input for To', function() {
       Assert.existsInputValue('to', 'to01');
     });
 
@@ -99,7 +99,7 @@ describe('TranslationPage', function() {
       Assert.existsLinkId('delete');
     });
 
-    afterEach(function(callback) {
+    after(function(callback) {
       Assert.hidePage(callback);
     });
 
@@ -107,16 +107,16 @@ describe('TranslationPage', function() {
 
   describe('TranslationPage (blank translation) on valid From and To on Done', function() {
 
-    beforeEach(function(callback) {
+    before(function(callback) {
       Asynchronous.series([
         function(callback) {
           Assert.showPage(TranslationPage.createElement(TranslationPage.Source.createSource({})), callback);
         },
         function(callback) {
-          Assert.inputValue('from', 'from02', callback);
+          Assert.inputValue('from', 'from01', callback);
         },
         function(callback) {
-          Assert.inputValue('to', 'to02', callback);
+          Assert.inputValue('to', 'to01', callback);
         },
         function(callback) {
           Assert.clickLink('Done', callback);
@@ -124,42 +124,46 @@ describe('TranslationPage', function() {
       ], callback);
     });
 
-    it('should save the from "from02" for the translation "from02" to "to02"', function(callback) {
-      Application.GET('/api/translations/from02', function(error, translation) {
+    it('should save the From for the translation', function(callback) {
+      Application.GET('/api/translations/from01', function(error, translation) {
         if (error)
           callback(error);
         else {
-          Assert.equal(translation.from, 'from02');
+          Assert.equal(translation.from, 'from01');
           callback(null);
         }
       });
     });
 
-    it('should save the to "to02" for the translation "from02" to "to02"', function(callback) {
-      Application.GET('/api/translations/from02', function(error, translation) {
+    it('should save the To for the translation', function(callback) {
+      Application.GET('/api/translations/from01', function(error, translation) {
         if (error)
           callback(error);
         else {
-          Assert.equal(translation.to, 'to02');
+          Assert.equal(translation.to, 'to01');
           callback(null);
         }
       });
+    });
+
+    after(function(callback) {
+      Application.DELETE('/api/translations/from01', callback);
     });
 
   });
 
   describe('TranslationPage (blank translation) on invalid From on Done', function() {
 
-    beforeEach(function(callback) {
+    before(function(callback) {
       Asynchronous.series([
         function(callback) {
           Assert.showPage(TranslationPage.createElement(TranslationPage.Source.createSource({})), callback);
         },
         function(callback) {
-          Assert.inputValue('from', '@from03', callback);
+          Assert.inputValue('from', '@from01', callback);
         },
         function(callback) {
-          Assert.inputValue('to', 'to03', callback);
+          Assert.inputValue('to', 'to01', callback);
         },
         function(callback) {
           Assert.waitForModalShown(function() {
@@ -169,11 +173,11 @@ describe('TranslationPage', function() {
       ], callback);
     });
 
-    it('should display the alert "The translation from \'@from03\' is invalid."', function() {
-      Assert.existsAlert('The translation from "@from03" is invalid.');
+    it('should display an alert', function() {
+      Assert.existsAlert('The translation from "@from01" is invalid.');
     });
 
-    afterEach(function(callback) {
+    after(function(callback) {
       Asynchronous.series([
         function(callback) {
           Assert.waitForModalHidden(function() {
@@ -190,13 +194,13 @@ describe('TranslationPage', function() {
 
   describe('TranslationPage (blank translation) on invalid To on Done', function() {
 
-    beforeEach(function(callback) {
+    before(function(callback) {
       Asynchronous.series([
         function(callback) {
           Assert.showPage(TranslationPage.createElement(TranslationPage.Source.createSource({})), callback);
         },
         function(callback) {
-          Assert.inputValue('from', 'from03.5', callback);
+          Assert.inputValue('from', 'from01', callback);
         },
         function(callback) {
           Assert.inputValue('to', '', callback);
@@ -209,11 +213,11 @@ describe('TranslationPage', function() {
       ], callback);
     });
 
-    it('should display the alert "The translation to \'\' is invalid."', function() {
+    it('should display an alert', function() {
       Assert.existsAlert('The translation to "" is invalid.');
     });
 
-    afterEach(function(callback) {
+    after(function(callback) {
       Asynchronous.series([
         function(callback) {
           Assert.waitForModalHidden(function() {
@@ -230,12 +234,12 @@ describe('TranslationPage', function() {
 
   describe('TranslationPage (existing translation) on Delete', function() {
 
-    beforeEach(function(callback) {
+    before(function(callback) {
       Asynchronous.waterfall([
         function(callback) {
           Application.POST('/api/translations', {
-            'from': 'from04',
-            'to': 'to04'
+            'from': 'from01',
+            'to': 'to01'
           }, callback);
         },
         function(translation, callback) {
@@ -249,11 +253,11 @@ describe('TranslationPage', function() {
       ], callback);
     });
 
-    it('should display the confirmation "Are you sure you want to delete the translation from \'from04\'?"', function() {
-      Assert.existsConfirmation('Are you sure you want to delete the translation from "from04"?');
+    it('should display a confirmation', function() {
+      Assert.existsConfirmation('Are you sure you want to delete the translation from "from01"?');
     });
 
-    afterEach(function(callback) {
+    after(function(callback) {
       Asynchronous.series([
         function(callback) {
           Assert.waitForModalHidden(function() {
@@ -262,6 +266,9 @@ describe('TranslationPage', function() {
         },
         function(callback) {
           Assert.hidePage(callback);
+        },
+        function(callback) {
+          Application.DELETE('/api/translations/from01', callback);
         }
       ], callback);
     });
@@ -270,12 +277,12 @@ describe('TranslationPage', function() {
 
   describe('TranslationPage (existing translation) on Delete and Yes', function() {
 
-    beforeEach(function(callback) {
+    before(function(callback) {
       Asynchronous.waterfall([
         function(callback) {
           Application.POST('/api/translations', {
-            'from': 'from05',
-            'to': 'to05'
+            'from': 'from01',
+            'to': 'to01'
           }, callback);
         },
         function(translation, callback) {
@@ -310,12 +317,12 @@ describe('TranslationPage', function() {
 
   describe('TranslationPage (existing translation) on Delete and No', function() {
 
-    beforeEach(function(callback) {
+    before(function(callback) {
       Asynchronous.waterfall([
         function(callback) {
           Application.POST('/api/translations', {
-            'from': 'from06',
-            'to': 'to06'
+            'from': 'from01',
+            'to': 'to01'
           }, callback);
         },
         function(translation, callback) {
@@ -346,8 +353,15 @@ describe('TranslationPage', function() {
       ], callback);
     });
 
-    afterEach(function(callback) {
-      Assert.hidePage(callback);
+    after(function(callback) {
+      Asynchronous.series([
+        function(callback) {
+          Assert.hidePage(callback);
+        },
+        function(callback) {
+          Application.DELETE('/api/translations/from01', callback);
+        }
+      ], callback);
     });
 
   });

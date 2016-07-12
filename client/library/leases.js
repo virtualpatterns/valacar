@@ -12,11 +12,11 @@ var RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'res
 
 var Leases = Object.create({});
 
-Leases.insert = function(connection, address, _from, _to, device, host, callback) {
+Leases.insert = function(connection, address, from, to, device, host, callback) {
   Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-tlease.sql'), {
     $Address: address,
-    $From: _from.toISOString(),
-    $To: _to.toISOString(),
+    $From: from.toISOString(),
+    $To: to.toISOString(),
     $Device: device,
     $Host: host
   }, callback);

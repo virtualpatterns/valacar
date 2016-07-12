@@ -99,16 +99,26 @@ translationPagePrototype.onDelete = function(event) {
   source.from = self.getContent().find('#from').val();
   source.to = self.getContent().find('#to').val();
 
-  UIkit.modal.confirm(Utilities.format('Are you sure you want to delete the translation from %j?', source.from), function(){
+  Application.confirm('Are you sure you want to delete the translation from %j?', source.from, function() {
     Application.DELETE(Utilities.format('/api/translations/%s', source.from), Application.ifNotError(function() {
       window.application.hidePage();
     }));
-  }, {
-    labels: {
-     'Ok': 'Yes',
-     'Cancel': 'No'
-    }
   });
+
+  // UIkit.modal.confirm(
+  //   Utilities.format('Are you sure you want to delete the translation from %j?', source.from),
+  //   function(){
+  //     Application.DELETE(Utilities.format('/api/translations/%s', source.from), Application.ifNotError(function() {
+  //       window.application.hidePage();
+  //     }));
+  //   },
+  //   {
+  //     labels: {
+  //      'Ok': 'Yes',
+  //      'Cancel': 'No'
+  //     }
+  //   }
+  // );
 
 };
 

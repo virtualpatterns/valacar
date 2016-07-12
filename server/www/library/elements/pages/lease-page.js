@@ -10,6 +10,7 @@ var Log = require('../../log');
 var Page = require('../page');
 
 var LeaseInstructionsModal = require('../modals/lease-instructions-modal');
+var AlertModal = require('../modals/alert-modal');
 var TranslationPage = require('./translation-page');
 
 var pageSourcePrototype = Page.Source.getSourcePrototype();
@@ -168,8 +169,7 @@ leasePagePrototype.onDelete = function(event) {
   source.device = self.getContent().find('#device').val();
   source.host = self.getContent().find('#host').val();
 
-  UIkit.modal.confirm(Utilities.format('Are you sure you want to delete the static DHCP lease for %j?', source.address), function() {
-
+  Application.confirm('Are you sure you want to delete the static DHCP lease for %j?', source.address, function() {
     Asynchronous.series([
       function(callback) {
         Application.DELETE(Utilities.format('/api/leases/%s', source.address), callback);
@@ -180,12 +180,6 @@ leasePagePrototype.onDelete = function(event) {
     ], Application.ifNotError(function() {
       window.application.hidePage();
     }));
-
-  }, {
-    labels: {
-     'Ok': 'Yes',
-     'Cancel': 'No'
-    }
   });
 
 };

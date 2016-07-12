@@ -195,21 +195,21 @@ Command
   .option('--logPath <path>', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
   .option('--enableTrace', 'Enable database tracing')
   .option('--enableProfile', 'Enable database profiling')
-  .action(function (_from, _to, databasePath, options) {
+  .action(function (from, to, databasePath, options) {
 
     Log.addFile(options.logPath || LOG_PATH);
 
     Log.info('--------------------------------------------------------------------------------');
     Log.info('> Command.command("addTranslation <from> <to> [databasePath]")');
-    Log.info('> Command.action(function (%j, %j, %j, options) { ... }', _from, _to, Path.trim(databasePath));
+    Log.info('> Command.action(function (%j, %j, %j, options) { ... }', from, to, Path.trim(databasePath));
     Log.info('--------------------------------------------------------------------------------');
 
     Asynchronous.series([
       function(callback) {
-        Application.validateAddTranslation(_from, _to, callback);
+        Application.validateAddTranslation(from, to, callback);
       },
       function(callback) {
-        Application.addTranslation(_from, _to, databasePath || DATABASE_PATH, {
+        Application.addTranslation(from, to, databasePath || DATABASE_PATH, {
           'enableTrace': !!options.enableTrace,
           'enableProfile': !!options.enableProfile
         }, callback);
@@ -221,14 +221,14 @@ Command
         console.error(error.stack);
 
         Process.exitCode = 1;
-        console.log('An error occured adding the translation for %j to the database at %s.', _from, Path.trim(databasePath || DATABASE_PATH));
+        console.log('An error occured adding the translation for %j to the database at %s.', from, Path.trim(databasePath || DATABASE_PATH));
         console.log(error.stack);
 
       }
       else {
 
         Process.exitCode = 0;
-        console.log('Successfully added the translation for %j to the database at %s.', _from, Path.trim(databasePath || DATABASE_PATH));
+        console.log('Successfully added the translation for %j to the database at %s.', from, Path.trim(databasePath || DATABASE_PATH));
 
       }
 
@@ -245,21 +245,21 @@ Command
   .option('--logPath <path>', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
   .option('--enableTrace', 'Enable database tracing')
   .option('--enableProfile', 'Enable database profiling')
-  .action(function (_from, databasePath, options) {
+  .action(function (from, databasePath, options) {
 
     Log.addFile(options.logPath || LOG_PATH);
 
     Log.info('--------------------------------------------------------------------------------');
     Log.info('> Command.command("removeTranslation <from> [databasePath]")');
-    Log.info('> Command.action(function (%j, %j, options) { ... }', _from, Path.trim(databasePath));
+    Log.info('> Command.action(function (%j, %j, options) { ... }', from, Path.trim(databasePath));
     Log.info('--------------------------------------------------------------------------------');
 
     Asynchronous.series([
       function(callback) {
-        Application.validateRemoveTranslation(_from, callback);
+        Application.validateRemoveTranslation(from, callback);
       },
       function(callback) {
-        Application.removeTranslation(_from, databasePath || DATABASE_PATH, {
+        Application.removeTranslation(from, databasePath || DATABASE_PATH, {
           'enableTrace': !!options.enableTrace,
           'enableProfile': !!options.enableProfile
         }, callback);
@@ -271,14 +271,14 @@ Command
         console.error(error.stack);
 
         Process.exitCode = 1;
-        console.log('An error occured removing the translation for %j to the database at %s.', _from, Path.trim(databasePath || DATABASE_PATH));
+        console.log('An error occured removing the translation for %j to the database at %s.', from, Path.trim(databasePath || DATABASE_PATH));
         console.log(error.stack);
 
       }
       else {
 
         Process.exitCode = 0;
-        console.log('Successfully removed the translation for %j to the database at %s.', _from, Path.trim(databasePath || DATABASE_PATH));
+        console.log('Successfully removed the translation for %j to the database at %s.', from, Path.trim(databasePath || DATABASE_PATH));
 
       }
 
@@ -407,7 +407,7 @@ Command
         Application.validateRemoveLease(IPAddress, callback);
       },
       function(callback) {
-        Application.removeLease(IPAddress, databasePath || DATABASE_PATH, {
+        Application.removeLease(IPAddress, Database.MINIMUM_DATE, Database.MINIMUM_DATE, databasePath || DATABASE_PATH, {
           'enableTrace': !!options.enableTrace,
           'enableProfile': !!options.enableProfile
         }, callback);

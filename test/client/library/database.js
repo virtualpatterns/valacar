@@ -56,27 +56,27 @@ Database.notExistsTable = function(connection, tableName, callback) {
   });
 };
 
-Database.existsLease = function(connection, address, _from, _to, device, host, callback) {
+Database.existsLease = function(connection, address, from, to, device, host, callback) {
   this.getFile(connection, Path.join(RESOURCES_PATH, 'exists-tlease.sql'), {
     $Address: address,
-    $From: _from.toISOString(),
-    $To: _to.toISOString(),
+    $From: from.toISOString(),
+    $To: to.toISOString(),
     $Device: device,
     $Host: host
   }, function(error, row) {
     if (error)
       callback(error);
     else if (!row)
-      callback(new Error(Utilities.format('The lease %j from %j to %j does not exist.', address, _from, _to)), false);
+      callback(new Error(Utilities.format('The lease %j from %j to %j does not exist.', address, from, to)), false);
     else
       callback(null, true);
   });
 };
 
-Database.notExistsLease = function(connection, address, _from, _to, device, host, callback) {
-  this.existsLease(connection, address, _from, _to, device, host, function(error, exists) {
+Database.notExistsLease = function(connection, address, from, to, device, host, callback) {
+  this.existsLease(connection, address, from, to, device, host, function(error, exists) {
     if (exists)
-      callback(new Error(Utilities.format('The lease %j from %j to %j exists.', address, _from, _to))), false;
+      callback(new Error(Utilities.format('The lease %j from %j to %j exists.', address, from, to))), false;
     else if (exists == undefined)
       callback(error);
     else
@@ -92,24 +92,24 @@ Database.notExistsStaticLease = function(connection, address, device, host, call
   this.notExistsLease(connection, address, this.MINIMUM_DATE, this.MINIMUM_DATE, device, host, callback);
 };
 
-Database.existsTranslation = function(connection, _from, _to, callback) {
+Database.existsTranslation = function(connection, from, to, callback) {
   this.getFile(connection, Path.join(RESOURCES_PATH, 'exists-ttranslation.sql'), {
-    $From: _from,
-    $To: _to
+    $From: from,
+    $To: to
   }, function(error, row) {
     if (error)
       callback(error);
     else if (!row)
-      callback(new Error(Utilities.format('The translation from %j to %j does not exist.', _from, _to)), false);
+      callback(new Error(Utilities.format('The translation from %j to %j does not exist.', from, to)), false);
     else
       callback(null, true);
   });
 };
 
-Database.notExistsTranslation = function(connection, _from, _to, callback) {
-  this.existsTranslation(connection, _from, _to, function(error, exists) {
+Database.notExistsTranslation = function(connection, from, to, callback) {
+  this.existsTranslation(connection, from, to, function(error, exists) {
     if (exists)
-      callback(new Error(Utilities.format('The translation from %j to %j exists.', _from, _to)), false);
+      callback(new Error(Utilities.format('The translation from %j to %j exists.', from, to)), false);
     else if (exists == undefined)
       callback(error);
     else

@@ -114,7 +114,7 @@ elementPrototype.render = function(data, callback) {
       callback(error, content);
 
     })
-    .fail(function(request, status, error) {
+    .fail(function(request, status) {
       Log.error('< Element.render(data, callback)');
       Log.error('    request.status=%j', request.status);
       Log.error('    request.statusText=%j', request.statusText);

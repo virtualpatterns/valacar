@@ -87,12 +87,12 @@ Application.executeClean = function(callback) {
   this.executeCommand('clean', callback);
 };
 
-Application.executeAddTranslation = function(_from, _to, callback) {
-  this.executeCommand(Utilities.format('addTranslation %j %j', _from, _to), callback);
+Application.executeAddTranslation = function(from, to, callback) {
+  this.executeCommand(Utilities.format('addTranslation %j %j', from, to), callback);
 };
 
-Application.executeRemoveTranslation = function(_from, callback) {
-  this.executeCommand(Utilities.format('removeTranslation %j', _from), callback);
+Application.executeRemoveTranslation = function(from, callback) {
+  this.executeCommand(Utilities.format('removeTranslation %j', from), callback);
 };
 
 Application.executeDumpTranslations = function(callback) {
