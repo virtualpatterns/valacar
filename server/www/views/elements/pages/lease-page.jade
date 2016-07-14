@@ -1,0 +1,117 @@
+-
+  var expiresEnabled = element.source.isSystem
+  var deleteEnabled = element.source.isExistingStatic
+  var doneEnabled = element.source.isStatic
+  var addressEnabled = element.source.isNewStatic
+  var otherEnabled =  element.source.isStatic
+  var translationEnabled = element.source.translation
+  var addLeaseEnabled = element.source.isSystem
+  var copyLeaseEnabled = element.source.isExistingStatic
+  var addTranslationShown = !element.source.translation ||
+                            element.source.isNewStatic
+  var addTranslationEnabled = addTranslationShown &&
+                              !element.source.translation &&
+                              !element.source.isStatic
+  var editTranslationShown =  !addTranslationShown &&
+                              element.source.translation
+  var editTranslationEnabled =  editTranslationShown &&
+                                element.source.translation 
+
+div(id=element.id).uk-height-1-1.v-element.v-page.v-lease-page
+  div.uk-container.uk-height-1-1.uk-padding-remove.uk-margin-remove
+    nav.uk-navbar.uk-navbar-attached
+      ul.uk-navbar-nav
+        li
+          a(id='goBack')
+            i.uk-icon-chevron-left.v-left-icon
+            | Back
+      div.uk-navbar-flip
+        ul.uk-navbar-nav
+          li
+            a(  id='delete',
+                class={'uk-hidden': !deleteEnabled})
+              i.uk-icon-trash
+          li
+            a(  id='done',
+                class={'uk-hidden': !doneEnabled})
+              | Done
+      div.uk-navbar-content.uk-navbar-center
+        | Lease
+    div.uk-block.uk-padding-remove.uk-margin.uk-margin-left.uk-margin-right
+      div(class={'uk-hidden': !element.source.isSystem}).uk-alert
+        //- - if (element.source.isSystem)
+        | This is a DHCP lease imported from the DHCP server.  It cannot be 
+        | edited or deleted but it can be used to create a new static DHCP 
+        | lease or translation using the buttons below.
+        //- - else if (element.source.isExistingStatic)
+        //-   | This is an existing static DHCP lease.  The IP Address cannot be 
+        //-   | edited but a copy can be made with a different address and then this
+        //-   | one deleted.
+        //- - else if (element.source.isNewStatic)
+        //-   | This is a new static DHCP lease.  The IP Address can be edited.
+      form.uk-form.uk-form-stacked
+        div.uk-form-row
+          label(for='address').uk-form-label
+            | IP Address
+          div.uk-form-controls
+            input(id='address', 
+                  disabled=!addressEnabled, 
+                  placeholder='e.g. 10.1.128.14', 
+                  type='text', 
+                  value=element.source.address).uk-width-1-1
+        div.uk-form-row
+          label.uk-form-label
+            | Expires
+          div(class={'uk-text-muted': !expiresEnabled}).uk-form-controls
+            - if (expiresEnabled)
+              = element.source.toNowAsString
+              |  at 
+              = element.source.toAsString
+            - else
+              |  (never)
+        div.uk-form-row
+          label(for='device').uk-form-label
+            | MAC Address
+          div.uk-form-controls
+            input(id='device', 
+                  disabled=!otherEnabled, 
+                  placeholder='e.g. 12:ab:34:cd:56:ef', 
+                  type='text', 
+                  value=element.source.device).uk-width-1-1
+        div.uk-form-row
+          label(for='host').uk-form-label
+            - if (translationEnabled)
+              | Host Name/Translation
+            - else
+              | Host Name
+          div.uk-form-controls
+            input(id='host', 
+                  disabled=!otherEnabled, 
+                  placeholder='e.g. OfficeComputer or Printer01', 
+                  type='text', 
+                  value=element.source.host).uk-width-1-1
+            input(id='translation',
+                  class={'uk-hidden': !translationEnabled},
+                  disabled=true, 
+                  type='text', 
+                  value=translationEnabled ? element.source.translation.to : '(none)').uk-width-1-1.uk-margin-small-top
+      ul.uk-grid.uk-grid-width-1-2.uk-grid-small
+        li
+          button( id='addLease',
+                  disabled=!(addLeaseEnabled || copyLeaseEnabled),
+                  type='button').uk-button.uk-button-primary.uk-width-1-1
+            - if (addLeaseEnabled)
+              | Create static lease
+            - else
+              | Copy static lease
+        li
+          button( id='addTranslation',
+                  class={'uk-hidden':!addTranslationShown},
+                  disabled=!addTranslationEnabled,
+                  type='button').uk-button.uk-button-primary.uk-width-1-1
+            | Create translation
+          button( id='editTranslation',
+                  class={'uk-hidden':!editTranslationShown},
+                  disabled=!editTranslationEnabled,
+                  type='button').uk-button.uk-button-primary.uk-width-1-1
+            | Edit translation

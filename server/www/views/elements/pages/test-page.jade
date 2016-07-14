@@ -1,0 +1,25 @@
+div(id=element.id).uk-height-1-1.v-element.v-page.v-test-page
+  div.uk-container.uk-height-1-1.uk-padding-remove.uk-margin-remove
+    nav(data-uk-sticky).uk-navbar.uk-navbar-attached
+      ul.uk-navbar-nav
+        li
+          a(id='goDefault')
+            i.uk-icon-chevron-left.v-left-icon
+            | Go To Default
+      div.uk-navbar-flip
+        ul.uk-navbar-nav
+          li
+            a(id='refresh')
+              i.uk-icon-refresh
+      div.uk-navbar-content.uk-navbar-center.v-status
+        | Running ...
+      div.uk-navbar-content.uk-navbar-center.v-status-failed.uk-hidden
+        | Failed
+        i.uk-icon-close.v-right-icon
+      div.uk-navbar-content.uk-navbar-center.v-status-pending.uk-hidden
+        | Pending
+        i.uk-icon-exclamation.v-right-icon
+      div.uk-navbar-content.uk-navbar-center.v-status-passed.uk-hidden
+        | Passed
+        i.uk-icon-check.v-right-icon
+    div(id='mocha')

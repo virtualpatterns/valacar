@@ -1,4 +1,8 @@
 *.bts
+*.err
+*.log
+*.out
+*.pid
 node_modules
 npm-debug.log
 process/data

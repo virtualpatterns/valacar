@@ -1,30 +1,62 @@
-'use strict';
+var Utilities = require('util');
 
-const Utilities = require('util');
+var Application = require('../../client/library/application');
+var Database = require('../../client/library/database');
+var DatabaseTask = require('../library/database-task');
+var Package = require('../../package.json');
+var Path = require('../../client/library/path');
+var Process = require('../../client/library/process');
+var Task = require('../library/task');
 
-const Package = require('../../package.json');
-const Path = require('../../library/path');
-const Process = require('../../library/process');
-const Task = require('../library/task');
+var COPY_SOURCE_COMPUTER = 'PIGWIDGEON.local';
+var COPY_SOURCE_DATABASE_PATH = Path.join(Path.sep, 'home', 'fficnar', 'data', Utilities.format('%s.db', Package.name));
+var COPY_SOURCE_LOG_PATH = Path.join(Path.sep, 'home', 'fficnar', 'data', Utilities.format('%s.log', Package.name));
+var DATABASE_PATH = Path.join(Process.DATA_PATH, Utilities.format('%s.db', Package.name));
+var LOG_PATH = Path.join(Process.LOG_PATH, Utilities.format('%s.log', Package.name));
 
-const COPY_SOURCE_COMPUTER = 'PIGWIDGEON.local';
-const COPY_SOURCE_DATABASE_PATH = Path.join(Path.sep, 'home', 'fficnar', 'data', Utilities.format('%s.db', Package.name));
-const COPY_SOURCE_LOG_PATH = Path.join(Path.sep, 'home', 'fficnar', 'data', Utilities.format('%s.log', Package.name));
-const COPY_TARGET_DATABASE_PATH = Path.join(Process.cwd(), 'process', 'data', Utilities.format('%s.db', Package.name));
-const COPY_TARGET_LOG_PATH = Path.join(Process.cwd(), 'process', 'log', Utilities.format('%s.log', Package.name));
+var RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
 
 namespace('data', function() {
 
   desc('Copy database and log from production');
-  task('copy', ['log'], function () {
+  task('copy', ['log'], {'async': true}, function () {
     Task.createTask(this.fullName)
-      .add('echo -n "Copying %s from %s to %s ... "', COPY_SOURCE_DATABASE_PATH, COPY_SOURCE_COMPUTER, Path.trim(COPY_TARGET_DATABASE_PATH))
-      .add('scp "%s:%s" %j', COPY_SOURCE_COMPUTER, COPY_SOURCE_DATABASE_PATH, COPY_TARGET_DATABASE_PATH, Task.OPTIONS_STDIO_IGNORE)
+      .addLine()
+      .add('echo -n "Copying %s from %s to %s ... "', COPY_SOURCE_DATABASE_PATH, COPY_SOURCE_COMPUTER, Path.trim(DATABASE_PATH))
+      .add('scp "%s:%s" %j', COPY_SOURCE_COMPUTER, COPY_SOURCE_DATABASE_PATH, DATABASE_PATH, Task.OPTIONS_STDIO_IGNORE)
       .add('echo    "done"')
-      .add('echo -n "Copying %s from %s to %s ... "', COPY_SOURCE_LOG_PATH, COPY_SOURCE_COMPUTER, Path.trim(COPY_TARGET_LOG_PATH))
-      .add('scp "%s:%s" %j', COPY_SOURCE_COMPUTER, COPY_SOURCE_LOG_PATH, COPY_TARGET_LOG_PATH, Task.OPTIONS_STDIO_IGNORE)
+      .add('echo -n "Copying %s from %s to %s ... "', COPY_SOURCE_LOG_PATH, COPY_SOURCE_COMPUTER, Path.trim(LOG_PATH))
+      .add('scp "%s:%s" %j', COPY_SOURCE_COMPUTER, COPY_SOURCE_LOG_PATH, LOG_PATH, Task.OPTIONS_STDIO_IGNORE)
       .add('echo    "done"')
       .execute(complete, fail);
+  });
+
+  namespace('update', function() {
+
+    desc('Update all current leases\' to expiry');
+    task('leases', ['log', 'data:copy'], {'async': true}, function (duration) {
+      DatabaseTask.createTask(this.fullName, DATABASE_PATH)
+        .addRunFile(Path.join(RESOURCES_PATH, 'update-tlease-to.sql'), {$Duration: duration || '+1 day'})
+
+        // .add(function(callback) {
+        //   Application.openDatabase(DATABASE_PATH, {
+        //     'enableTrace': true,
+        //     'enableProfile': false
+        //   }, function(connection, callback) {
+        //     Database.runFile(connection, Path.join(RESOURCES_PATH, 'update-tlease-to.sql'), {
+        //       $Duration: duration || '+1 day'
+        //     }, function(error) {
+        //       if (!error)
+        //         Log.info();
+        //         Assert.ok(this.changes <= 1, Utilities.format('The number of rows deleted from tMigration should be 0 or 1 but is instead %d.', this.changes));
+        //       callback(error);
+        //     });
+        //   }, callback);
+        // })
+
+        .execute(complete, fail);
+    });
+
   });
 
 });

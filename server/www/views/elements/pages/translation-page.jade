@@ -1,0 +1,48 @@
+-
+  var deleteEnabled = !element.source.isNew
+  var fromEnabled = element.source.isNew
+                      
+div(id=element.id).uk-height-1-1.v-element.v-page.v-translation-page
+  div.uk-container.uk-height-1-1.uk-padding-remove.uk-margin-remove
+    nav.uk-navbar.uk-navbar-attached
+      ul.uk-navbar-nav
+        li
+          a(id='goBack')
+            i.uk-icon-chevron-left.v-left-icon
+            | Back
+      div.uk-navbar-flip
+        ul.uk-navbar-nav
+          li
+            a(  id='delete',
+                class={'uk-hidden': !deleteEnabled})
+              i.uk-icon-trash
+          li
+            a(id='done')
+              | Done
+      div.uk-navbar-content.uk-navbar-center
+        | Translation
+    div.uk-block.uk-padding-remove.uk-margin.uk-margin-left.uk-margin-right
+      //- div.uk-alert
+      //-   - if (!element.source.isNew)
+      //-     | This is an existing translation.  The value of From cannot be 
+      //-     | edited but this translation can be deleted and a new one created with 
+      //-     | a different value of From.
+      //-   - else
+      //-     | This is a new translation.  The value of From can be edited.
+      form.uk-form.uk-form-stacked
+        div.uk-form-row
+          label(for='from').uk-form-label
+            | From
+          div.uk-form-controls
+            input(id='from', 
+                  disabled=!fromEnabled, 
+                  placeholder='e.g. 12:ab:34:cd:56:ef or tv', 
+                  type='text', 
+                  value=element.source.from).uk-width-1-1
+        div.uk-form-row
+          label(for='to').uk-form-label
+            | To
+          div.uk-form-controls
+            input(id='to', 
+                  type='text', 
+                  value=element.source.to).uk-width-1-1

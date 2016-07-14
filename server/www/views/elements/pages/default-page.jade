@@ -1,0 +1,35 @@
+div(id=element.id).uk-height-1-1.v-element.v-page.v-default-page
+  div.uk-container.uk-height-1-1
+    div.uk-container-center
+      div.uk-panel.uk-panel-box.uk-margin-top
+        div.uk-panel-teaser
+          button( id='close',
+                  type='button').uk-close.uk-position-top-right.uk-margin-top.uk-margin-right.uk-position-z-index
+          img(src='/www/resources/valacar.png',
+              height='100px',
+              width='100px').uk-align-center.uk-margin-top
+        ul.uk-list
+          li.uk-margin-small-bottom
+            button( id='goLeases',
+                    type='button').uk-button.uk-button-large.uk-button-primary.uk-width-1-1
+              | Leases
+          li
+            button( id='goTranslations',
+                    type='button').uk-button.uk-button-large.uk-button-primary.uk-width-1-1
+              | Translations
+          li.uk-margin-top
+            button( id='goTest',
+                    type='button').uk-button.uk-button-large.uk-button-primary.uk-width-1-1
+              | Go To Tests
+      div.uk-panel.uk-panel-box.uk-margin
+        h3.uk-panel-title
+          | Status
+        dl.uk-description-list-line
+          dt Name
+          dd.v-status-name= status.name
+          dt Version
+          dd.v-status-version= status.version
+          dt Heap Total
+          dd.v-status-heap-total= status.heap.totalAsString
+          dt Heap Used
+          dd.v-status-heap-used= status.heap.usedAsString

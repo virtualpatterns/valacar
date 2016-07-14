@@ -1,35 +1,33 @@
-'use strict';
+var Utilities = require('util');
 
+var Path = require('../../client/library/path');
+var Task = require('./task');
 
-const Utilities = require('util');
+var RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
 
-const Path = require('../../library/path');
-const Task = require('./task');
+var taskPrototype = Task.getTaskPrototype();
+var gitTaskPrototype = Object.create(taskPrototype);
 
-const RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
-
-const taskPrototype = Object.create(Task.getTaskPrototype());
-
-taskPrototype.addIsDirty = function(options) {
+gitTaskPrototype.addIsDirty = function(options) {
   return this.add(Utilities.format('%j', Path.join(RESOURCES_PATH, 'git-is-dirty.sh')), options || Task.OPTIONS_STDIO_IGNORE);
 };
 
-taskPrototype.addExistsStash = function(options) {
+gitTaskPrototype.addExistsStash = function(options) {
   return this.add(Utilities.format('%j', Path.join(RESOURCES_PATH, 'git-exists-stash.sh')), options || Task.OPTIONS_STDIO_IGNORE);
 };
 
-const GitTask = Object.create(Task);
+var GitTask = Object.create(Task);
 
-GitTask.createTask = function(name, prototype) {
-  return Object.getPrototypeOf(this).createTask.call(this, name, prototype || taskPrototype);
+GitTask.createTask = function(name, options, prototype) {
+  return Task.createTask.call(this, name, options, prototype || gitTaskPrototype);
 };
 
 GitTask.isTask = function(task) {
-  return taskPrototype.isPrototypeOf(task);
+  return gitTaskPrototype.isPrototypeOf(task);
 };
 
 GitTask.getTaskPrototype = function() {
-  return taskPrototype;
+  return gitTaskPrototype;
 };
 
 module.exports = GitTask;

@@ -1,0 +1,62 @@
+body {
+  font-family: 'Raleway', sans-serif;
+}
+
+div#mocha {
+  margin-bottom: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-top: 45px;
+}
+
+ul#mocha-stats {
+  display: none;
+}
+
+div.v-default-page > div > div {
+  width: 250px;
+}
+
+i.v-left-icon {
+  padding-right: 5px;
+}
+
+i.v-right-icon {
+  padding-left: 5px;
+}
+
+div.uk-navbar-content {
+  padding-top: 3px;
+}
+
+div.v-page > div > nav.uk-navbar {
+  background-color: rgb(00a8e6);
+}
+
+a.v-icon-button {
+  padding-top: 3px;
+}
+
+table.v-table > tbody > tr {
+  cursor: pointer;
+}
+
+div.v-translation-page div.uk-block {
+  margin-top: 13px;
+}
+
+div.v-translation-page label.uk-form-label {
+  margin-bottom: 3px;
+}
+
+div.v-translation-page div.uk-form-row {
+  margin-top: 10px;
+}
+
+div.v-translation-page div.uk-form-row:first-child {
+  margin-top: 0px;
+}
+
+div.v-lease-page div.uk-block ul.uk-grid {
+  margin-top: 20px;
+}

@@ -1,0 +1,29 @@
+{
+  "name": "valacar",
+  "description": "Import DHCP leases into a database",
+  "main": "",
+  "authors": [
+    "code@virtualpatterns.com"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/virtualpatterns/valacar",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "async": "^1.5.2",
+    "DateJS": "^1.0.0-rc3",
+    "human-format": "^0.6.0",
+    "mocha": "^2.5.3",
+    "moment": "^2.13.0",
+    "uikit": "^2.26.3",
+    "underscore.string": "^3.3.4",
+    "util": "^3.46.1"
+  },
+  "devDependencies": {
+  }
+}

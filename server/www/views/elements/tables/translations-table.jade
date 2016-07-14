@@ -1,0 +1,10 @@
+table(id=element.id).uk-table.uk-table-striped.uk-table-condensed.uk-table-hover.uk-margin-remove.v-element.v-table.v-translations-table
+  thead
+    tr
+      th From
+      th To
+  tbody
+    each translation in translations
+      tr(data-translation-id=translation.id)
+        td= translation.from
+        td= translation.to
