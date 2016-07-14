@@ -6,33 +6,27 @@ namespace('git', function() {
   desc('Fail if there are any uncommitted or unstashed changes');
   task('is-dirty', ['log'], {'async': true}, function () {
     GitTask.createTask(this.fullName)
-      .addLine()
-      .add('echo "The next step will fail if there are any uncommitted or unstashed changes."')
       .addIsDirty()
-      .add('echo "All changes are committed or stashed."')
       .execute(complete, fail);
   });
 
   desc('Fail if there are any stashed changes');
   task('exists-stash', ['log'], {'async': true}, function () {
     GitTask.createTask(this.fullName)
-      .addLine()
-      .add('echo "The next step will fail if there are any stashed changes."')
       .addExistsStash()
-      .add('echo "The stash is empty."')
       .execute(complete, fail);
   });
 
   desc('Merge origin, test, increment version, commit/tag, push');
   task('push', ['log'], {'async': true}, function (version) {
     GitTask.createTask(this.fullName)
-      .addLine()
-      .add('echo "The next step will fail if there are any uncommitted or unstashed changes."')
       .addIsDirty()
-      .add('echo "All changes are committed or stashed."')
       .add('git checkout development')
       .add('jake bundle:shrink')
-      .add('git add server/www/library/bundles/*')
+      .add('git add server/www/library/bundles/default.js')
+      .add('git add server/www/library/bundles/default.min.js')
+      .add('git add server/www/library/bundles/test.js')
+      .add('git add server/www/library/bundles/test.min.js')
       .add('git commit --message "Updating bundles"')
       .add('git pull origin development')
       .add('mocha test/client/tests')
@@ -46,10 +40,7 @@ namespace('git', function() {
   desc('Stage development');
   task('stage', ['log'], {'async': true}, function () {
     GitTask.createTask(this.fullName)
-      .addLine()
-      .add('echo "The next step will fail if there are any uncommitted or unstashed changes."')
       .addIsDirty()
-      .add('echo "All changes are committed or stashed."')
       .add('git checkout staging')
       .add('git pull origin staging')
       .add('git merge development')
@@ -64,10 +55,7 @@ namespace('git', function() {
   desc('Release staging');
   task('release', ['log'], {'async': true}, function () {
     GitTask.createTask(this.fullName)
-      .addLine()
-      .add('echo "The next step will fail if there are any uncommitted or unstashed changes."')
       .addIsDirty()
-      .add('echo "All changes are committed or stashed."')
       .add('git checkout staging')
       .add('git pull origin staging')
       .add('git checkout production')

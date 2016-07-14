@@ -9,11 +9,19 @@ var taskPrototype = Task.getTaskPrototype();
 var gitTaskPrototype = Object.create(taskPrototype);
 
 gitTaskPrototype.addIsDirty = function(options) {
-  return this.add(Utilities.format('%j', Path.join(RESOURCES_PATH, 'git-is-dirty.sh')), options || Task.OPTIONS_STDIO_IGNORE);
+  return this
+    .addLine()
+    .add('echo "The next step will fail if there are any uncommitted or unstashed changes."')
+    .add(Utilities.format('%j', Path.join(RESOURCES_PATH, 'git-is-dirty.sh')), options || Task.OPTIONS_STDIO_IGNORE)
+    .add('echo "All changes are committed or stashed."');
 };
 
 gitTaskPrototype.addExistsStash = function(options) {
-  return this.add(Utilities.format('%j', Path.join(RESOURCES_PATH, 'git-exists-stash.sh')), options || Task.OPTIONS_STDIO_IGNORE);
+  return this
+    .addLine()
+    .add('echo "The next step will fail if there are any stashed changes."')
+    .add(Utilities.format('%j', Path.join(RESOURCES_PATH, 'git-exists-stash.sh')), options || Task.OPTIONS_STDIO_IGNORE)
+    .add('echo "The stash is empty."');
 };
 
 var GitTask = Object.create(Task);

@@ -17,9 +17,6 @@ var DEFAULT_TARGET_MIN_PATH = Path.join(TARGET_PATH, 'default.min.js');
 var TEST_SOURCE_PATH = Path.join(SOURCE_PATH, 'test.js');
 var TEST_TARGET_PATH = Path.join(TARGET_PATH, 'test.js');
 var TEST_TARGET_MIN_PATH = Path.join(TARGET_PATH, 'test.min.js');
-var LIBRARY_SOURCE_PATH = Path.join(SOURCE_PATH, 'library.js');
-var LIBRARY_TARGET_PATH = Path.join(TARGET_PATH, 'library.js');
-var LIBRARY_TARGET_MIN_PATH = Path.join(TARGET_PATH, 'library.min.js');
 
 namespace('bundle', function() {
 
@@ -35,7 +32,6 @@ namespace('bundle', function() {
     Task.createTask(this.fullName)
       .add('browserify %j --debug --full-paths --outfile %j', DEFAULT_SOURCE_PATH, DEFAULT_TARGET_PATH)
       .add('browserify %j --debug --full-paths --outfile %j', TEST_SOURCE_PATH, TEST_TARGET_PATH)
-      .add('browserify %j --debug --full-paths --outfile %j', LIBRARY_SOURCE_PATH, LIBRARY_TARGET_PATH)
       .execute(complete, fail);
   });
 
@@ -57,14 +53,6 @@ namespace('bundle', function() {
         .execute(complete, fail);
     });
 
-    desc(Utilities.format('Run the bundle process on %j, output to %j', Path.trim(LIBRARY_SOURCE_PATH), Path.trim(LIBRARY_TARGET_PATH)));
-    task('library', ['log'], {'async': true}, function () {
-      Task.createTask(this.fullName)
-        .addLine()
-        .add('watchify %j "--outfile=%s" --debug --verbose', LIBRARY_SOURCE_PATH, LIBRARY_TARGET_PATH)
-        .execute(complete, fail);
-    });
-
   });
 
   desc(Utilities.format('Start the bundle processes on %j, output to %j', Path.trim(DEFAULT_SOURCE_PATH), Path.trim(DEFAULT_TARGET_PATH), Path.trim(TEST_TARGET_PATH)));
@@ -82,7 +70,6 @@ namespace('bundle', function() {
           .add('echo "Starting PID\'s ... "', options)
           .add('watchify %j "--outfile=%s" --debug --verbose', DEFAULT_SOURCE_PATH, DEFAULT_TARGET_PATH, options)
           .add('watchify %j "--outfile=%s" --debug --verbose', TEST_SOURCE_PATH, TEST_TARGET_PATH, options)
-          .add('watchify %j "--outfile=%s" --debug --verbose', LIBRARY_SOURCE_PATH, LIBRARY_TARGET_PATH, options)
           .add('pgrep -f watchify', options)
           .execute(callback);
       }
@@ -150,7 +137,6 @@ namespace('bundle', function() {
       .addLine()
       .add('uglifyjs --output %j %j', DEFAULT_TARGET_MIN_PATH, DEFAULT_TARGET_PATH)
       .add('uglifyjs --output %j %j', TEST_TARGET_MIN_PATH, TEST_TARGET_PATH)
-      .add('uglifyjs --output %j %j', LIBRARY_TARGET_MIN_PATH, LIBRARY_TARGET_PATH)
       .add('ls -al %j', TARGET_PATH)
       .execute(complete, fail);
   });
