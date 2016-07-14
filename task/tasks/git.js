@@ -1,4 +1,5 @@
 var GitTask = require('../library/git-task');
+var Task = require('../library/task');
 
 namespace('git', function() {
 
