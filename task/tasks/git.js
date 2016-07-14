@@ -6,6 +6,7 @@ namespace('git', function() {
   desc('Fail if there are any uncommitted or unstashed changes');
   task('is-dirty', ['log'], {'async': true}, function () {
     GitTask.createTask(this.fullName)
+      .addLine()
       .add('echo "The next step will fail if there are any uncommitted or unstashed changes."')
       .addIsDirty()
       .add('echo "All changes are committed or stashed."')
@@ -15,6 +16,7 @@ namespace('git', function() {
   desc('Fail if there are any stashed changes');
   task('exists-stash', ['log'], {'async': true}, function () {
     GitTask.createTask(this.fullName)
+      .addLine()
       .add('echo "The next step will fail if there are any stashed changes."')
       .addExistsStash()
       .add('echo "The stash is empty."')
@@ -22,12 +24,16 @@ namespace('git', function() {
   });
 
   desc('Merge origin, test, increment version, commit/tag, push');
-  task('push', ['log', 'bundle:shrink'], {'async': true}, function (version) {
+  task('push', ['log'], {'async': true}, function (version) {
     GitTask.createTask(this.fullName)
+      .addLine()
       .add('echo "The next step will fail if there are any uncommitted or unstashed changes."')
       .addIsDirty()
       .add('echo "All changes are committed or stashed."')
       .add('git checkout development')
+      .add('jake bundle:shrink')
+      .add('git add server/www/library/bundles/*')
+      .add('git commit --message "Updating bundles"')
       .add('git pull origin development')
       .add('mocha test/client/tests')
       .add('mocha --timeout 0 \
@@ -40,6 +46,7 @@ namespace('git', function() {
   desc('Stage development');
   task('stage', ['log'], {'async': true}, function () {
     GitTask.createTask(this.fullName)
+      .addLine()
       .add('echo "The next step will fail if there are any uncommitted or unstashed changes."')
       .addIsDirty()
       .add('echo "All changes are committed or stashed."')
@@ -57,6 +64,7 @@ namespace('git', function() {
   desc('Release staging');
   task('release', ['log'], {'async': true}, function () {
     GitTask.createTask(this.fullName)
+      .addLine()
       .add('echo "The next step will fail if there are any uncommitted or unstashed changes."')
       .addIsDirty()
       .add('echo "All changes are committed or stashed."')
