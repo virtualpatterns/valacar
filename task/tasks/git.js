@@ -27,7 +27,9 @@ namespace('git', function() {
       .addIsDirty()
       .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
       .add('git pull origin development')
-      .add('mocha --require test/index.js test/tests')
+      .add('mocha test/client/tests')
+      .add('mocha --timeout 0 \
+                  test/server/tests')
       .add('npm version %s --message "Creating v%s"', version || 'prerelease', '%s', Task.OPTIONS_STDIO_IGNORE)
       .add('git push origin development --tags', Task.OPTIONS_STDIO_IGNORE)
       .execute(complete, fail);
@@ -40,7 +42,9 @@ namespace('git', function() {
       .add('git checkout staging', Task.OPTIONS_STDIO_IGNORE)
       .add('git pull origin staging')
       .add('git merge development')
-      .add('mocha --require test/index.js test/tests')
+      .add('mocha test/client/tests')
+      .add('mocha --timeout 0 \
+                  test/server/tests')
       .add('git push origin staging --tags', Task.OPTIONS_STDIO_IGNORE)
       .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
       .execute(complete, fail);
@@ -55,7 +59,9 @@ namespace('git', function() {
       .add('git checkout production', Task.OPTIONS_STDIO_IGNORE)
       .add('git pull origin production')
       .add('git merge staging')
-      .add('mocha --require test/index.js test/tests')
+      .add('mocha test/client/tests')
+      .add('mocha --timeout 0 \
+                  test/server/tests')
       .add('git push origin production --tags', Task.OPTIONS_STDIO_IGNORE)
       .add('npm publish', Task.OPTIONS_STDIO_IGNORE)
       .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
