@@ -3,5 +3,7 @@ node_modules
 npm-debug.log
 process/data
 process/log
+process/pid
 process/output
 sandbox
+server/www/vendor
