@@ -14,6 +14,7 @@ var Process = require('../client/library/process');
 
 var ADDRESS = '0.0.0.0';
 var PORT = 8080;
+var STATIC_PATH = __dirname;
 var DATABASE_PATH = Path.join(Process.cwd(), Utilities.format('%s.%s', Package.name, 'db'));
 var MASTER_LOG_PATH = Path.join(Process.cwd(), Utilities.format('%s.master.log', Package.name));
 var WORKER_LOG_PATH = Path.join(Process.cwd(), Utilities.format('%s.worker.log', Package.name));
@@ -31,6 +32,7 @@ Command
   .option('--fork', 'Fork the server process, by default the server process is not forked')
   .option('--address <address>', Utilities.format('Listening IPv4 or IPv6 address, defaults to %s', ADDRESS))
   .option('--port <number>', Utilities.format('Listening port, defaults to %s', PORT))
+  .option('--staticPath <path>', Utilities.format('Static file path (path containing but not including www), defaults to %s', Path.trim(STATIC_PATH)))
   .option('--masterLogPath <path>', Utilities.format('Master process log file path, defaults to %s', Path.trim(MASTER_LOG_PATH)))
   .option('--workerLogPath <path>', Utilities.format('Worker process log file path, defaults to %s', Path.trim(WORKER_LOG_PATH)))
   .option('--masterPIDPath <path>', Utilities.format('Master process PID file path, defaults to %s', Path.trim(MASTER_PID_PATH)))
@@ -90,6 +92,7 @@ Command
 
         Application.startWorker(  options.address || ADDRESS,
                                   options.port || PORT,
+                                  options.staticPath || STATIC_PATH,
                                   databasePath || DATABASE_PATH,
                                   {
                                     'enableTrace': !!options.enableTrace,

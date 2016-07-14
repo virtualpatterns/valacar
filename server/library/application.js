@@ -137,8 +137,8 @@ Application.startMaster = function (numberOfWorkers, pidPath) {
 
 };
 
-Application.startWorker = function (address, port, databasePath, options) {
-  Log.info('> Application.startWorker(%j, %d, %j, %j) { ... }', address, port, Path.trim(databasePath), options, {});
+Application.startWorker = function (address, port, staticPath, databasePath, options) {
+  Log.info('> Application.startWorker(%j, %d, %j, %j) { ... }', address, port, Path.trim(staticPath), Path.trim(databasePath), options, {});
 
   var Leases = require('../routes/leases');
   var Static = require('../routes/static');
@@ -156,7 +156,7 @@ Application.startWorker = function (address, port, databasePath, options) {
   Status.createRoutes(server, databasePath, options);
   Translations.createRoutes(server, databasePath, options);
   Leases.createRoutes(server, databasePath, options);
-  Static.createRoutes(server, databasePath, options);
+  Static.createRoutes(server, staticPath, options);
 
   server.listen(port, address);
 
