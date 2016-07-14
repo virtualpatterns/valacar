@@ -50,7 +50,7 @@ Leases.import = function(connection, path, callback) {
                       address,
                       lease['starts'],
                       lease['ends'],
-                      lease['hardware ethernet'],
+                      lease['hardware ethernet'] || '00:00:00:00:00:00',
                       lease['client-hostname'],
                       callback);
 
