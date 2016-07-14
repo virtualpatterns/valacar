@@ -84,8 +84,13 @@ testPagePrototype.onShown = function(event) {
 };
 
 testPagePrototype.onGoDefault = function(event) {
-  Log.info('> TestPage.onGoDefault(event) { ... }');
-  window.location.href = '/www/default.html';
+  Log.info('> TestPage.onGoDefault(event) { ... } window.location.href=%j', window.location.href);
+
+  if (window.location.href.endsWith('test.html'))
+    window.location.href = '/www/default.html';
+  else if (window.location.href.endsWith('test.min.html'))
+    window.location.href = '/www/default.min.html';
+
 };
 
 testPagePrototype.onStarted = function() {

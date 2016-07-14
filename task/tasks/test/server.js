@@ -55,14 +55,12 @@ namespace('server', function() {
       .execute(complete, fail);
   });
 
-  desc('Run /www tests');
-  task('static', ['log', 'clean:test:server'], {'async': true}, function () {
-    Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
-      .add('mocha --timeout 0 \
-                  test/server/tests/00000000000000-begin.js \
-                  test/server/tests/20160610155200-static.js \
-                  test/server/tests/99999999999999-end.js', Task.OPTIONS_STDIO_INHERIT)
-      .execute(complete, fail);
-  });
+  // desc('Run /www/test.html tests');
+  // task('www', ['log', 'clean:test:server'], {'async': true}, function () {
+  //   Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
+  //     .add('mocha-phantomjs --timeout 0 \
+  //                           http://localhost:31470/www/test.html', Task.OPTIONS_STDIO_INHERIT)
+  //     .execute(complete, fail);
+  // });
 
 });

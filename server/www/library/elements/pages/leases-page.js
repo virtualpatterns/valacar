@@ -87,6 +87,7 @@ leasesPagePrototype.onAddLease = function(event) {
 };
 
 leasesPagePrototype.onSelected = function(event) {
+  Log.info('> LeasesPage.onSelected(event) { ... }\n\n%s\n\n', Utilities.inspect(JSON.parse(event.currentTarget.dataset.leaseId)));
 
   var self = event.data.this;
   var leaseId = JSON.parse(event.currentTarget.dataset.leaseId);
@@ -134,7 +135,6 @@ leasesPagePrototype.getElements = function(Class) {
 };
 
 leasesPagePrototype.refreshElements = function(Class, callback) {
-  Log.info('> LeasesPage.refreshElements(Class, callback) { ... }');
 
   if (Is.function(Class)) {
     callback = Class;
@@ -159,7 +159,7 @@ leasesPagePrototype.refreshElements = function(Class, callback) {
 };
 
 leasesPagePrototype.refreshLeasesTable = function(callback) {
-  Log.info('> LeasesPage.refreshLeasesTable(callback) { ... }');
+  // Log.info('> LeasesPage.refreshLeasesTable(callback) { ... }');
 
   var self = this;
   var element = self.leasesTable;

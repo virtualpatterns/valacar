@@ -13,7 +13,7 @@ modalPrototype.show = function(options) {
   options = options || {};
   options.bgclose = false;
 
-  Log.info('> Modal.show(options) { ... }\n\n%s\n\n', Utilities.inspect(options));
+  // Log.info('> Modal.show(options) { ... }\n\n%s\n\n', Utilities.inspect(options));
 
   this.Modal = UIkit.modal(Utilities.format('#%s', this.id), options);
 
@@ -23,7 +23,7 @@ modalPrototype.show = function(options) {
 };
 
 modalPrototype.hide = function(results) {
-  Log.info('> Modal.hide(results) { ... }\n\n%s\n\n', Utilities.inspect(results));
+  // Log.info('> Modal.hide(results) { ... }\n\n%s\n\n', Utilities.inspect(results));
 
   this.getContent().data('results', results);
 
@@ -41,14 +41,14 @@ modalPrototype.render = function(data, callback) {
     data = {};
   }
 
-  Log.info('> Modal.render(data, callback) { ... }\n\n%s\n\n', Utilities.inspect(data));
+  // Log.info('> Modal.render(data, callback) { ... }\n\n%s\n\n', Utilities.inspect(data));
 
   pagePrototype.render.call(this, data, function(error, content) {
     if (error)
       callback(error);
     else {
       content = Element.show(content);
-      Log.info('< Modal.render(data, callback) { ... }\n\n%s\n\n', content);
+      // Log.info('< Modal.render(data, callback) { ... }\n\n%s\n\n', content);
       callback(null, content);
     }
   });

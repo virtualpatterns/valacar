@@ -10,6 +10,7 @@ var Process = require('../../client/library/process');
 
 var REGEXP_STATIC = /^(\/www.*)$/;
 
+var DEFAULT_PATH = Path.join(Process.cwd(), 'server', 'www');
 var RESOURCES_PATH = Path.join(Process.cwd(), 'server', 'www', 'resources');
 var STATIC_PATH = Path.join(Process.cwd(), 'server');
 
@@ -23,6 +24,16 @@ Static.createRoutes = function(server, databasePath, options) {
       directory: RESOURCES_PATH,
       file: 'valacar.ico'
     })(request, response, next);
+  });
+
+  server.get('/', function(request, response, next) {
+    Log.info('> server.get("/", function(request, response, next) { ... })\n\nrequest.headers\n---------------\n%s\n', Utilities.inspect(request.headers));
+    response.redirect('/www/default.min.html', next);
+  });
+
+  server.get('/www', function(request, response, next) {
+    Log.info('> server.get("/", function(request, response, next) { ... })\n\nrequest.headers\n---------------\n%s\n', Utilities.inspect(request.headers));
+    response.redirect('/www/default.min.html', next);
   });
 
   server.head(REGEXP_STATIC, function(request, response, next) {

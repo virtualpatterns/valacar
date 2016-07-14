@@ -24,7 +24,7 @@ TranslationPageSource.createSource = function(translation, prototype) {
   Object.assign(translationPageSource, translation);
 
   translationPageSource.isNew = !translationPageSource.inserted
-  translationPageSource.isExisting = translationPageSource.inserted
+  translationPageSource.isExisting = !!translationPageSource.inserted
 
   return translationPageSource;
 
@@ -84,7 +84,7 @@ translationPagePrototype.onDone = function(event) {
   source.to = self.getContent().find('#to').val();
 
   Application.POST('/api/translations', source, Application.ifNotError(function(translation) {
-    Log.debug('= TranslationPage.onDone(event) { ... }\n\n%s\n\n', Utilities.inspect(translation));
+    // Log.debug('= TranslationPage.onDone(event) { ... }\n\n%s\n\n', Utilities.inspect(translation));
     window.application.hidePage();
   }));
 
@@ -104,21 +104,6 @@ translationPagePrototype.onDelete = function(event) {
       window.application.hidePage();
     }));
   });
-
-  // UIkit.modal.confirm(
-  //   Utilities.format('Are you sure you want to delete the translation from %j?', source.from),
-  //   function(){
-  //     Application.DELETE(Utilities.format('/api/translations/%s', source.from), Application.ifNotError(function() {
-  //       window.application.hidePage();
-  //     }));
-  //   },
-  //   {
-  //     labels: {
-  //      'Ok': 'Yes',
-  //      'Cancel': 'No'
-  //     }
-  //   }
-  // );
 
 };
 

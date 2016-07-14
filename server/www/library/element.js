@@ -10,12 +10,12 @@ var elementSourcePrototype = Object.create({});
 var ElementSource = Object.create({});
 
 ElementSource.createSourceId = function() {
-  Log.info('> ElementSource.createSourceId() { ... }');
+  // Log.info('> ElementSource.createSourceId() { ... }');
   return null;
 };
 
 ElementSource.createSource = function(id, prototype) {
-  Log.info('> ElementSource.createSource(prototype) { ... }');
+  // Log.info('> ElementSource.createSource(prototype) { ... }');
 
   var elementSource = Object.create(prototype || elementSourcePrototype);
 
@@ -73,7 +73,7 @@ elementPrototype.render = function(data, callback) {
     data = {};
   }
 
-  Log.info('> Element.render(data, callback) { ... }\n\n%s\n\n', Utilities.inspect(data));
+  // Log.info('> Element.render(data, callback) { ... }\n\n%s\n\n', Utilities.inspect(data));
 
   var self = this;
 
@@ -94,7 +94,7 @@ elementPrototype.render = function(data, callback) {
           'compileDebug':true
         };
 
-        Log.info('> Template.compile(%j, options)', self.templateURL);
+        // Log.info('> Template.compile(%j, options)', self.templateURL);
         // Log.info('> Template.compile(%j, options)\n\n%s\n\n', self.templateURL, Utilities.inspect(options));
         var templateFn = Template.compile(templateData, options);
 

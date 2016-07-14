@@ -12,7 +12,7 @@ var Pages = require('./collections/pages');
 var applicationPrototype = Object.create({});
 
 applicationPrototype.showPage = function(newPage, callback) {
-  Log.info('> Application.showPage(newPage, callback) { ... }');
+  // Log.info('> Application.showPage(newPage, callback) { ... }');
 
   var self = this;
 
@@ -52,7 +52,7 @@ applicationPrototype.showPage = function(newPage, callback) {
 };
 
 applicationPrototype.waitForPageShown = function(waitFn, callback) {
-  Log.info('> Application.waitForPageShown(waitFn, callback) { ... }');
+  // Log.info('> Application.waitForPageShown(waitFn, callback) { ... }');
 
   var self = this;
 
@@ -88,7 +88,7 @@ applicationPrototype.triggerPageShown = function(data) {
 };
 
 applicationPrototype.hidePage = function() {
-  Log.info('> Application.hidePage() { ... }');
+  // Log.info('> Application.hidePage() { ... }');
 
   if (this.pages.isNotAlmostEmpty()) {
 
@@ -120,7 +120,7 @@ applicationPrototype.hidePage = function() {
 };
 
 applicationPrototype.waitForPageHidden = function(callback) {
-  Log.info('> Application.waitForPageHidden(callback) { ... }');
+  // Log.info('> Application.waitForPageHidden(callback) { ... }');
 
   var self = this;
 
@@ -141,7 +141,7 @@ applicationPrototype.showModal = function(modal, options, callback) {
     options = {};
   }
 
-  Log.info('> Application.showModal(modal, options, callback) { ... }\n\n%s\n\n', Utilities.inspect(options));
+  // Log.info('> Application.showModal(modal, options, callback) { ... }\n\n%s\n\n', Utilities.inspect(options));
 
   var self = this;
 
@@ -153,9 +153,9 @@ applicationPrototype.showModal = function(modal, options, callback) {
       self.pages.addToTop(modal);
       self.body.addContent(content);
 
-      Log.info('> jQuery(modal).on("v-hidden", function(event) { ... }');
+      // Log.info('> jQuery(modal).on("v-hidden", function(event) { ... }');
       jQuery(modal).on('v-hidden', function(event) {
-        Log.info('< jQuery(modal).on("v-hidden", function(event) { ... }\n\n%s\n\n', Utilities.inspect(event.results));
+        // Log.info('< jQuery(modal).on("v-hidden", function(event) { ... }\n\n%s\n\n', Utilities.inspect(event.results));
         callback(null, event.results);
       });
 
@@ -323,7 +323,7 @@ Application.alert = function(message) {
   var argumentsArray = Array.prototype.slice.call(arguments);
   argumentsArray.push(function(error) {
     if (error) {
-      Log.error('> Application.alert(message) { ... }\n\n%s\n\n', Utilities.inspect(argumentsArray));
+      Log.error('< Application.alert(message) { ... }\n\n%s\n\n', Utilities.inspect(argumentsArray));
       Log.error('    error.message=%j', error.message);
       alert(error.message);
     }
@@ -348,7 +348,7 @@ Application.confirm = function(message, yesFn, noFn) {
 
   argumentsArray.push(function(error, isConfirmed) {
     if (error) {
-      Log.error('> Application.confirm(message, yesFn, noFn) { ... }\n\n%s\n\n', Utilities.inspect(argumentsArray));
+      Log.error('< Application.confirm(message, yesFn, noFn) { ... }\n\n%s\n\n', Utilities.inspect(argumentsArray));
       Log.error('    error.message=%j', error.message);
       self.alert(error.message);
     }
@@ -368,7 +368,7 @@ Application.ifNotError = function(ifNotFn) {
 
   return function(error) {
     if (error) {
-      Log.error('> Application.ifNotError(ifNotFn) { ... }');
+      Log.error('< Application.ifNotError(ifNotFn) { ... }');
       Log.error('    error.message=%j', error.message);
       self.alert(error.message);
     }
@@ -428,7 +428,7 @@ Application.request = function(method, path, requestData, callback) {
 
   }
 
-  Log.info('> jQuery.ajax(settings)\n\n%s\n\n', Utilities.inspect(settings));
+  // Log.info('> jQuery.ajax(settings)\n\n%s\n\n', Utilities.inspect(settings));
   jQuery.ajax(settings)
     .done(function(responseData, status, request) {
       if (request.responseJSON) {

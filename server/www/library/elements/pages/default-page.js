@@ -22,7 +22,7 @@ defaultPagePrototype.render = function(data, callback) {
 
   var self = this;
 
-  Log.info('> DefaultPage.render(data, callback) { ... }');
+  // Log.info('> DefaultPage.render(data, callback) { ... }');
 
   Application.GET('/api/status', function(error, status) {
     if (error)
@@ -94,18 +94,6 @@ defaultPagePrototype.onShown = function(event) {
   else
     Element.hide(self.getContent().find('#close'));
 
-  // setTimeout(function() {
-  //   Log.info('> DefaultPage.setTimeout(function() { ... }, ...)');
-  //   self.getContent().find('div.uk-panel-teaser')
-  //     .removeClass('uk-animation-slide-left');
-  //     setTimeout(function() {
-  //       Log.info('> DefaultPage.setTimeout(function() { ... }, ...)');
-  //       self.getContent().find('div.uk-panel-teaser')
-  //         .addClass('uk-animation-slide-left')
-  //         .addClass('uk-animation-reverse');
-  //     }, 2500);
-  // }, 5000);
-
 };
 
 defaultPagePrototype.onClose = function(event) {
@@ -124,8 +112,13 @@ defaultPagePrototype.onGoTranslations = function(event) {
 };
 
 defaultPagePrototype.onGoTest = function(event) {
-  Log.info('> DefaultPage.onGoTest(event) { ... }');
-  window.location.href = '/www/test.html';
+  Log.info('> DefaultPage.onGoTest(event) { ... } window.location.href=%j', window.location.href);
+
+  if (window.location.href.endsWith('default.html'))
+    window.location.href = '/www/test.html';
+  else if (window.location.href.endsWith('default.min.html'))
+    window.location.href = '/www/test.min.html';
+
 };
 
 var DefaultPage = Object.create(Page);

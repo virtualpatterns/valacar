@@ -268,40 +268,4 @@ LeasePage.getElementPrototype = function() {
 
 LeasePage.Source = LeasePageSource;
 
-// LeasePage.createLeaseId = function(leaseId) {
-//   // Log.debug('> LeasePage.createLeaseId(leaseId) { ... }\n\n%s\n\n', Utilities.inspect(leaseId));
-//
-//   leaseId.fromAsDate = Date.parse(leaseId.from);
-//   leaseId.toAsDate = Date.parse(leaseId.to);
-//
-//   // Log.debug('< LeasePage.createLeaseId(leaseId) { ... }\n\n%s\n\n', Utilities.inspect(leaseId));
-//
-//   return leaseId;
-//
-// };
-//
-// LeasePage.createLease = function(lease) {
-//   // Log.debug('> LeasePage.createLease(lease) { ... }\n\n%s\n\n', Utilities.inspect(lease));
-//
-//   lease = lease || {};
-//
-//   lease.fromAsDate = lease.from ? Date.parse(lease.from) : new Date(0);
-//   lease.toAsDate = lease.from ? Date.parse(lease.to) : new Date(0);
-//
-//   lease.fromNowAsString = Moment(lease.fromAsDate).fromNow();
-//   lease.toNowAsString = Moment(lease.toAsDate).fromNow();
-//   lease.toAsString = Moment(lease.toAsDate).format('h:mm a');
-//
-//   lease.id = {
-//     'address': lease.address,
-//     'from': lease.fromAsDate,
-//     'to': lease.toAsDate
-//   };
-//
-//   // Log.debug('< LeasePage.createLease(lease) { ... }\n\n%s\n\n', Utilities.inspect(lease));
-//
-//   return lease;
-//
-// };
-
 module.exports = LeasePage;

@@ -86,10 +86,6 @@ translationsPagePrototype.onRefresh = function(event) {
   self.refreshElements(TranslationsTable, Application.ifNotError());
 };
 
-// translationsPagePrototype.onRefreshed = function(event) {
-//   Log.debug('> TranslationsPage.onRefreshed(event) { ... }');
-// };
-
 translationsPagePrototype.onAddTranslation = function(event) {
   Log.info('> TranslationsPage.onAddTranslation(event) { ... }');
   window.application.showPage(TranslationPage.createElement(TranslationPage.Source.createSource({})), Application.ifNotError());
@@ -124,7 +120,6 @@ translationsPagePrototype.getElements = function(Class) {
 };
 
 translationsPagePrototype.refreshElements = function(Class, callback) {
-  Log.info('> TranslationsPage.refreshElements(Class, callback) { ... }');
 
   if (Is.function(Class)) {
     callback = Class;
@@ -151,7 +146,7 @@ translationsPagePrototype.refreshElements = function(Class, callback) {
 };
 
 translationsPagePrototype.refreshTranslationsTable = function(callback) {
-  Log.info('> TranslationsPage.refreshTranslationsTable(callback) { ... }');
+  // Log.info('> TranslationsPage.refreshTranslationsTable(callback) { ... }');
 
   var self = this;
   var element = self.translationsTable;

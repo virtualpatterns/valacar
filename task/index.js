@@ -1,10 +1,6 @@
-
-
 var Asynchronous = require('async');
 var Utilities = require('util');
 
-var BackgroundTask = require('./library/background-task');
-var FileSystemTask = require('./library/file-system-task');
 var Log = require('../client/library/log');
 var Package = require('../package.json');
 var Path = require('../client/library/path');
@@ -44,7 +40,7 @@ task('unlink', ['log'], {'async': true}, function () {
     .execute(complete, fail);
 });
 
-require('./tasks/watch')
+require('./tasks/bundle')
 require('./tasks/client')
 require('./tasks/server')
 require('./tasks/data')
