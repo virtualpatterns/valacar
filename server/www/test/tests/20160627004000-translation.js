@@ -9,19 +9,19 @@ var TranslationsPage = require('../../library/elements/pages/translations-page')
 
 describe('TranslationPage', function() {
 
-  before(function(callback) {
-    Asynchronous.waterfall([
-      function(callback) {
-        Application.GET('/api/translations', callback);
-      },
-      function(translations, callback) {
-        if (translations.length > 0)
-          Application.DELETE('/api/translations', callback);
-        else
-          callback(null);
-      }
-    ], callback);
-  });
+  // before(function(callback) {
+  //   Asynchronous.waterfall([
+  //     function(callback) {
+  //       Application.GET('/api/translations', callback);
+  //     },
+  //     function(translations, callback) {
+  //       if (translations.length > 0)
+  //         Application.DELETE('/api/translations', callback);
+  //       else
+  //         callback(null);
+  //     }
+  //   ], callback);
+  // });
 
   describe('TranslationPage (blank translation)', function() {
 
@@ -302,15 +302,20 @@ describe('TranslationPage', function() {
     });
 
     it('should delete the translation', function(callback) {
-      Asynchronous.waterfall([
-        function(callback) {
-          Application.GET('/api/translations', callback);
-        },
-        function(translations, callback) {
-          Assert.equal(translations.length, 0);
-          callback(null);
-        }
-      ], callback);
+      Application.GET('/api/translations/from01', function(error, translation) {
+        Assert.ok(error instanceof Application.RequestError);
+        Assert.equal(error.status, 404);
+        callback(null);
+      });
+      // Asynchronous.waterfall([
+      //   function(callback) {
+      //     Application.GET('/api/translations', callback);
+      //   },
+      //   function(translations, callback) {
+      //     Assert.equal(translations.length, 0);
+      //     callback(null);
+      //   }
+      // ], callback);
     });
 
   });
@@ -342,15 +347,20 @@ describe('TranslationPage', function() {
     });
 
     it('should not delete the translation', function(callback) {
-      Asynchronous.waterfall([
-        function(callback) {
-          Application.GET('/api/translations', callback);
-        },
-        function(translations, callback) {
-          Assert.equal(translations.length, 1);
-          callback(null);
-        }
-      ], callback);
+      Application.GET('/api/translations/from01', function(error, translation) {
+        Assert.ok(!error);
+        Assert.ok(translation);
+        callback(null);
+      });
+      // Asynchronous.waterfall([
+      //   function(callback) {
+      //     Application.GET('/api/translations', callback);
+      //   },
+      //   function(translations, callback) {
+      //     Assert.equal(translations.length, 1);
+      //     callback(null);
+      //   }
+      // ], callback);
     });
 
     after(function(callback) {

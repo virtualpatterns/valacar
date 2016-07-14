@@ -11,20 +11,20 @@ var TranslationsTable = require('../../library/elements/tables/translations-tabl
 describe('TranslationsPage', function() {
 
   before(function(callback) {
-    Asynchronous.waterfall([
-      function(callback) {
-        Application.GET('/api/translations', callback);
-      },
-      function(translations, callback) {
-        if (translations.length > 0)
-          Application.DELETE('/api/translations', callback);
-        else
-          callback(null);
-      },
-      function(callback) {
+    // Asynchronous.waterfall([
+    //   function(callback) {
+    //     Application.GET('/api/translations', callback);
+    //   },
+    //   function(translations, callback) {
+    //     if (translations.length > 0)
+    //       Application.DELETE('/api/translations', callback);
+    //     else
+    //       callback(null);
+    //   },
+    //   function(callback) {
         Assert.showPage(TranslationsPage.createElement(), callback);
-      }
-    ], callback);
+    //   }
+    // ], callback);
   });
 
   it('should be on the Translations page', function() {

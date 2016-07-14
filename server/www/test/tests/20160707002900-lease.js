@@ -12,19 +12,19 @@ var LeasesPage = require('../../library/elements/pages/leases-page');
 
 describe('LeasePage', function() {
 
-  before(function(callback) {
-    Asynchronous.waterfall([
-      function(callback) {
-        Application.GET('/api/leases', callback);
-      },
-      function(leases, callback) {
-        if (leases.length > 0)
-          Application.DELETE('/api/leases', callback);
-        else
-          callback(null);
-      }
-    ], callback);
-  });
+  // before(function(callback) {
+  //   Asynchronous.waterfall([
+  //     function(callback) {
+  //       Application.GET('/api/leases', callback);
+  //     },
+  //     function(leases, callback) {
+  //       if (leases.length > 0)
+  //         Application.DELETE('/api/leases', callback);
+  //       else
+  //         callback(null);
+  //     }
+  //   ], callback);
+  // });
 
   describe('LeasePage (new static lease)', function() {
 
@@ -444,7 +444,7 @@ describe('LeasePage', function() {
 
   describe('LeasePage (existing static lease) on Delete', function() {
 
-    beforeEach(function(callback) {
+    before(function(callback) {
       Asynchronous.waterfall([
         function(callback) {
           Application.POST('/api/leases', {
@@ -468,7 +468,7 @@ describe('LeasePage', function() {
       Assert.existsConfirmation('Are you sure you want to delete the static DHCP lease for "1.2.3.4"?');
     });
 
-    afterEach(function(callback) {
+    after(function(callback) {
       Asynchronous.series([
         function(callback) {
           Assert.waitForModalHidden(function() {
@@ -488,7 +488,7 @@ describe('LeasePage', function() {
 
   describe('LeasePage (existing static lease) on Delete and Yes', function() {
 
-    beforeEach(function(callback) {
+    before(function(callback) {
       Asynchronous.waterfall([
         function(callback) {
           Application.POST('/api/leases', {
@@ -521,22 +521,27 @@ describe('LeasePage', function() {
     });
 
     it('should delete the lease', function(callback) {
-      Asynchronous.waterfall([
-        function(callback) {
-          Application.GET('/api/leases', callback);
-        },
-        function(leases, callback) {
-          Assert.equal(leases.length, 0);
-          callback(null);
-        }
-      ], callback);
+      Application.GET('/api/leases/1.2.3.4', function(error, lease) {
+        Assert.ok(error instanceof Application.RequestError);
+        Assert.equal(error.status, 404);
+        callback(null);
+      });
+      // Asynchronous.waterfall([
+      //   function(callback) {
+      //     Application.GET('/api/leases', callback);
+      //   },
+      //   function(leases, callback) {
+      //     Assert.equal(leases.length, 0);
+      //     callback(null);
+      //   }
+      // ], callback);
     });
 
   });
 
   describe('LeasePage (existing static lease) on Delete and No', function() {
 
-    beforeEach(function(callback) {
+    before(function(callback) {
       Asynchronous.waterfall([
         function(callback) {
           Application.POST('/api/leases', {
@@ -562,18 +567,23 @@ describe('LeasePage', function() {
     });
 
     it('should not delete the lease', function(callback) {
-      Asynchronous.waterfall([
-        function(callback) {
-          Application.GET('/api/leases', callback);
-        },
-        function(leases, callback) {
-          Assert.equal(leases.length, 1);
-          callback(null);
-        }
-      ], callback);
+      Application.GET('/api/leases/1.2.3.4', function(error, lease) {
+        Assert.ok(!error);
+        Assert.ok(lease);
+        callback(null);
+      });
+      // Asynchronous.waterfall([
+      //   function(callback) {
+      //     Application.GET('/api/leases', callback);
+      //   },
+      //   function(leases, callback) {
+      //     Assert.equal(leases.length, 1);
+      //     callback(null);
+      //   }
+      // ], callback);
     });
 
-    afterEach(function(callback) {
+    after(function(callback) {
       Asynchronous.series([
         function(callback) {
           Assert.hidePage(callback);

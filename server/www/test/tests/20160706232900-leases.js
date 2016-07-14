@@ -11,20 +11,20 @@ var LeasesTable = require('../../library/elements/tables/leases-table');
 describe('LeasesPage', function() {
 
   before(function(callback) {
-    Asynchronous.waterfall([
-      function(callback) {
-        Application.GET('/api/leases', callback);
-      },
-      function(leases, callback) {
-        if (leases.length > 0)
-          Application.DELETE('/api/leases', callback);
-        else
-          callback(null);
-      },
-      function(callback) {
+    // Asynchronous.waterfall([
+    //   function(callback) {
+    //     Application.GET('/api/leases', callback);
+    //   },
+    //   function(leases, callback) {
+    //     if (leases.length > 0)
+    //       Application.DELETE('/api/leases', callback);
+    //     else
+    //       callback(null);
+    //   },
+    //   function(callback) {
         Assert.showPage(LeasesPage.createElement(), callback);
-      }
-    ], callback);
+    //   }
+    // ], callback);
   });
 
   it('should be on the Leases page', function() {

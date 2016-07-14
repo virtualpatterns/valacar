@@ -22,49 +22,55 @@ namespace('git', function() {
   });
 
   desc('Merge origin, test, increment version, commit/tag, push');
-  task('push', ['log'], {'async': true}, function (version) {
+  task('push', ['log', 'bundle:shrink'], {'async': true}, function (version) {
     GitTask.createTask(this.fullName)
+      .add('echo "The next step will fail if there are any uncommitted or unstashed changes."')
       .addIsDirty()
-      .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
+      .add('echo "All changes are committed or stashed."')
+      .add('git checkout development')
       .add('git pull origin development')
       .add('mocha test/client/tests')
       .add('mocha --timeout 0 \
                   test/server/tests')
-      .add('npm version %s --message "Creating v%s"', version || 'prerelease', '%s', Task.OPTIONS_STDIO_IGNORE)
-      .add('git push origin development --tags', Task.OPTIONS_STDIO_IGNORE)
+      .add('npm version %s --message "Creating v%s"', version || 'prerelease', '%s')
+      .add('git push origin development --tags')
       .execute(complete, fail);
   });
 
   desc('Stage development');
   task('stage', ['log'], {'async': true}, function () {
     GitTask.createTask(this.fullName)
+      .add('echo "The next step will fail if there are any uncommitted or unstashed changes."')
       .addIsDirty()
-      .add('git checkout staging', Task.OPTIONS_STDIO_IGNORE)
+      .add('echo "All changes are committed or stashed."')
+      .add('git checkout staging')
       .add('git pull origin staging')
       .add('git merge development')
       .add('mocha test/client/tests')
       .add('mocha --timeout 0 \
                   test/server/tests')
-      .add('git push origin staging --tags', Task.OPTIONS_STDIO_IGNORE)
-      .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
+      .add('git push origin staging --tags')
+      .add('git checkout development')
       .execute(complete, fail);
   });
 
   desc('Release staging');
   task('release', ['log'], {'async': true}, function () {
     GitTask.createTask(this.fullName)
+      .add('echo "The next step will fail if there are any uncommitted or unstashed changes."')
       .addIsDirty()
-      .add('git checkout staging', Task.OPTIONS_STDIO_IGNORE)
+      .add('echo "All changes are committed or stashed."')
+      .add('git checkout staging')
       .add('git pull origin staging')
-      .add('git checkout production', Task.OPTIONS_STDIO_IGNORE)
+      .add('git checkout production')
       .add('git pull origin production')
       .add('git merge staging')
       .add('mocha test/client/tests')
       .add('mocha --timeout 0 \
                   test/server/tests')
-      .add('git push origin production --tags', Task.OPTIONS_STDIO_IGNORE)
-      .add('npm publish', Task.OPTIONS_STDIO_IGNORE)
-      .add('git checkout development', Task.OPTIONS_STDIO_IGNORE)
+      .add('git push origin production --tags')
+      .add('npm publish')
+      .add('git checkout development')
       .execute(complete, fail);
   });
 
