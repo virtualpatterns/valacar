@@ -18,7 +18,7 @@ namespace('git', function() {
   });
 
   desc('Merge origin, test, increment version, commit/tag, push');
-  task('push', ['log'], {'async': true}, function (version) {
+  task('push', ['log', 'bundle:shrink'], {'async': true}, function (version) {
     GitTask.createTask(this.fullName)
       .addIsDirty()
       .add('git checkout development')
