@@ -23,6 +23,8 @@ TranslationPageSource.createSource = function(translation, prototype) {
 
   Object.assign(translationPageSource, translation);
 
+  translationPageSource.insertedAsDate = (translation.inserted ? Date.parse(translation.inserted) : new Date());
+
   translationPageSource.isNew = !translationPageSource.inserted
   translationPageSource.isExisting = !!translationPageSource.inserted
 

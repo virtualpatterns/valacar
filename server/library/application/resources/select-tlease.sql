@@ -1,6 +1,8 @@
 SELECT  tLease.cAddress                     AS [address],
-        datetime(tLease.cFrom, 'localtime') AS [from],
-        datetime(tLease.cTo, 'localtime')   AS [to],
+        printf('%sZ', tLease.cFrom)         AS [from],
+        printf('%sZ', tLease.cTo)           AS [to],
+        -- datetime(tLease.cFrom, 'localtime') AS [from],
+        -- datetime(tLease.cTo, 'localtime')   AS [to],
         tLease.cDevice                      AS [device],
         CASE
           WHEN NOT tDeviceTranslation.cTo IS NULL THEN
@@ -10,7 +12,7 @@ SELECT  tLease.cAddress                     AS [address],
           ELSE
             tLease.cHost
         END                                 AS [host],
-        tLease.cInserted                    AS [inserted]
+        printf('%sZ', tLease.cInserted)     AS [inserted]
 FROM    tLease
           LEFT OUTER JOIN tTranslation AS tDeviceTranslation ON
             tLease.cDevice = tDeviceTranslation.cFrom

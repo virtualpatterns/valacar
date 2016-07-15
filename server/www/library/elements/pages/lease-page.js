@@ -23,9 +23,9 @@ LeasePageSource.createSourceId = function(lease) {
 
   var leaseId = {
     'address': lease.address,
-    'from': lease.from,
+    // 'from': lease.from,
     'fromAsISOString': (lease.from ? Date.parse(lease.from) : new Date(0)).toISOString(),
-    'to': lease.to,
+    // 'to': lease.to,
     'toAsISOString': (lease.to ? Date.parse(lease.to) : new Date(0)).toISOString()
   };
 
@@ -48,6 +48,8 @@ LeasePageSource.createSource = function(lease, translation, prototype) {
   leasePageSource.fromNowAsString = Moment(leasePageSource.fromAsDate).fromNow();
   leasePageSource.toNowAsString = Moment(leasePageSource.toAsDate).fromNow();
   leasePageSource.toAsString = Moment(leasePageSource.toAsDate).format('h:mm a');
+
+  leasePageSource.insertedAsDate = (lease.inserted ? Date.parse(lease.inserted) : new Date());
 
   leasePageSource.isStatic = leasePageSource.fromAsDate.getTime() == leasePageSource.toAsDate.getTime();
   leasePageSource.isSystem = (!leasePageSource.isStatic && leasePageSource.inserted)

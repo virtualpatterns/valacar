@@ -1,5 +1,5 @@
-SELECT  tTranslation.cFrom      AS [from],
-        tTranslation.cTo        AS [to],
-        tTranslation.cInserted  AS [inserted]
+SELECT  tTranslation.cFrom                    AS [from],
+        tTranslation.cTo                      AS [to],
+        printf('%sZ', tTranslation.cInserted) AS [inserted]
 FROM    tTranslation
 WHERE   tTranslation.cFrom = $From;
