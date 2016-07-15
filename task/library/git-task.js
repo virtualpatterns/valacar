@@ -1,12 +1,13 @@
 var Utilities = require('util');
 
+var FileSystemTask = require('./file-system-task');
 var Path = require('../../client/library/path');
 var Task = require('./task');
 
 var RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
 
-var taskPrototype = Task.getTaskPrototype();
-var gitTaskPrototype = Object.create(taskPrototype);
+var fileSystemTaskPrototype = FileSystemTask.getTaskPrototype();
+var gitTaskPrototype = Object.create(fileSystemTaskPrototype);
 
 gitTaskPrototype.addIsDirty = function(options) {
   return this
