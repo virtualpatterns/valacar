@@ -513,7 +513,8 @@ describe('LeasePage', function() {
           }, callback);
         },
         function(callback) {
-          Assert.waitForModalHidden(function() {
+          Assert.waitForPageShown(function() {
+          // Assert.waitForModalHidden(function() {
             Assert.clickClose();
           }, callback);
         }

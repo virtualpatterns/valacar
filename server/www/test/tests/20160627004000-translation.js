@@ -294,7 +294,8 @@ describe('TranslationPage', function() {
           }, callback);
         },
         function(callback) {
-          Assert.waitForModalHidden(function() {
+          Assert.waitForPageShown(function() {
+          // Assert.waitForModalHidden(function() {
             Assert.clickYes();
           }, callback);
         }
