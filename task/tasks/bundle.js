@@ -20,13 +20,6 @@ var TEST_TARGET_MIN_PATH = Path.join(TARGET_PATH, 'test.min.js');
 
 namespace('bundle', function() {
 
-  desc('List ...');
-  task('list', ['log'], {'async': true}, function () {
-    Task.createTask(this.fullName)
-      .add('browserify %j --list', LIBRARY_SOURCE_PATH)
-      .execute(complete, fail);
-  });
-
   desc(Utilities.format('Run bundle process once on %j, output to %j', Path.trim(DEFAULT_SOURCE_PATH), Path.trim(DEFAULT_TARGET_PATH)));
   task('once', ['log'], {'async': true}, function () {
     Task.createTask(this.fullName)
