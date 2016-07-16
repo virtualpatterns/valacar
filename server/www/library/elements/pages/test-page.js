@@ -1,5 +1,7 @@
 var Mocha = mocha;
 
+var Application = require('../../application');
+// var Assert = require('../../../test/library/assert');
 var Log = require('../../log');
 var Page = require('../page');
 
@@ -50,11 +52,11 @@ testPagePrototype.onShown = function(event) {
       });
 
       require('../../../test/tests/20160622163300-begin');
-      require('../../../test/tests/20160622173800-default');
-      require('../../../test/tests/20160625023000-translations');
-      require('../../../test/tests/20160627004000-translation');
+      // require('../../../test/tests/20160622173800-default');
+      // require('../../../test/tests/20160625023000-translations');
+      // require('../../../test/tests/20160627004000-translation');
       require('../../../test/tests/20160706232900-leases');
-      require('../../../test/tests/20160707002900-lease');
+      // require('../../../test/tests/20160707002900-lease');
       require('../../../test/tests/99999999999999-end');
 
       var tests = Mocha.run();
@@ -76,7 +78,8 @@ testPagePrototype.onShown = function(event) {
     catch (error) {
       Log.error('> TestPage.onShown(event) { ... }');
       Log.error('    error.message=%j\n\n%s\n\n', error.message, error.stack);
-      UIkit.modal.alert(error.message);
+      Application.alert(error.message);
+      // UIkit.modal.alert(error.message);
     }
 
   }
@@ -108,6 +111,12 @@ testPagePrototype.onFinished = function(status) {
     this.getContent().find('div.v-status-pending').toggleClass('uk-hidden', false);
   else
     this.getContent().find('div.v-status-passed').toggleClass('uk-hidden', false);
+
+  if (window.callPhantom) {
+    // Assert.hideAllPages(Application.ifNotError(function() {
+      window.callPhantom(status);
+    // }));
+  }
 
 }
 

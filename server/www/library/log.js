@@ -6,51 +6,55 @@ var Log = Object.create({});
 
 Log.log = function() {
 
-  var argumentsArray = Array.prototype.slice.call(arguments);
-  var level = argumentsArray.shift().toUpperCase();
-  var levelFn = console.log;
-
-  switch (level) {
-    case 'LOG':
-      levelFn = console.log;
-      break;
-    case 'ERROR':
-      levelFn = console.error;
-      break;
-    case 'WARN':
-      levelFn = console.warn;
-      break;
-    case 'INFO':
-      levelFn = console.info;
-      break;
-    case 'DEBUG':
-      levelFn = console.debug;
-      break;
-    default:
-      levelFn = console.log;
-  }
-
-  if (Is.string(argumentsArray[0])) {
-
-    var message = Utilities.format.apply(Utilities.format, argumentsArray);
-
-    levelFn.call( console,
-                  '%s %s %s',
-                  new Date().toISOString(),
-                  Pad(level, 5),
-                  message || '');
-
+  if (window.callPhantom) {
+    // Do nothing
   }
   else {
 
-    var object = argumentsArray.shift();
+    var argumentsArray = Array.prototype.slice.call(arguments);
+    var level = argumentsArray.shift().toUpperCase();
+    var levelFn = console.log;
 
-    levelFn.call( console,
-                  '%s %s ...\n',
-                  new Date().toISOString(),
-                  Pad(level, 5));
-    levelFn.call( console,
-                  object);
+    switch (level) {
+      case 'LOG':
+        levelFn = console.log;
+        break;
+      case 'ERROR':
+        levelFn = console.error;
+        break;
+      case 'WARN':
+        levelFn = console.warn;
+        break;
+      case 'INFO':
+        levelFn = console.info;
+        break;
+      case 'DEBUG':
+        levelFn = console.debug;
+        break;
+      default:
+        levelFn = console.log;
+    }
+
+    if (Is.string(argumentsArray[0])) {
+
+      var message = null;
+      message = Utilities.format.apply(Utilities.format, argumentsArray);
+      message = Utilities.format('%s %s %s', new Date().toISOString(), Pad(level, 5), message || '');
+
+      levelFn.call(console, message);
+
+    }
+    else {
+
+      var object = argumentsArray.shift();
+
+      var message = null;
+      message = Utilities.format('%s %s ...\n', new Date().toISOString(), Pad(level, 5));
+
+      levelFn.call(console, message);
+      levelFn.call(console, object);
+
+    }
 
   }
 

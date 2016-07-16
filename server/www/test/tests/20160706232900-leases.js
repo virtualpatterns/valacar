@@ -96,7 +96,7 @@ describe('LeasesPage', function() {
 
   });
 
-  describe('LeasesPage POST/Refresh', function() {
+  describe.only('LeasesPage POST/Refresh', function() {
 
     before(function(callback) {
       Asynchronous.series([
@@ -106,6 +106,24 @@ describe('LeasesPage', function() {
             'device': 'aa:11:bb:22:cc:33',
             'host': 'host01'
           }, callback);
+        },
+        function(callback) {
+          Application.DELETE('/api/translations/aa:11:bb:22:cc:33', function(error, translation) {
+            if (error instanceof Application.RequestError &&
+                error.status == 404)
+              callback(null);
+            else
+              callback(error);
+          });
+        },
+        function(callback) {
+          Application.DELETE('/api/translations/host01', function(error, translation) {
+            if (error instanceof Application.RequestError &&
+                error.status == 404)
+              callback(null);
+            else
+              callback(error);
+          });
         },
         function(callback) {
           Assert.waitForElementsShown(LeasesTable, function() {

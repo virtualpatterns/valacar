@@ -7,7 +7,7 @@ var Path = require('../../client/library/path');
 var Process = require('../../client/library/process');
 var Task = require('../library/task');
 
-var OPTIONS_STDIO_STDOUT_PATH = Path.join(Process.LOG_PATH, Utilities.format('%s.watch.log', Package.name));
+var OPTIONS_STDIO_STDOUT_PATH = Path.join(Process.LOG_PATH, Utilities.format('%s.bundle.log', Package.name));
 
 var SOURCE_PATH = Path.join(Process.cwd(), 'server', 'www', 'library');
 var TARGET_PATH = Path.join(SOURCE_PATH, 'bundles');
