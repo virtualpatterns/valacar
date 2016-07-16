@@ -36,6 +36,6 @@ after(function(callback) {
 
 });
 
-describe('begin', function() {
+describe('Begin', function() {
   it('should begin the tests', function() {});
 });
