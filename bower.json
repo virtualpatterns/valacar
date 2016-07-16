@@ -22,8 +22,8 @@
     "moment": "^2.13.0",
     "uikit": "^2.26.3",
     "underscore.string": "^3.3.4",
-    "util": "^3.46.1"
+    "util": "^3.46.1",
+    "jquery-mask-plugin": "^1.14.0"
   },
-  "devDependencies": {
-  }
+  "devDependencies": {}
 }

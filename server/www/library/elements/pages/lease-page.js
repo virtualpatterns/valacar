@@ -2,7 +2,7 @@ require('../../../vendor/DateJS');
 
 var Asynchronous = require('async');var Utilities = require('util');
 
-var Moment = require('../../../vendor/moment/moment')
+var Moment = require('../../../vendor/moment/moment');
 
 var Application = require('../../application');
 var Element = require('../../element');
@@ -19,24 +19,22 @@ var leasePageSourcePrototype = Object.create(pageSourcePrototype);
 var LeasePageSource = Object.create(Page.Source);
 
 LeasePageSource.createSourceId = function(lease) {
-  Log.debug('> LeasePageSource.createSourceId(lease) { ... }\n\n%s\n\n', Utilities.inspect(lease));
+  // Log.debug('> LeasePageSource.createSourceId(lease) { ... }\n\n%s\n\n', Utilities.inspect(lease));
 
   var leaseId = {
     'address': lease.address,
-    // 'from': lease.from,
     'fromAsISOString': (lease.from ? Date.parse(lease.from) : new Date(0)).toISOString(),
-    // 'to': lease.to,
     'toAsISOString': (lease.to ? Date.parse(lease.to) : new Date(0)).toISOString()
   };
 
-  Log.debug('< LeasePageSource.createSourceId(lease) { ... }\n\n%s\n\n', Utilities.inspect(leaseId));
+  // Log.debug('< LeasePageSource.createSourceId(lease) { ... }\n\n%s\n\n', Utilities.inspect(leaseId));
 
   return leaseId;
 
 };
 
 LeasePageSource.createSource = function(lease, translation, prototype) {
-  Log.debug('> LeasePageSource.createSource(lease, prototype) { ... }\n\n%s\n\n', Utilities.inspect(lease));
+  // Log.debug('> LeasePageSource.createSource(lease, prototype) { ... }\n\n%s\n\n', Utilities.inspect(lease));
 
   var leasePageSource = Page.Source.createSource.call(this, this.createSourceId(lease), prototype || leasePageSourcePrototype);
 
@@ -59,7 +57,7 @@ LeasePageSource.createSource = function(lease, translation, prototype) {
   if (translation)
     leasePageSource.translation = translation;
 
-  Log.debug('< LeasePageSource.createSource(lease, prototype) { ... }\n\n%s\n\n', Utilities.inspect(leasePageSource));
+  // Log.debug('< LeasePageSource.createSource(lease, prototype) { ... }\n\n%s\n\n', Utilities.inspect(leasePageSource));
 
   return leasePageSource;
 
@@ -104,10 +102,30 @@ leasePagePrototype.bind = function() {
     'this': this
   }, this.onEditTranslation);
 
+  this.getContent().find('#address').mask('0NN.0NN.0NN.0NN', {
+    'translation': {
+      'N': {
+        'optional': true,
+        'pattern': /[0-9]/
+      }
+    }
+  });
+
+  this.getContent().find('#device').mask('NN:NN:NN:NN:NN:NN', {
+    'translation': {
+      'N': {
+        'optional': false,
+        'pattern': /[0-9a-f]/
+      }
+    }
+  });
 
 };
 
 leasePagePrototype.unbind = function() {
+
+  this.getContent().find('#device').unmask();
+  this.getContent().find('#address').unmask();
 
   this.getContent().find('#editTranslation').off('click', this.onEditTranslation);
   this.getContent().find('#addTranslation').off('click', this.onAddTranslation);
@@ -174,7 +192,7 @@ leasePagePrototype.onDelete = function(event) {
   Application.confirm('Are you sure you want to delete the static DHCP lease for %j?', source.address, function() {
     Asynchronous.series([
       function(callback) {
-        Application.DELETE(Utilities.format('/api/leases/%s', source.address), callback);
+        Application.DELETE(Utilities.format('/api/leases/%s/%s/%s', source.address, source.fromAsDate.toISOString(), source.toAsDate.toISOString()), callback);
       },
       function(callback) {
         window.application.showModal(LeaseInstructionsModal.createElement(source), callback);

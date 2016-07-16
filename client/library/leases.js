@@ -51,7 +51,7 @@ Leases.import = function(connection, path, callback) {
                       lease['starts'],
                       lease['ends'],
                       lease['hardware ethernet'] || '00:00:00:00:00:00',
-                      lease['client-hostname'],
+                      lease['client-hostname'] || '(unknown)',
                       callback);
 
         // Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-tlease.sql'), {
