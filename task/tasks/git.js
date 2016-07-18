@@ -23,11 +23,7 @@ namespace('git', function() {
       .addIsDirty()
       .add('git checkout development')
       .add('git pull origin development')
-      .add('mocha --reporter dot \
-                  test/client/tests')
-      .add('mocha --reporter dot \
-                  --timeout 0 \
-                  test/server/tests')
+      .add('jake test')
       .add('npm version %s --message "Creating v%s"', version || 'prerelease', '%s')
       .add('git push origin development --tags')
       .execute(complete, fail);
@@ -40,11 +36,7 @@ namespace('git', function() {
       .add('git checkout staging')
       .add('git pull origin staging')
       .add('git merge development')
-      .add('mocha --reporter dot \
-                  test/client/tests')
-      .add('mocha --reporter dot \
-                  --timeout 0 \
-                  test/server/tests')
+      .add('jake test')
       .add('git push origin staging --tags')
       .add('git checkout development')
       .execute(complete, fail);
@@ -59,11 +51,7 @@ namespace('git', function() {
       .add('git checkout production')
       .add('git pull origin production')
       .add('git merge staging')
-      .add('mocha --reporter dot \
-                  test/client/tests')
-      .add('mocha --reporter dot \
-                  --timeout 0 \
-                  test/server/tests')
+      .add('jake test')
       .add('git push origin production --tags')
       .add('npm publish')
       .add('git checkout development')

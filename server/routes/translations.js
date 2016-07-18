@@ -26,6 +26,23 @@ Translations.createRoutes = function(server, databasePath, options) {
     });
   });
 
+  server.get('/api/exists/translations/:from', function(request, response, next) {
+    Log.info('> server.get("/api/exists/translations/:from", function(request, response, next) { ... })\n\nrequest.headers\n---------------\n%s\n\nrequest.params\n--------------\n%s\n', Utilities.inspect(request.headers), Utilities.inspect(request.params));
+    Application.getTranslation(request.params.from, databasePath, options, function(error, row) {
+      if (error)
+        response.send(error);
+      else if (row)
+        response.send({
+          'exists': true
+        });
+      else
+        response.send({
+          'exists': false
+        });
+      next();
+    });
+  });
+
   server.get('/api/translations/:from', function(request, response, next) {
     Log.info('> server.get("/api/translations/:from", function(request, response, next) { ... })\n\nrequest.headers\n---------------\n%s\n\nrequest.params\n--------------\n%s\n', Utilities.inspect(request.headers), Utilities.inspect(request.params));
     Application.getTranslation(request.params.from, databasePath, options, function(error, row) {

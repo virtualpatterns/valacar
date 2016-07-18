@@ -42,6 +42,62 @@ describe('HEAD /api/translations', function() {
 
 });
 
+describe('GET /api/exists/translations', function() {
+
+  before(function(callback) {
+    Asynchronous.series([
+      function(callback) {
+        Application.executeInstall(callback);
+      },
+      function(callback) {
+        Application.executeStart(callback);
+      },
+      function(callback) {
+        Application.waitUntilReady(callback);
+      }
+    ], callback);
+  });
+
+  it('should respond to GET /api/exists/translations/tv4622148de6a5 with true', function(callback) {
+    Application.isGET('/api/exists/translations/tv4622148de6a5', function(statusCode, headers, data, callback) {
+      callback(null, data.exists);
+    }, callback);
+  });
+
+  it('should respond to GET /api/exists/translations/18:b4:30:21:c4:45 with true', function(callback) {
+    Application.isGET('/api/exists/translations/18:b4:30:21:c4:45', function(statusCode, headers, data, callback) {
+      callback(null, data.exists);
+    }, callback);
+  });
+
+  it('should respond to GET /api/exists/translations/from01 (a non-existent translation) with false', function(callback) {
+    Application.isGET('/api/exists/translations/from01', function(statusCode, headers, data, callback) {
+      callback(null, !data.exists);
+    }, callback);
+  });
+
+  it('should respond to GET /api/exists/translations/@from01 (an invalid translation) with false', function(callback) {
+    Application.isGET('/api/exists/translations/@from01', function(statusCode, headers, data, callback) {
+      callback(null, !data.exists);
+    }, callback);
+  });
+
+  after(function(callback) {
+    Asynchronous.series([
+      function(callback) {
+        Application.executeStop(callback);
+      },
+      function(callback) {
+        Application.waitUntilNotReady(callback);
+      },
+      function(callback) {
+        Application.executeUninstall(callback);
+      }
+    ], callback);
+  });
+
+});
+
 describe('GET /api/translations', function() {
 
   before(function(callback) {

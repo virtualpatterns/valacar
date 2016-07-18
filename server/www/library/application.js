@@ -428,10 +428,12 @@ Application.request = function(method, path, requestData, callback) {
 
   }
 
-  // Log.info('> jQuery.ajax(settings)\n\n%s\n\n', Utilities.inspect(settings));
+  // Log.debug('> jQuery.ajax(settings)\n\n%s\n\n', Utilities.inspect(settings));
   jQuery.ajax(settings)
     .done(function(responseData, status, request) {
-      if (request.responseJSON) {
+      // Log.debug('> jQuery.ajax(settings).done(function(responseData, %j, request) { ... })\n\n%s\n\n', status, Utilities.inspect(responseData));
+      if (!Is.undefined(request.responseJSON)) {
+      // if (request.responseJSON) {
         Log.info('< Application.request(%j, %j, requestData, callback) { ... }\n\n%s\n\n', method, path, Utilities.inspect(request.responseJSON));
         callback(null, request.responseJSON);
       }

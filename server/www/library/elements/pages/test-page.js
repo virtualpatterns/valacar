@@ -1,5 +1,8 @@
+var Is = require('@pwn/is');
 var Mocha = mocha;
 
+var Application = require('../../application');
+// var Assert = require('../../../test/library/assert');
 var Log = require('../../log');
 var Page = require('../page');
 
@@ -43,6 +46,10 @@ testPagePrototype.onShown = function(event) {
 
     try {
 
+      if (Is.function(window.initMochaPhantomJS)) {
+        window.initMochaPhantomJS();
+      }
+
       Mocha.setup({
         'bail': true,
         'timeout': 30000,
@@ -76,7 +83,8 @@ testPagePrototype.onShown = function(event) {
     catch (error) {
       Log.error('> TestPage.onShown(event) { ... }');
       Log.error('    error.message=%j\n\n%s\n\n', error.message, error.stack);
-      UIkit.modal.alert(error.message);
+      Application.alert(error.message);
+      // UIkit.modal.alert(error.message);
     }
 
   }
@@ -108,6 +116,13 @@ testPagePrototype.onFinished = function(status) {
     this.getContent().find('div.v-status-pending').toggleClass('uk-hidden', false);
   else
     this.getContent().find('div.v-status-passed').toggleClass('uk-hidden', false);
+
+  console.log('suck my balls');
+  if (window.callPhantom) {
+    // Assert.hideAllPages(Application.ifNotError(function() {
+      window.callPhantom(status);
+    // }));
+  }
 
 }
 

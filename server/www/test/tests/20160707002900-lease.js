@@ -522,11 +522,19 @@ describe('LeasePage', function() {
     });
 
     it('should delete the lease', function(callback) {
-      Application.GET('/api/leases/1.2.3.4', function(error, lease) {
-        Assert.ok(error instanceof Application.RequestError);
-        Assert.equal(error.status, 404);
-        callback(null);
+      Application.GET('/api/exists/leases/1.2.3.4', function(error, data) {
+        if (error)
+          callback(error);
+        else {
+          Assert.ok(!data.exists, 'The leases exists.');
+          callback(null);
+        }
       });
+      // Application.GET('/api/leases/1.2.3.4', function(error, lease) {
+      //   Assert.ok(error instanceof Application.RequestError);
+      //   Assert.equal(error.status, 404);
+      //   callback(null);
+      // });
       // Asynchronous.waterfall([
       //   function(callback) {
       //     Application.GET('/api/leases', callback);

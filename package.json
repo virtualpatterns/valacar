@@ -34,6 +34,7 @@
     "browserify": "^13.0.1",
     "browserify-bower": "^0.6.1",
     "eslint": "^3.0.1",
+    "mocha-phantomjs": "^4.1.0",
     "uglify-js": "^2.7.0",
     "watchify": "^3.7.0"
   }

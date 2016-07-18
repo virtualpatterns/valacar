@@ -55,12 +55,17 @@ namespace('server', function() {
       .execute(complete, fail);
   });
 
-  // desc('Run /www/test.html tests');
-  // task('www', ['log', 'clean:test:server'], {'async': true}, function () {
-  //   Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
-  //     .add('mocha-phantomjs --timeout 0 \
-  //                           http://localhost:31470/www/test.html', Task.OPTIONS_STDIO_INHERIT)
-  //     .execute(complete, fail);
-  // });
+  desc('Run all /www/test.html tests');
+  task('www', ['log'], {'async': true}, function () {
+    Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
+      .add('mocha-phantomjs --ignore-resource-errors \
+                            --view 640x1200 \
+                            http://localhost:31470/www/test.html', Task.OPTIONS_STDIO_INHERIT)
+      // .add('mocha-phantomjs --ignore-resource-errors \
+      //                       --path ~/bin/phantomjs http://dumbledore.local:31470/www/test.html', Task.OPTIONS_STDIO_INHERIT)
+      .execute(complete, fail);
+  });
+
+  require('./www')
 
 });

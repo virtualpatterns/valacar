@@ -303,11 +303,19 @@ describe('TranslationPage', function() {
     });
 
     it('should delete the translation', function(callback) {
-      Application.GET('/api/translations/from01', function(error, translation) {
-        Assert.ok(error instanceof Application.RequestError);
-        Assert.equal(error.status, 404);
-        callback(null);
+      Application.GET('/api/exists/translations/from01', function(error, data) {
+        if (error)
+          callback(error);
+        else {
+          Assert.ok(!data.exists, 'The translation exists.');
+          callback(null);
+        }
       });
+      // Application.GET('/api/translations/from01', function(error, translation) {
+      //   Assert.ok(error instanceof Application.RequestError);
+      //   Assert.equal(error.status, 404);
+      //   callback(null);
+      // });
       // Asynchronous.waterfall([
       //   function(callback) {
       //     Application.GET('/api/translations', callback);

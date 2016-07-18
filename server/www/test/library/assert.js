@@ -1,6 +1,7 @@
 var _Assert = require('assert');
 var Asynchronous = require('async');
 var Is = require('@pwn/is');
+var Path = require('../../../../client/library/path');
 var Utilities = require('util');
 
 var Application = require('../../library/application');
@@ -428,133 +429,11 @@ Assert.waitForModalHidden = function(duration, waitFn, callback) {
 
 };
 
-module.exports = Assert;
+Assert.capture = function(name) {
+  if (Is.function(window.callPhantom)) {
+    var path = Path.join('process', 'output', 'capture', Utilities.format('%s-%s', name, new Date().toISOString()));
+    callPhantom({'screenshot': path})
+  }
+}
 
-// define(function() {
-//
-//     var Script = {
-//         nextStep: function() {
-//             if (_.isFunction(window.callPhantom)) {
-//                 // console.log('NEXT');
-//                 window.callPhantom('nextStep');
-//             }
-//         },
-//         savePage: function() {
-//             if (_.isFunction(window.callPhantom)) {
-//                 // console.log('SAVE');
-//                 window.callPhantom('savePage');
-//             }
-//             this.nextStep();
-//         },
-//         stop: function() {
-//             if (_.isFunction(window.callPhantom)) {
-//                 // console.log('STOP');
-//                 window.callPhantom('savePage');
-//                 window.callPhantom('stop');
-//             }
-//         },
-//         execute: function(name, _function) {
-//             console.log('EXECUTE ' + name);
-//             var self = this;
-//             _function(function(error) {
-//                 if (error) {
-//                     console.log('        "' + error + '"');
-//                     self.stop();
-//                 }
-//                 else
-//                     self.nextStep();
-//             });
-//         },
-//         sleep: function(count) {
-//             console.log('SLEEP   Sleep ' + count + 'ms');
-//             var self = this;
-//             window.setTimeout(function() {
-//                 self.nextStep();
-//             }, count);
-//         },
-//         clickButton: function(text) {
-//             this.clickSelector('Click the visible button "' + text + '" on the active page', '.ui-page-active button:visible:contains("' + text + '")');
-//         },
-//         clickLink: function(text) {
-//             this.clickSelector('Click the visible link "' + text + '" on the active page', '.ui-page-active a:visible:contains("' + text + '")');
-//         },
-//         clickSelector: function(name, selector) {
-//             console.log('ACTION  ' + name);
-//             var elements = jQuery(selector);
-//             if (elements.length > 0)
-//                 elements.click();
-//             else {
-//                 console.log('FAIL    ' + name);
-//                 this.stop();
-//             }
-//         },
-//         updateInputValue: function(text, value) {
-//             var name = 'Update the field labelled "' + text + '" on the active page to ' + JSON.stringify(value);
-//             console.log('ACTION  ' + name);
-//             var elements = this._getInput(text);
-//             if (elements.length > 0) {
-//                 elements.val(value);
-//                 elements.change();
-//             }
-//             else {
-//                 console.log('FAIL    ' + name);
-//                 this.stop();
-//             }
-//         },
-//         assertExistsText: function(text) {
-//             this.assertExistsSelector('The text "' + text + '" is visible on the active page', '.ui-page-active *:visible:contains("' + text + '")');
-//         },
-//         assertNotExistsText: function(text) {
-//             this.assertNotExistsSelector('The text "' + text + '" is not visible on the active page', '.ui-page-active *:visible:contains("' + text + '")');
-//         },
-//         assertExistsButton: function(text) {
-//             this.assertExistsSelector('The button "' + text + '" is visible on the active page', '.ui-page-active button:visible:contains("' + text + '")');
-//         },
-//         assertNotExistsButton: function(text) {
-//             this.assertNotExistsSelector('The button "' + text + '" is not visible on the active page', '.ui-page-active button:visible:contains("' + text + '")');
-//         },
-//         assertExistsLink: function(text) {
-//             this.assertExistsSelector('The link "' + text + '" is visible on the active page', '.ui-page-active a:visible:contains("' + text + '")');
-//         },
-//         assertNotExistsLink: function(text) {
-//             this.assertNotExistsSelector('The link "' + text + '" is not visible on the active page', '.ui-page-active a:visible:contains("' + text + '")');
-//         },
-//         assertExistsSelector: function(name, selector) {
-//             this.assertTrue(name, jQuery(selector).length > 0);
-//         },
-//         assertNotExistsSelector: function(name, selector) {
-//             this.assertTrue(name, jQuery(selector).length == 0);
-//         },
-//         assertExistsInput: function(text) {
-//             var input = this._getInput(text);
-//             this.assertTrue('The field labelled "' + text + '" is visible on the active page', input.length > 0);
-//         },
-//         assertNotExistsInput: function(text) {
-//             var input = this._getInput(text);
-//             this.assertTrue('The field labelled "' + text + '" is not visible on the active page', input.length == 0);
-//         },
-//         assertInputValue: function(text, value) {
-//             var input = this._getInput(text);
-//             this.assertTrue('The field labelled "' + text + '" has the value "' + value + '"', input.val() == value);
-//         },
-//         assertNotInputValue: function(text, value) {
-//             var input = this._getInput(text);
-//             this.assertTrue('The field labelled "' + text + '" does not have the value "' + value + '"', input.val() != value);
-//         },
-//         assertTrue: function(name, value) {
-//             console.log('ASSERT  ' + name);
-//             if (value)
-//                 this.nextStep();
-//             else {
-//                 console.log('FAIL    ' + name);
-//                 this.stop();
-//             }
-//         },
-//         _getInput: function(text) {
-//             return jQuery('#' + jQuery('.ui-page-active label:visible:contains("' + text + '")').attr('for'));
-//         }
-//     };
-//
-//     return Script;
-//
-// });
+module.exports = Assert;

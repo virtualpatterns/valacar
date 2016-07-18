@@ -42,6 +42,82 @@ describe('HEAD /api/leases', function() {
 
 });
 
+describe('GET /api/exists/leases', function() {
+
+  before(function(callback) {
+    Asynchronous.series([
+      function(callback) {
+        Application.executeInstall(callback);
+      },
+      function(callback) {
+        Application.executeStart(callback);
+      },
+      function(callback) {
+        Application.waitUntilReady(callback);
+      }
+    ], callback);
+  });
+
+  it('should respond to GET /api/exists/leases/192.168.2.201/1970-01-01T00:00:00.000Z/1970-01-01T00:00:00.000Z with true', function(callback) {
+    Application.isGET('/api/exists/leases/192.168.2.201/1970-01-01T00:00:00.000Z/1970-01-01T00:00:00.000Z', function(statusCode, headers, data, callback) {
+      callback(null, data.exists);
+    }, callback);
+  });
+
+  it('should respond to GET /api/exists/leases/192.168.2.201 with true', function(callback) {
+    Application.isGET('/api/exists/leases/192.168.2.201', function(statusCode, headers, data, callback) {
+      callback(null, data.exists);
+    }, callback);
+  });
+
+  it('should respond to GET /api/exists/leases/192.168.2.292/1970-01-01T00:00:00.000Z/1970-01-01T00:00:00.000Z (a non-existent lease) with false', function(callback) {
+    Application.isGET('/api/exists/leases/192.168.2.292/1970-01-01T00:00:00.000Z/1970-01-01T00:00:00.000Z', function(statusCode, headers, data, callback) {
+      callback(null, !data.exists);
+    }, callback);
+  });
+
+  it('should respond to GET /api/exists/leases/192.168.2.292 (a non-existent lease) with false', function(callback) {
+    Application.isGET('/api/exists/leases/192.168.2.292', function(statusCode, headers, data, callback) {
+      callback(null, !data.exists);
+    }, callback);
+  });
+
+  it('should respond to GET /api/exists/leases/192-168-2-201/1970-01-01T00:00:00.000Z/1970-01-01T00:00:00.000Z (an invalid address/lease) with false', function(callback) {
+    Application.isGET('/api/exists/leases/192-168-2-201/1970-01-01T00:00:00.000Z/1970-01-01T00:00:00.000Z', function(statusCode, headers, data, callback) {
+      callback(null, !data.exists);
+    }, callback);
+  });
+
+  it('should respond to GET /api/exists/leases/192-168-2-201 (an invalid address/lease) with false', function(callback) {
+    Application.isGET('/api/exists/leases/192-168-2-201', function(statusCode, headers, data, callback) {
+      callback(null, !data.exists);
+    }, callback);
+  });
+
+  it('should respond to GET /api/exists/leases/192-168-2-201/1970.01.01T00-00-00.000R/1970.01.01T00-00-00.000R (an invalid address/from/to/lease) with 500 Internal Server Error', function(callback) {
+    Application.isGETStatusCode('/api/exists/leases/192-168-2-201/1970.01.01T00-00-00.000R/1970.01.01T00-00-00.000R', 500, callback);
+  });
+
+  it('should respond to GET /api/exists/leases/192.168.2.201/a/a (an invalid address/from/to/lease) with 500 Internal Server Error', function(callback) {
+    Application.isGETStatusCode('/api/exists/leases/192.168.2.201/a/a', 500, callback);
+  });
+
+  after(function(callback) {
+    Asynchronous.series([
+      function(callback) {
+        Application.executeStop(callback);
+      },
+      function(callback) {
+        Application.waitUntilNotReady(callback);
+      },
+      function(callback) {
+        Application.executeUninstall(callback);
+      }
+    ], callback);
+  });
+
+});
+
 describe('GET /api/leases', function() {
 
   before(function(callback) {
