@@ -25,6 +25,28 @@ Leases.createRoutes = function(server, databasePath, options) {
     });
   });
 
+  server.get('/api/exists/leases/:address', function(request, response, next) {
+    Log.info('> server.get("/api/exists/leases/:address", function(request, response, next) { ... })\n\nrequest.headers\n---------------\n%s\n\nrequest.params\n--------------\n%s\n', Utilities.inspect(request.headers), Utilities.inspect(request.params));
+
+    var from = Database.MINIMUM_DATE;
+    var to = Database.MINIMUM_DATE;
+
+    Application.getLease(request.params.address, from, to, databasePath, options, function(error, row) {
+      if (error)
+        response.send(error);
+      else if (row)
+        response.send({
+          'exists': true
+        });
+      else
+        response.send({
+          'exists': false
+        });
+      next();
+    });
+
+  });
+
   server.get('/api/leases/:address', function(request, response, next) {
     Log.info('> server.get("/api/leases/:address", function(request, response, next) { ... })\n\nrequest.headers\n---------------\n%s\n\nrequest.params\n--------------\n%s\n', Utilities.inspect(request.headers), Utilities.inspect(request.params));
 
@@ -40,6 +62,41 @@ Leases.createRoutes = function(server, databasePath, options) {
         response.send(404);
       next();
     });
+
+  });
+
+  server.get('/api/exists/leases/:address/:from/:to', function(request, response, next) {
+    Log.info('> server.get("/api/exists/leases/:address/:from/:to", function(request, response, next) { ... })\n\nrequest.headers\n---------------\n%s\n\nrequest.params\n--------------\n%s\n', Utilities.inspect(request.headers), Utilities.inspect(request.params));
+
+    try {
+
+      var from = new Date(request.params.from);
+      var to = new Date(request.params.to);
+
+      // Leave it like this ... required to complete validation!
+      Log.info('=   from.toISOString()=%j', from.toISOString());
+      Log.info('=   to.toISOString()=%j', to.toISOString());
+
+      Application.getLease(request.params.address, from, to, databasePath, options, function(error, row) {
+        if (error)
+          response.send(error);
+        else if (row)
+          response.send({
+            'exists': true
+          });
+        else
+          response.send({
+            'exists': false
+          });
+      });
+
+    }
+    catch (error) {
+      response.send(error);
+    }
+    finally {
+      next();
+    }
 
   });
 

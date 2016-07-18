@@ -19,24 +19,22 @@ var leasePageSourcePrototype = Object.create(pageSourcePrototype);
 var LeasePageSource = Object.create(Page.Source);
 
 LeasePageSource.createSourceId = function(lease) {
-  Log.debug('> LeasePageSource.createSourceId(lease) { ... }\n\n%s\n\n', Utilities.inspect(lease));
+  // Log.debug('> LeasePageSource.createSourceId(lease) { ... }\n\n%s\n\n', Utilities.inspect(lease));
 
   var leaseId = {
     'address': lease.address,
-    // 'from': lease.from,
     'fromAsISOString': (lease.from ? Date.parse(lease.from) : new Date(0)).toISOString(),
-    // 'to': lease.to,
     'toAsISOString': (lease.to ? Date.parse(lease.to) : new Date(0)).toISOString()
   };
 
-  Log.debug('< LeasePageSource.createSourceId(lease) { ... }\n\n%s\n\n', Utilities.inspect(leaseId));
+  // Log.debug('< LeasePageSource.createSourceId(lease) { ... }\n\n%s\n\n', Utilities.inspect(leaseId));
 
   return leaseId;
 
 };
 
 LeasePageSource.createSource = function(lease, translation, prototype) {
-  Log.debug('> LeasePageSource.createSource(lease, prototype) { ... }\n\n%s\n\n', Utilities.inspect(lease));
+  // Log.debug('> LeasePageSource.createSource(lease, prototype) { ... }\n\n%s\n\n', Utilities.inspect(lease));
 
   var leasePageSource = Page.Source.createSource.call(this, this.createSourceId(lease), prototype || leasePageSourcePrototype);
 
@@ -59,7 +57,7 @@ LeasePageSource.createSource = function(lease, translation, prototype) {
   if (translation)
     leasePageSource.translation = translation;
 
-  Log.debug('< LeasePageSource.createSource(lease, prototype) { ... }\n\n%s\n\n', Utilities.inspect(leasePageSource));
+  // Log.debug('< LeasePageSource.createSource(lease, prototype) { ... }\n\n%s\n\n', Utilities.inspect(leasePageSource));
 
   return leasePageSource;
 

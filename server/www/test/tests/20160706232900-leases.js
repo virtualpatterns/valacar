@@ -96,34 +96,48 @@ describe('LeasesPage', function() {
 
   });
 
-  describe.only('LeasesPage POST/Refresh', function() {
+  describe('LeasesPage POST/Refresh', function() {
 
     before(function(callback) {
-      Asynchronous.series([
+      Asynchronous.waterfall([
         function(callback) {
           Application.POST('/api/leases', {
             'address': '1.2.3.4',
             'device': 'aa:11:bb:22:cc:33',
             'host': 'host01'
-          }, callback);
-        },
-        function(callback) {
-          Application.DELETE('/api/translations/aa:11:bb:22:cc:33', function(error, translation) {
-            if (error instanceof Application.RequestError &&
-                error.status == 404)
-              callback(null);
-            else
-              callback(error);
+          }, function(error, lease) {
+            callback(error);
           });
         },
+        // function(callback) {
+        //   Application.POST('/api/translations', {
+        //     'from': 'aa:11:bb:22:cc:33',
+        //     'to': 'host001'
+        //   }, callback);
+        // },
+        // function(callback) {
+        //   Application.POST('/api/translations', {
+        //     'from': 'host01',
+        //     'to': 'host001'
+        //   }, callback);
+        // },
         function(callback) {
-          Application.DELETE('/api/translations/host01', function(error, translation) {
-            if (error instanceof Application.RequestError &&
-                error.status == 404)
-              callback(null);
-            else
-              callback(error);
-          });
+          Application.GET('/api/exists/translations/aa:11:bb:22:cc:33', callback);
+        },
+        function(data, callback) {
+          if (data.exists)
+            Application.DELETE('/api/translations/aa:11:bb:22:cc:33', callback);
+          else
+            callback(null);
+        },
+        function(callback) {
+          Application.GET('/api/exists/translations/host01', callback);
+        },
+        function(data, callback) {
+          if (data.exists)
+            Application.DELETE('/api/translations/host01', callback);
+          else
+            callback(null);
         },
         function(callback) {
           Assert.waitForElementsShown(LeasesTable, function() {

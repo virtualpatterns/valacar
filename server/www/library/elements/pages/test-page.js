@@ -1,3 +1,4 @@
+var Is = require('@pwn/is');
 var Mocha = mocha;
 
 var Application = require('../../application');
@@ -45,6 +46,10 @@ testPagePrototype.onShown = function(event) {
 
     try {
 
+      if (Is.function(window.initMochaPhantomJS)) {
+        window.initMochaPhantomJS();
+      }
+
       Mocha.setup({
         'bail': true,
         'timeout': 30000,
@@ -52,11 +57,11 @@ testPagePrototype.onShown = function(event) {
       });
 
       require('../../../test/tests/20160622163300-begin');
-      // require('../../../test/tests/20160622173800-default');
-      // require('../../../test/tests/20160625023000-translations');
-      // require('../../../test/tests/20160627004000-translation');
+      require('../../../test/tests/20160622173800-default');
+      require('../../../test/tests/20160625023000-translations');
+      require('../../../test/tests/20160627004000-translation');
       require('../../../test/tests/20160706232900-leases');
-      // require('../../../test/tests/20160707002900-lease');
+      require('../../../test/tests/20160707002900-lease');
       require('../../../test/tests/99999999999999-end');
 
       var tests = Mocha.run();
@@ -112,6 +117,7 @@ testPagePrototype.onFinished = function(status) {
   else
     this.getContent().find('div.v-status-passed').toggleClass('uk-hidden', false);
 
+  console.log('suck my balls');
   if (window.callPhantom) {
     // Assert.hideAllPages(Application.ifNotError(function() {
       window.callPhantom(status);

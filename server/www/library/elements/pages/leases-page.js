@@ -97,25 +97,26 @@ leasesPagePrototype.onSelected = function(event) {
       Application.GET(Utilities.format('/api/leases/%s/%s/%s', leaseId.address, leaseId.fromAsISOString, leaseId.toAsISOString), callback);
     },
     function(lease, callback) {
-      Application.GET(Utilities.format('/api/translations/%s', lease.device), function(error, deviceTranslation) {
-        if (error instanceof Application.RequestError &&
-            error.status == 404)
-          callback(null, lease, null);
-        else
-          callback(error, lease, deviceTranslation);
+      Application.GET(Utilities.format('/api/exists/translations/%s', lease.device), function(error, deviceTranslation) {
+        callback(error, lease, deviceTranslation);
       });
     },
     function(lease, deviceTranslation, callback) {
-      if (deviceTranslation)
-        callback(null, lease, deviceTranslation);
-      else
+      Application.GET(Utilities.format('/api/exists/translations/%s', lease.host), function(error, hostTranslation) {
+        callback(error, lease, deviceTranslation, hostTranslation);
+      });
+    },
+    function(lease, deviceTranslation, hostTranslation, callback) {
+      if (deviceTranslation.exists)
+        Application.GET(Utilities.format('/api/translations/%s', lease.device), function(error, deviceTranslation) {
+            callback(error, lease, deviceTranslation);
+        });
+      else if (hostTranslation.exists)
         Application.GET(Utilities.format('/api/translations/%s', lease.host), function(error, hostTranslation) {
-          if (error instanceof Application.RequestError &&
-              error.status == 404)
-            callback(null, lease, null);
-          else
             callback(error, lease, hostTranslation);
         });
+      else
+        callback(null, lease, null)
     },
     function(lease, translation, callback) {
       window.application.showPage(LeasePage.createElement(LeasePage.Source.createSource(lease, translation)), callback);
