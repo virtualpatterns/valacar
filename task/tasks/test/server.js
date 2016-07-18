@@ -61,6 +61,9 @@ namespace('server', function() {
       .add('mocha-phantomjs --ignore-resource-errors \
                             --view 640x1200 \
                             http://localhost:31470/www/test.html', Task.OPTIONS_STDIO_INHERIT)
+      .add('mocha-phantomjs --ignore-resource-errors \
+                            --view 640x1200 \
+                            http://localhost:31470/www/test.min.html', Task.OPTIONS_STDIO_INHERIT)
       // .add('mocha-phantomjs --ignore-resource-errors \
       //                       --path ~/bin/phantomjs http://dumbledore.local:31470/www/test.html', Task.OPTIONS_STDIO_INHERIT)
       .execute(complete, fail);

@@ -7,6 +7,8 @@ namespace('www', function() {
     Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
       .add('mocha-phantomjs --ignore-resource-errors \
                             http://localhost:31470/www/test.html?grep=DefaultPage', Task.OPTIONS_STDIO_INHERIT)
+      .add('mocha-phantomjs --ignore-resource-errors \
+                            http://localhost:31470/www/test.min.html?grep=DefaultPage', Task.OPTIONS_STDIO_INHERIT)
       .execute(complete, fail);
   });
 
@@ -15,6 +17,8 @@ namespace('www', function() {
     Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
       .add('mocha-phantomjs --ignore-resource-errors \
                             http://localhost:31470/www/test.html?grep=TranslationsPage', Task.OPTIONS_STDIO_INHERIT)
+      .add('mocha-phantomjs --ignore-resource-errors \
+                            http://localhost:31470/www/test.min.html?grep=TranslationsPage', Task.OPTIONS_STDIO_INHERIT)
       .execute(complete, fail);
   });
 
@@ -23,6 +27,8 @@ namespace('www', function() {
     Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
       .add('mocha-phantomjs --ignore-resource-errors \
                             http://localhost:31470/www/test.html?grep=TranslationPage', Task.OPTIONS_STDIO_INHERIT)
+      .add('mocha-phantomjs --ignore-resource-errors \
+                            http://localhost:31470/www/test.min.html?grep=TranslationPage', Task.OPTIONS_STDIO_INHERIT)
       .execute(complete, fail);
   });
 
@@ -31,6 +37,8 @@ namespace('www', function() {
     Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
       .add('mocha-phantomjs --ignore-resource-errors \
                             http://localhost:31470/www/test.html?grep=LeasesPage', Task.OPTIONS_STDIO_INHERIT)
+      .add('mocha-phantomjs --ignore-resource-errors \
+                            http://localhost:31470/www/test.min.html?grep=LeasesPage', Task.OPTIONS_STDIO_INHERIT)
       .execute(complete, fail);
   });
 
@@ -39,6 +47,8 @@ namespace('www', function() {
     Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
       .add('mocha-phantomjs --ignore-resource-errors \
                             http://localhost:31470/www/test.html?grep=LeasePage', Task.OPTIONS_STDIO_INHERIT)
+      .add('mocha-phantomjs --ignore-resource-errors \
+                            http://localhost:31470/www/test.min.html?grep=LeasePage', Task.OPTIONS_STDIO_INHERIT)
       .execute(complete, fail);
   });
 
