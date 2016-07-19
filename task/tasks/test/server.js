@@ -1,4 +1,4 @@
-
+var Jake = jake;
 
 var Task = require('../../library/task');
 
@@ -56,17 +56,8 @@ namespace('server', function() {
   });
 
   desc('Run all /www/test.html tests');
-  task('www', ['log'], {'async': true}, function () {
-    Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
-      .add('mocha-phantomjs --ignore-resource-errors \
-                            --view 640x1200 \
-                            http://localhost:31470/www/test.html', Task.OPTIONS_STDIO_INHERIT)
-      .add('mocha-phantomjs --ignore-resource-errors \
-                            --view 640x1200 \
-                            http://localhost:31470/www/test.min.html', Task.OPTIONS_STDIO_INHERIT)
-      // .add('mocha-phantomjs --ignore-resource-errors \
-      //                       --path ~/bin/phantomjs http://dumbledore.local:31470/www/test.html', Task.OPTIONS_STDIO_INHERIT)
-      .execute(complete, fail);
+  task('www', ['log'], function () {
+    Jake.Task['test:server:www:filter'].invoke();
   });
 
   require('./www')

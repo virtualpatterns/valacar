@@ -60,6 +60,17 @@ namespace('clean', function() {
         .execute(complete, fail);
     });
 
+    namespace('server', function() {
+
+      desc('Delete www test-related log files');
+      task('www', ['log'], {'async': true}, function () {
+        FileSystemTask.createTask(this.fullName)
+          .addRemoveFile(Path.join(Process.LOG_PATH, Utilities.format('%s.www.test.log', Package.name)))
+          .execute(complete, fail);
+      });
+
+    });
+
   });
 
 });

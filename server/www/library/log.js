@@ -6,64 +6,65 @@ var Log = Object.create({});
 
 Log.log = function() {
 
-  if (window.callPhantom) {
-    // Do nothing
+  var argumentsArray = Array.prototype.slice.call(arguments);
+  var level = argumentsArray.shift().toUpperCase();
+  var levelFn = console.log.bind(console);
+
+  if (window.callPhantom)
+    levelFn = this.logPhantom.bind(this);
+  else
+    switch (level) {
+      case 'LOG':
+        levelFn = console.log.bind(console);
+        break;
+      case 'ERROR':
+        levelFn = console.error.bind(console);
+        break;
+      case 'WARN':
+        levelFn = console.warn.bind(console);
+        break;
+      case 'INFO':
+        levelFn = console.info.bind(console);
+        break;
+      case 'DEBUG':
+        levelFn = console.debug.bind(console);
+        break;
+      default:
+        levelFn = console.log.bind(console);
+    }
+
+  if (Is.string(argumentsArray[0])) {
+
+    var message = null;
+    message = Utilities.format.apply(Utilities.format, argumentsArray);
+    message = Utilities.format('%s %s %s', new Date().toISOString(), Pad(level, 5), message || '');
+
+    levelFn(message);
+
   }
   else {
 
-    var argumentsArray = Array.prototype.slice.call(arguments);
-    var level = argumentsArray.shift().toUpperCase();
-    var levelFn = console.log;
+    var object = argumentsArray.shift();
 
-    switch (level) {
-      case 'LOG':
-        levelFn = console.log;
-        break;
-      case 'ERROR':
-        levelFn = console.error;
-        break;
-      case 'WARN':
-        levelFn = console.warn;
-        break;
-      case 'INFO':
-        levelFn = console.info;
-        break;
-      case 'DEBUG':
-        levelFn = console.debug;
-        break;
-      default:
-        levelFn = console.log;
-    }
+    var message = null;
+    message = Utilities.format('%s %s ...\n', new Date().toISOString(), Pad(level, 5));
 
-    if (Is.string(argumentsArray[0])) {
-
-      var message = null;
-      message = Utilities.format.apply(Utilities.format, argumentsArray);
-      message = Utilities.format('%s %s %s', new Date().toISOString(), Pad(level, 5), message || '');
-
-      levelFn.call(console, message);
-
-    }
-    else {
-
-      var object = argumentsArray.shift();
-
-      var message = null;
-      message = Utilities.format('%s %s ...\n', new Date().toISOString(), Pad(level, 5));
-
-      levelFn.call(console, message);
-      levelFn.call(console, object);
-
-    }
+    levelFn(message);
+    levelFn(object);
 
   }
 
 };
 
+Log.logPhantom = function(message) {
+  window.callPhantom({
+    'message': message
+  });
+};
+
 Log.info = function() {
 
-  var argumentsArray = null;
-  argumentsArray = Array.prototype.slice.call(arguments);
+  var argumentsArray = Array.prototype.slice.call(arguments);
   argumentsArray.unshift('info');
 
   this.log.apply(this, argumentsArray);
@@ -72,8 +73,7 @@ Log.info = function() {
 
 Log.debug = function() {
 
-  var argumentsArray = null;
-  argumentsArray = Array.prototype.slice.call(arguments);
+  var argumentsArray = Array.prototype.slice.call(arguments);
   argumentsArray.unshift('debug');
 
   this.log.apply(this, argumentsArray);
@@ -82,8 +82,7 @@ Log.debug = function() {
 
 Log.error = function() {
 
-  var argumentsArray = null;
-  argumentsArray = Array.prototype.slice.call(arguments);
+  var argumentsArray = Array.prototype.slice.call(arguments);
   argumentsArray.unshift('error');
 
   this.log.apply(this, argumentsArray);
