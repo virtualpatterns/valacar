@@ -1,8 +1,10 @@
-var Is = require('@pwn/is');
 var Mocha = mocha;
 
+var Is = require('@pwn/is');
+var QueryString = require('query-string');
+var Utilities = require('util');
+
 var Application = require('../../application');
-// var Assert = require('../../../test/library/assert');
 var Log = require('../../log');
 var Page = require('../page');
 
@@ -20,6 +22,9 @@ testPagePrototype.bind = function() {
   this.getContent().find('#goDefault').on('click', {
     'this': this
   }, this.onGoDefault);
+  this.getContent().find('#start').on('click', {
+    'this': this
+  }, this.onStart);
   this.getContent().find('#refresh').on('click', {
     'this': this
   }, this.onRefresh);
@@ -29,6 +34,7 @@ testPagePrototype.bind = function() {
 testPagePrototype.unbind = function() {
 
   this.getContent().find('#refresh').off('click', this.onRefresh);
+  this.getContent().find('#start').off('click', this.onStart);
   this.getContent().find('#goDefault').off('click', this.onGoDefault);
 
   jQuery(this).off('v-shown', this.onShown);
@@ -44,48 +50,12 @@ testPagePrototype.onShown = function(event) {
 
   if (event.isInitial) {
 
-    try {
+    var query = QueryString.parse(window.location.search);
 
-      if (Is.function(window.initMochaPhantomJS)) {
-        window.initMochaPhantomJS();
-      }
+    Log.info('= TestPage.onShown(event) { ... }\n\nwindow.location.search\n----------------------\n%s\n\n', Utilities.inspect(query));
 
-      Mocha.setup({
-        'bail': true,
-        'timeout': 30000,
-        'ui': 'bdd'
-      });
-
-      require('../../../test/tests/20160622163300-begin');
-      require('../../../test/tests/20160622173800-default');
-      require('../../../test/tests/20160625023000-translations');
-      require('../../../test/tests/20160627004000-translation');
-      require('../../../test/tests/20160706232900-leases');
-      require('../../../test/tests/20160707002900-lease');
-      require('../../../test/tests/99999999999999-end');
-
-      var tests = Mocha.run();
-
-      // 'start'     execution started
-      // 'end'       execution complete
-      // 'suite'     (suite) test suite execution started
-      // 'suite end' (suite) all tests (and sub-suites) have finished
-      // 'test'      (test) test execution started
-      // 'test end'  (test) test completed
-      // 'hook'      (hook) hook execution started
-      // 'hook end'  (hook) hook complete
-      // 'pass'      (test) test passed
-      // 'fail'      (test, err) test failed
-
-      tests.on('end', self.onFinished.bind(self, tests.stats));
-
-    }
-    catch (error) {
-      Log.error('> TestPage.onShown(event) { ... }');
-      Log.error('    error.message=%j\n\n%s\n\n', error.message, error.stack);
-      Application.alert(error.message);
-      // UIkit.modal.alert(error.message);
-    }
+    if (query.start)
+      self.getContent().find('#start').click();
 
   }
 
@@ -94,21 +64,59 @@ testPagePrototype.onShown = function(event) {
 testPagePrototype.onGoDefault = function(event) {
   Log.info('> TestPage.onGoDefault(event) { ... } window.location.href=%j', window.location.href);
 
-  if (window.location.href.endsWith('test.html'))
+  if (window.location.href.match(/test\.html/))
     window.location.href = '/www/default.html';
-  else if (window.location.href.endsWith('test.min.html'))
+  else if (window.location.href.match(/test\.min\.html/))
     window.location.href = '/www/default.min.html';
 
 };
 
-testPagePrototype.onStarted = function() {
-  Log.info('> TestPage.onStarted() { ... }');
-}
+testPagePrototype.onStart = function(event) {
+  Log.info('> TestPage.onStart(event) { ... }');
+
+  var self = event.data.this;
+
+  try {
+
+    self.getContent().find('div.v-status').toggleClass('uk-hidden', true);
+    self.getContent().find('li:has(#start)').toggleClass('uk-hidden', true);
+
+    if (Is.function(window.initMochaPhantomJS)) {
+      // console.log('> window.initMochaPhantomJS()');
+      window.initMochaPhantomJS();
+      // console.log('< window.initMochaPhantomJS()');
+    }
+
+    Mocha.setup({
+      'bail': true,
+      'timeout': 0,
+      'ui': 'bdd'
+    });
+
+    require('../../../test/tests/20160622163300-begin');
+    require('../../../test/tests/20160622173800-default');
+    require('../../../test/tests/20160625023000-translations');
+    require('../../../test/tests/20160627004000-translation');
+    require('../../../test/tests/20160706232900-leases');
+    require('../../../test/tests/20160707002900-lease');
+    require('../../../test/tests/20160731022800-history');
+    require('../../../test/tests/99999999999999-end');
+
+    var tests = Mocha.run();
+
+    tests.on('end', self.onFinished.bind(self, tests.stats));
+
+  }
+  catch (error) {
+    Log.error('> TestPage.onShown(event) { ... }');
+    Log.error('    error.message=%j\n\n%s\n\n', error.message, error.stack);
+    Application.alert(error.message);
+  }
+
+};
 
 testPagePrototype.onFinished = function(status) {
   Log.info('> TestPage.onFinished() { ... }');
-
-  this.getContent().find('div.v-status').toggleClass('uk-hidden', true);
 
   if (status.failures > 0)
     this.getContent().find('div.v-status-failed').toggleClass('uk-hidden', false);
@@ -117,12 +125,9 @@ testPagePrototype.onFinished = function(status) {
   else
     this.getContent().find('div.v-status-passed').toggleClass('uk-hidden', false);
 
-  console.log('suck my balls');
-  if (window.callPhantom) {
-    // Assert.hideAllPages(Application.ifNotError(function() {
-      window.callPhantom(status);
-    // }));
-  }
+  // Log.info(this.getContent().find('li:has(#refresh)'));
+
+  this.getContent().find('li:has(#refresh)').toggleClass('uk-hidden', false);
 
 }
 

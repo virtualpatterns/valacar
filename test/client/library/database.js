@@ -92,6 +92,31 @@ Database.notExistsStaticLease = function(connection, address, device, host, call
   this.notExistsLease(connection, address, this.MINIMUM_DATE, this.MINIMUM_DATE, device, host, callback);
 };
 
+Database.existsDevice = function(connection, device, host, callback) {
+  this.getFile(connection, Path.join(RESOURCES_PATH, 'exists-tdevicehost.sql'), {
+    $Device: device,
+    $Host: host
+  }, function(error, row) {
+    if (error)
+      callback(error);
+    else if (!row)
+      callback(new Error(Utilities.format('The device %j/%j does not exist.', device, host)), false);
+    else
+      callback(null, true);
+  });
+};
+
+Database.notExistsDevice = function(connection, device, host, callback) {
+  this.existsDevice(connection, device, host, function(error, exists) {
+    if (exists)
+      callback(new Error(Utilities.format('The device %j/%j exists.', device, host))), false;
+    else if (exists == undefined)
+      callback(error);
+    else
+      callback(null, true);
+  });
+};
+
 Database.existsTranslation = function(connection, from, to, callback) {
   this.getFile(connection, Path.join(RESOURCES_PATH, 'exists-ttranslation.sql'), {
     $From: from,

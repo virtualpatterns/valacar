@@ -27,29 +27,31 @@ namespace('server', function() {
                                   --masterLogPath %j \
                                   --workerLogPath %j \
                                   --masterPIDPath %j \
-                                  --numberOfWorkers %d',  DATABASE_PATH,
-                                                          PORT,
-                                                          MASTER_LOG_PATH,
-                                                          WORKER_LOG_PATH,
-                                                          MASTER_PID_PATH,
-                                                          numberOfWorkers || NUMBER_OF_WORKERS)
+                                  --numberOfWorkers %d \
+                                  --enableTrace', DATABASE_PATH,
+                                                  PORT,
+                                                  MASTER_LOG_PATH,
+                                                  WORKER_LOG_PATH,
+                                                  MASTER_PID_PATH,
+                                                  numberOfWorkers || NUMBER_OF_WORKERS)
       .execute(complete, fail);
   });
 
   desc(Utilities.format('Start server on %j, log to %j, pid to %j', Path.trim(DATABASE_PATH), Path.trim(MASTER_LOG_PATH), Path.trim(MASTER_PID_PATH)));
-  task('start', ['log', 'clean:server'], {'async': true}, function (numberOfWorkers) {
+  task('start', ['log', 'bundle:start', 'clean:server'], {'async': true}, function (numberOfWorkers) {
     Task.createTask(this.fullName)
       .add('./server.js start %j  --fork \
                                   --port %d \
                                   --masterLogPath %j \
                                   --workerLogPath %j \
                                   --masterPIDPath %j \
-                                  --numberOfWorkers %d',  DATABASE_PATH,
-                                                          PORT,
-                                                          MASTER_LOG_PATH,
-                                                          WORKER_LOG_PATH,
-                                                          MASTER_PID_PATH,
-                                                          numberOfWorkers || NUMBER_OF_WORKERS)
+                                  --numberOfWorkers %d \
+                                  --enableTrace', DATABASE_PATH,
+                                                  PORT,
+                                                  MASTER_LOG_PATH,
+                                                  WORKER_LOG_PATH,
+                                                  MASTER_PID_PATH,
+                                                  numberOfWorkers || NUMBER_OF_WORKERS)
       .add(function(callback){
         FileSystem.waitUntilFileExists(WAIT_TIMEOUT, WAIT_DURATION, MASTER_PID_PATH, callback);
       })
@@ -57,7 +59,7 @@ namespace('server', function() {
   });
 
   desc(Utilities.format('Stop server, log to %j, pid from %j', Path.trim(MASTER_LOG_PATH), Path.trim(MASTER_PID_PATH)));
-  task('stop', ['log'], {'async': true}, function () {
+  task('stop', ['log', 'bundle:stop'], {'async': true}, function () {
     Task.createTask(this.fullName)
       .add('./server.js stop  --masterLogPath %j \
                                   --masterPIDPath %j',  MASTER_LOG_PATH,
@@ -69,7 +71,7 @@ namespace('server', function() {
   });
 
   desc(Utilities.format('Restart the server on %j, log to %j, pid to %j', Path.trim(DATABASE_PATH), Path.trim(MASTER_LOG_PATH), Path.trim(MASTER_PID_PATH)));
-  task('restart', ['log'], {'async': true}, function () {
+  task('restart', ['log', 'bundle:restart'], {'async': true}, function () {
 
     Asynchronous.eachSeries([
       'server:stop',

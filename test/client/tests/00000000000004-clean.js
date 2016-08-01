@@ -32,6 +32,12 @@ describe('Command.command("clean [databasePath]")', function() {
     }, callback);
   });
 
+  it('should have removed the device for 9c:35:eb:4e:73:4f/HOST1', function(callback) {
+    Database.openConnection(function(connection, callback) {
+      Database.notExistsDevice(connection, '9c:35:eb:4e:73:4f', 'HOST1', callback);
+    }, callback);
+  });
+
   it('should have not changed the static lease for BUCKBEAK', function(callback) {
     Database.openConnection(function(connection, callback) {
       Database.existsStaticLease(connection, '192.168.2.101', 'c8:2a:14:57:bb:1b', 'BUCKBEAK', callback);

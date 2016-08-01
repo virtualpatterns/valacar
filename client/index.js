@@ -291,7 +291,7 @@ Command
 
 Command
   .command('dumpTranslations [databasePath]')
-  .description(Utilities.format('Output a table of active leases, database defaults to %s.', Path.trim(DATABASE_PATH)))
+  .description(Utilities.format('Output a table of translations, database defaults to %s.', Path.trim(DATABASE_PATH)))
   .option('--logPath <path>', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
   .option('--enableTrace', 'Enable database tracing')
   .option('--enableProfile', 'Enable database profiling')
@@ -514,5 +514,45 @@ Command
     });
 
   });
+
+Command
+  .command('dumpDevices [databasePath]')
+  .description(Utilities.format('Output a table of MAC addresses and host names, database defaults to %s.', Path.trim(DATABASE_PATH)))
+  .option('--logPath <path>', Utilities.format('Log file path, defaults to %s', Path.trim(LOG_PATH)))
+  .option('--enableTrace', 'Enable database tracing')
+  .option('--enableProfile', 'Enable database profiling')
+  .action(function (databasePath, options) {
+
+    Log.addFile(options.logPath || LOG_PATH);
+
+    Log.info('--------------------------------------------------------------------------------');
+    Log.info('> Command.command("dumpDevices [databasePath]")');
+    Log.info('> Command.action(function (%j, options) { ... }', Path.trim(databasePath));
+    Log.info('--------------------------------------------------------------------------------');
+
+    Application.dumpDevices(databasePath || DATABASE_PATH, {
+      'enableTrace': !!options.enableTrace,
+      'enableProfile': !!options.enableProfile
+    }, function (error) {
+      if (error) {
+
+        Log.error('= %s\n\n%s\n', error.message, error.stack);
+        console.error(error.stack);
+
+        Process.exitCode = 1;
+        console.log('An error occured outputting a table of MAC addresses and host names from the database at %s.', Path.trim(databasePath || DATABASE_PATH));
+        console.log(error.stack);
+
+      }
+      else
+        Process.exitCode = 0;
+
+      Log.info('< Command.command("dumpDevices [databasePath]")');
+      Log.info('--------------------------------------------------------------------------------');
+
+    });
+
+  });
+
 
 Command.parse(process.argv);

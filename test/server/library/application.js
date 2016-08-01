@@ -122,13 +122,14 @@ Application.executeStart = function(callback) {
 
   Asynchronous.series([
     function(callback) {
-      self.executeCommand(Utilities.format('start %j --fork \
+      self.executeCommand(Utilities.format('start %j  --fork \
                                                       --address %s \
                                                       --port %d \
                                                       --masterLogPath %j \
                                                       --workerLogPath %j \
                                                       --masterPIDPath %j \
-                                                      --numberOfWorkers %d',  self.DATABASE_PATH,
+                                                      --numberOfWorkers %d \
+                                                      --enableTrace',  self.DATABASE_PATH,
                                                                               self.ADDRESS,
                                                                               self.PORT,
                                                                               self.MASTER_LOG_PATH,
@@ -149,7 +150,7 @@ Application.executeStop = function(callback) {
 
   Asynchronous.series([
     function(callback) {
-      self.executeCommand(Utilities.format('stop --masterLogPath %j \
+      self.executeCommand(Utilities.format('stop  --masterLogPath %j \
                                                   --masterPIDPath %j',  self.MASTER_LOG_PATH,
                                                                         self.MASTER_PID_PATH), callback);
     },

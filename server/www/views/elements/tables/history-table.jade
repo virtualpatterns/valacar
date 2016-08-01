@@ -1,0 +1,43 @@
+table(id=element.id).uk-table.uk-table-striped.uk-table-condensed.uk-margin-remove.v-element.v-table.v-history-table
+  thead
+    tr
+      th Identity
+      th Range
+  tbody
+    each item in history
+      tr
+        td
+          dl.uk-description-list
+            dt 
+              span.uk-text-small MAC Address
+            dd
+              a(data-filter-string=item.device).v-filter-string
+                i.uk-icon-search.v-left-icon
+                = item.device
+            dt 
+              span.uk-text-small IP Address
+            dd
+              //- a(data-filter-string=item.address).v-filter-string
+              //-   i.uk-icon-search.v-left-icon
+              = item.address 
+            dt 
+              span.uk-text-small Host Name
+            dd
+              - if (item.host)
+                a(data-filter-string=item.host).v-filter-string
+                  i.uk-icon-search.v-left-icon
+                  = item.host
+              - else
+                | (unknown)
+        td
+          dl.uk-description-list
+            dt 
+              span.uk-text-small From/To
+            dd
+              //- a(data-filter-date=item.fromAsISOString).v-filter-date
+              //-   i.uk-icon-search.v-left-icon
+              = item.fromAsString
+              br
+              //- a(data-filter-date=item.toAsISOString).v-filter-date
+              //-   i.uk-icon-search.v-left-icon
+              = item.toAsString

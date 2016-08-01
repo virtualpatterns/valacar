@@ -1,0 +1,45 @@
+div(id=element.id).uk-height-1-1.v-element.v-page.v-history-page
+  div.uk-container.uk-height-1-1.uk-padding-remove.uk-margin-remove
+    nav(data-uk-sticky).uk-navbar.uk-navbar-attached
+      ul.uk-navbar-nav
+        li
+          a(id='goBack')
+            i.uk-icon-chevron-left.v-left-icon
+            | Back
+      div.uk-navbar-flip
+        ul.uk-navbar-nav
+          li
+            a(id='filterLink')
+              i.uk-icon-search
+          li
+            a(id='refresh')
+              i.uk-icon-refresh
+      div.uk-navbar-content.uk-navbar-center
+        | History
+    div(id='filterPanel').uk-panel.uk-panel-box.uk-margin-small.uk-margin-small-left.uk-margin-small-right.uk-hidden
+      form(id='filterForm').uk-form
+        div.uk-form-row
+          label(for='filterDate').uk-form-label
+            | Filter by date
+          div.uk-form-controls
+            div.uk-form-icon.uk-width-1-1
+              i.uk-icon-calendar
+              input(id='filterDate',
+                    data-minimum-value=range.minimumValueAsISOString,
+                    data-maximum-value=range.maximumValueAsISOString,
+                    placeholder='e.g. 1980-05-28',
+                    type='text',
+                    value=range.defaultDateAsString).uk-width-1-1
+        div.uk-form-row
+          label(for='filterString').uk-form-label
+            | Filter by IP address, MAC address, or host name
+          div.uk-form-controls
+            input(id='filterString',
+                  placeholder='e.g. 12:ab:34:cd:56:ef or OfficeComputer',
+                  type='text').uk-width-1-1
+        div.uk-form-row
+          div.uk-form-controls
+            label
+              input(id='filterNull',
+                    type='checkbox')
+              |  Filter by (unknown) host name 

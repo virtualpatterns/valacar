@@ -1,3 +1,6 @@
+var Jake = jake;
+
+var Asynchronous = require('async');
 var Utilities = require('util');
 
 var Package = require('../../package.json');
@@ -14,10 +17,10 @@ namespace('clean', function() {
       .execute(complete, fail);
   });
 
-  desc('Delete watch-related log files');
-  task('watch', ['log'], {'async': true}, function () {
+  desc('Delete bundle-related log files');
+  task('bundle', ['log'], {'async': true}, function () {
     FileSystemTask.createTask(this.fullName)
-      .addRemoveFile(Path.join(Process.LOG_PATH, Utilities.format('%s.watch.log', Package.name)))
+      .addRemoveFile(Path.join(Process.LOG_PATH, Utilities.format('%s.bundle.log', Package.name)))
       .execute(complete, fail);
   });
 
@@ -37,7 +40,28 @@ namespace('clean', function() {
   });
 
   desc('Delete test-related log files');
-  task('test', ['log', 'clean:test:client', 'clean:test:server'], function () {
+  task('test', ['log'], {'async': true}, function () {
+
+    Asynchronous.eachSeries([
+      'clean:test:client',
+      'clean:test:server',
+      'clean:test:www'
+    ], function(taskName, callback) {
+      var task = jake.Task[taskName];
+      task.addListener('complete', function () {
+        callback(null);
+      });
+      task.addListener('error', function (error) {
+        callback(error);
+      });
+      task.invoke();
+    }, function(error) {
+      if (error)
+        fail(error);
+      else
+        complete()
+    });
+
   });
 
   namespace('test', function() {
@@ -60,15 +84,11 @@ namespace('clean', function() {
         .execute(complete, fail);
     });
 
-    namespace('server', function() {
-
-      desc('Delete www test-related log files');
-      task('www', ['log'], {'async': true}, function () {
-        FileSystemTask.createTask(this.fullName)
-          .addRemoveFile(Path.join(Process.LOG_PATH, Utilities.format('%s.www.test.log', Package.name)))
-          .execute(complete, fail);
-      });
-
+    desc('Delete www test-related log files');
+    task('www', ['log'], {'async': true}, function () {
+      FileSystemTask.createTask(this.fullName)
+        .addRemoveFile(Path.join(Process.LOG_PATH, Utilities.format('%s.www.test.log', Package.name)))
+        .execute(complete, fail);
     });
 
   });

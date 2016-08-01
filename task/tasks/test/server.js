@@ -1,5 +1,3 @@
-var Jake = jake;
-
 var Task = require('../../library/task');
 
 namespace('server', function() {
@@ -7,7 +5,8 @@ namespace('server', function() {
   desc('Run start tests');
   task('start', ['log', 'clean:test:server'], {'async': true}, function () {
     Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
-      .add('mocha --timeout 0 \
+      .add('mocha --bail \
+                  --timeout 0 \
                   test/server/tests/00000000000000-begin.js \
                   test/server/tests/20160603231000-start.js \
                   test/server/tests/99999999999999-end.js', Task.OPTIONS_STDIO_INHERIT)
@@ -17,7 +16,8 @@ namespace('server', function() {
   desc('Run start/stop tests');
   task('stop', ['log', 'clean:test:server'], {'async': true}, function () {
     Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
-      .add('mocha --timeout 0 \
+      .add('mocha --bail \
+                  --timeout 0 \
                   test/server/tests/00000000000000-begin.js \
                   test/server/tests/20160603231000-start.js \
                   test/server/tests/20160604224200-stop.js \
@@ -28,7 +28,8 @@ namespace('server', function() {
   desc('Run /api/status tests');
   task('status', ['log', 'clean:test:server'], {'async': true}, function () {
     Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
-      .add('mocha --timeout 0 \
+      .add('mocha --bail \
+                  --timeout 0 \
                   test/server/tests/00000000000000-begin.js \
                   test/server/tests/20160610163500-status.js \
                   test/server/tests/99999999999999-end.js', Task.OPTIONS_STDIO_INHERIT)
@@ -38,7 +39,8 @@ namespace('server', function() {
   desc('Run /api/translations tests');
   task('translations', ['log', 'clean:test:server'], {'async': true}, function () {
     Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
-      .add('mocha --timeout 0 \
+      .add('mocha --bail \
+                  --timeout 0 \
                   test/server/tests/00000000000000-begin.js \
                   test/server/tests/20160605010500-translations.js \
                   test/server/tests/99999999999999-end.js', Task.OPTIONS_STDIO_INHERIT)
@@ -48,18 +50,23 @@ namespace('server', function() {
   desc('Run /api/leases tests');
   task('leases', ['log', 'clean:test:server'], {'async': true}, function () {
     Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
-      .add('mocha --timeout 0 \
+      .add('mocha --bail \
+                  --timeout 0 \
                   test/server/tests/00000000000000-begin.js \
                   test/server/tests/20160630010900-leases.js \
                   test/server/tests/99999999999999-end.js', Task.OPTIONS_STDIO_INHERIT)
       .execute(complete, fail);
   });
 
-  desc('Run all /www/test.html tests');
-  task('www', ['log'], function () {
-    Jake.Task['test:server:www:filter'].invoke();
+  desc('Run /api/history tests');
+  task('history', ['log', 'clean:test:server'], {'async': true}, function () {
+    Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
+      .add('mocha --bail \
+                  --timeout 0 \
+                  test/server/tests/00000000000000-begin.js \
+                  test/server/tests/20160728025900-history.js \
+                  test/server/tests/99999999999999-end.js', Task.OPTIONS_STDIO_INHERIT)
+      .execute(complete, fail);
   });
-
-  require('./www')
 
 });

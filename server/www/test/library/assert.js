@@ -67,31 +67,61 @@ Assert.existsRow = function(text, callback) {
   return this.existsSelector.apply(this, argumentsArray);
 };
 
+Assert.existsRowIndex = function(text, index, callback) {
+  var argumentsArray = Array.prototype.slice.call(arguments);
+  argumentsArray.unshift('table > tbody > tr:visible:contains(%j):eq(%d)');
+  return this.existsSelector.apply(this, argumentsArray);
+};
+
 Assert.notExistsRow = function(text, callback) {
   var argumentsArray = Array.prototype.slice.call(arguments);
   argumentsArray.unshift('table > tbody > tr:visible:contains(%j)');
   return this.notExistsSelector.apply(this, argumentsArray);
 };
 
+Assert.notExistsRowIndex = function(text, index, callback) {
+  var argumentsArray = Array.prototype.slice.call(arguments);
+  argumentsArray.unshift('table > tbody > tr:visible:contains(%j):eq(%d)');
+  return this.notExistsSelector.apply(this, argumentsArray);
+};
+
 Assert.existsInput = function(text, callback) {
   var argumentsArray = Array.prototype.slice.call(arguments);
-  argumentsArray.unshift('input[type="text"][value=%j]:visible:not([disabled])');
+  // argumentsArray.unshift('input[type="text"][value=%j]:visible:not([disabled])');
+  argumentsArray.unshift('input[value=%j]:visible:not([disabled])');
   return this.existsSelector.apply(this, argumentsArray);
 };
 
 Assert.existsInputId = function(id, callback) {
   var argumentsArray = Array.prototype.slice.call(arguments);
-  argumentsArray.unshift('input#%s[type="text"]:visible:not([disabled])');
+  return this.existsVisibleInputId.apply(this, argumentsArray);
+};
+
+Assert.existsVisibleInputId = function(id, callback) {
+  var argumentsArray = Array.prototype.slice.call(arguments);
+  // argumentsArray.unshift('input#%s[type="text"]:visible:not([disabled])');
+  argumentsArray.unshift('input#%s:visible:not([disabled])');
+  return this.existsSelector.apply(this, argumentsArray);
+};
+
+Assert.existsHiddenInputId = function(id, callback) {
+  var argumentsArray = Array.prototype.slice.call(arguments);
+  // argumentsArray.unshift('input#%s[type="text"]:hidden:not([disabled])');
+  argumentsArray.unshift('input#%s:hidden:not([disabled])');
   return this.existsSelector.apply(this, argumentsArray);
 };
 
 Assert.existsInputValue = function(id, value, callback) {
   var argumentsArray = Array.prototype.slice.call(arguments);
 
-  if (Is.emptyString(value))
-    argumentsArray.unshift('input#%s[type="text"]:visible:not([value][disabled])');
-  else
-    argumentsArray.unshift('input#%s[type="text"][value=%j]:visible:not([disabled])');
+  if (Is.emptyString(value)) {
+    // argumentsArray.unshift('input#%s[type="text"]:visible:not([value][disabled])');
+    argumentsArray.unshift('input#%s:visible:not([value][disabled])');
+  }
+  else {
+    // argumentsArray.unshift('input#%s[type="text"][value=%j]:visible:not([disabled])');
+    argumentsArray.unshift('input#%s[value=%j]:visible:not([disabled])');
+  }
 
   return this.existsSelector.apply(this, argumentsArray);
 
@@ -100,10 +130,14 @@ Assert.existsInputValue = function(id, value, callback) {
 Assert.existsDisabledInputValue = function(id, value, callback) {
   var argumentsArray = Array.prototype.slice.call(arguments);
 
-  if (Is.emptyString(value))
-    argumentsArray.unshift('input#%s[type="text"][disabled]:visible:not([value])');
-  else
-    argumentsArray.unshift('input#%s[type="text"][value=%j][disabled]:visible');
+  if (Is.emptyString(value)) {
+    // argumentsArray.unshift('input#%s[type="text"][disabled]:visible:not([value])');
+    argumentsArray.unshift('input#%s[disabled]:visible:not([value])');
+  }
+  else {
+    // argumentsArray.unshift('input#%s[type="text"][value=%j][disabled]:visible');
+    argumentsArray.unshift('input#%s[value=%j][disabled]:visible');
+  }
 
   return this.existsSelector.apply(this, argumentsArray);
 
@@ -124,11 +158,12 @@ Assert.existsConfirmation = function(text, callback) {
 Assert.existsSelector = function(selector, callback) {
 
   var argumentsArray = Array.prototype.slice.call(arguments);
+
   var results = this.select.apply(this, argumentsArray);
   var error = null;
 
   try {
-    this.equal(results.selected.length, 1, Utilities.format('The selector %j does not exist at most once.', results.selector));
+    this.equal(results.selected.length, 1, Utilities.format('The selector %j exists %d times.', results.selector, results.selected.length));
   }
   catch (_error) {
     error = _error;
@@ -151,7 +186,7 @@ Assert.notExistsSelector = function(selector, callback) {
   var error = null;
 
   try {
-    this.equal(results.selected.length, 0, Utilities.format('The selector %j exists.', results.selector));
+    this.equal(results.selected.length, 0, Utilities.format('The selector %j exists %d times.', results.selector, results.selected.length));
   }
   catch (_error) {
     error = _error;
@@ -239,7 +274,8 @@ Assert.clickSelector = function(selector, callback) {
 
 Assert.inputValue = function(id, value, callback) {
   var argumentsArray = Array.prototype.slice.call(arguments);
-  argumentsArray.unshift('input#%s[type="text"]:visible');
+  // argumentsArray.unshift('input#%s[type="text"]:visible');
+  argumentsArray.unshift('input#%s:visible');
   return this.inputSelector.apply(this, argumentsArray);
 };
 
@@ -276,15 +312,19 @@ Assert.select = function(selector, callback) {
 
   var argumentsArray = Array.prototype.slice.call(arguments);
 
-  if (!argumentsArray[argumentsArray.length - 1]) {
-    argumentsArray.pop();
-    callback = null;
-  }
-  else if (Is.function(argumentsArray[argumentsArray.length - 1]))
+  // Log.debug('> Assert.select(selector, callback) { ... }\n\n%s\n\n', Utilities.inspect(argumentsArray));
+
+  // if (!argumentsArray[argumentsArray.length - 1]) {
+  //   argumentsArray.pop();
+  //   callback = null;
+  // }
+  // else
+  if (Is.function(argumentsArray[argumentsArray.length - 1]))
     callback = argumentsArray.pop();
   else
     callback = null;
 
+  // Log.debug('> Utilities.format( ... )\n\n%s\n\n', Utilities.inspect(argumentsArray));
   selector = Utilities.format.apply(Utilities.format, argumentsArray);
   var selected = jQuery(selector);
 

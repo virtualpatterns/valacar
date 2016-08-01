@@ -1,3 +1,5 @@
+var Jake = jake;
+
 var Utilities = require('util');
 
 var Application = require('../../client/library/application');
@@ -28,6 +30,18 @@ namespace('data', function() {
       .add('echo -n "Copying %s from %s to %s ... "', COPY_SOURCE_LOG_PATH, COPY_SOURCE_COMPUTER, Path.trim(LOG_PATH))
       .add('scp "%s:%s" %j', COPY_SOURCE_COMPUTER, COPY_SOURCE_LOG_PATH, LOG_PATH, Task.OPTIONS_STDIO_IGNORE)
       .add('echo    "done"')
+      .add(function(callback) {
+
+        var task = Jake.Task['client:install'];
+        task.addListener('complete', function () {
+          callback(null);
+        });
+        task.addListener('error', function (error) {
+          callback(error);
+        });
+        task.invoke();
+
+      })
       .execute(complete, fail);
   });
 
@@ -37,23 +51,6 @@ namespace('data', function() {
     task('leases', ['log', 'data:copy'], {'async': true}, function (duration) {
       DatabaseTask.createTask(this.fullName, DATABASE_PATH)
         .addRunFile(Path.join(RESOURCES_PATH, 'update-tlease-to.sql'), {$Duration: duration || '+1 day'})
-
-        // .add(function(callback) {
-        //   Application.openDatabase(DATABASE_PATH, {
-        //     'enableTrace': true,
-        //     'enableProfile': false
-        //   }, function(connection, callback) {
-        //     Database.runFile(connection, Path.join(RESOURCES_PATH, 'update-tlease-to.sql'), {
-        //       $Duration: duration || '+1 day'
-        //     }, function(error) {
-        //       if (!error)
-        //         Log.info();
-        //         Assert.ok(this.changes <= 1, Utilities.format('The number of rows deleted from tMigration should be 0 or 1 but is instead %d.', this.changes));
-        //       callback(error);
-        //     });
-        //   }, callback);
-        // })
-
         .execute(complete, fail);
     });
 

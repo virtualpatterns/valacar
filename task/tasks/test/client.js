@@ -1,5 +1,3 @@
-
-
 var Task = require('../../library/task');
 
 namespace('client', function() {
@@ -7,7 +5,9 @@ namespace('client', function() {
   desc('Run task tests');
   task('task', ['log', 'clean:test:client'], {'async': true}, function () {
     Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
-      .add('mocha test/client/tests/00000000000000-begin.js \
+      .add('mocha --bail \
+                  --timeout 0 \
+                  test/client/tests/00000000000000-begin.js \
                   test/client/tests/20160525110900-task.js \
                   test/client/tests/99999999999999-end.js', Task.OPTIONS_STDIO_INHERIT)
       .execute(complete, fail);
@@ -16,7 +16,9 @@ namespace('client', function() {
   desc('Run install tests');
   task('install', ['log', 'clean:test:client'], {'async': true}, function () {
     Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
-      .add('mocha test/client/tests/00000000000000-begin.js \
+      .add('mocha --bail \
+                  --timeout 0 \
+                  test/client/tests/00000000000000-begin.js \
                   test/client/tests/00000000000001-install.js \
                   test/client/tests/99999999999999-end.js', Task.OPTIONS_STDIO_INHERIT)
       .execute(complete, fail);
@@ -25,7 +27,9 @@ namespace('client', function() {
   desc('Run install/uninstall tests');
   task('uninstall', ['log', 'clean:test:client'], {'async': true}, function () {
     Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
-      .add('mocha test/client/tests/00000000000000-begin.js \
+      .add('mocha --bail \
+                  --timeout 0 \
+                  test/client/tests/00000000000000-begin.js \
                   test/client/tests/00000000000001-install.js \
                   test/client/tests/00000000000002-uninstall.js \
                   test/client/tests/99999999999999-end.js', Task.OPTIONS_STDIO_INHERIT)
@@ -35,7 +39,9 @@ namespace('client', function() {
   desc('Run translation tests');
   task('translation', ['log', 'clean:test:client'], {'async': true}, function () {
     Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
-      .add('mocha test/client/tests/00000000000000-begin.js \
+      .add('mocha --bail \
+                  --timeout 0 \
+                  test/client/tests/00000000000000-begin.js \
                   test/client/tests/00000000000001-install.js \
                   test/client/tests/00000000000002-uninstall.js \
                   test/client/tests/00000000000007-addTranslation.js \
@@ -48,7 +54,9 @@ namespace('client', function() {
   desc('Run leases tests');
   task('leases', ['log', 'clean:test:client'], {'async': true}, function () {
     Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
-      .add('mocha test/client/tests/00000000000000-begin.js \
+      .add('mocha --bail \
+                  --timeout 0 \
+                  test/client/tests/00000000000000-begin.js \
                   test/client/tests/00000000000000-begin.js \
                   test/client/tests/00000000000001-install.js \
                   test/client/tests/00000000000002-uninstall.js \

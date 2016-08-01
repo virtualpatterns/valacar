@@ -1,4 +1,4 @@
-require('../../vendor/DateJS');
+require('datejs');
 
 var Asynchronous = require('async');
 var Utilities = require('util');

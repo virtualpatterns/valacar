@@ -1,3 +1,5 @@
+require('datejs');
+
 var Asynchronous = require('async');
 var Is = require('@pwn/is');
 var Utilities = require('util');
@@ -12,6 +14,41 @@ var LeasesTable = require('../tables/leases-table');
 
 var pagePrototype = Page.getElementPrototype();
 var leasesPagePrototype = Object.create(pagePrototype);
+
+// leasesPagePrototype.render = function(data, callback) {
+//
+//   if (Is.function(data)) {
+//     callback = data;
+//     data = {};
+//   }
+//
+//   var self = this;
+//
+//   // Log.info('> LeasesPage.render(data, callback) { ... }');
+//
+//   Application.GET('/api/range/leases', function(error, range) {
+//     if (error)
+//       callback(error);
+//     else {
+//
+//       data.range = range;
+//
+//       var now = new Date();
+//       var minimumValue = Date.parse(data.range.minimumFrom);
+//       var maximumValue = Date.parse(data.range.maximumTo);
+//       var defaultValue = Date.compare(now, maximumValue) <= 0 ? now : maximumValue;
+//
+//       data.range.defaultDateAsString = defaultValue.toString('yyyy-MM-dd');
+//       data.range.defaultTimeAsString = defaultValue.toString('hh:00 tt');
+//       data.range.minimumValueAsISOString = minimumValue.toISOString();
+//       data.range.maximumValueAsISOString = maximumValue.toISOString();
+//
+//       pagePrototype.render.call(self, data, callback);
+//
+//     }
+//   });
+//
+// };
 
 leasesPagePrototype.bind = function() {
 
@@ -28,19 +65,31 @@ leasesPagePrototype.bind = function() {
   this.getContent().find('#goBack').on('click', {
     'this': this
   }, this.onGoBack);
+  // this.getContent().find('#filterLink').on('click', {
+  //   'this': this
+  // }, this.onFilterLink);
   this.getContent().find('#refresh').on('click', {
     'this': this
   }, this.onRefresh);
   this.getContent().find('#addLease').on('click', {
     'this': this
   }, this.onAddLease);
+  // this.getContent().find('#filterDate').on('change', {
+  //   'this': this
+  // }, this.onFilterDateChange);
+  // this.getContent().find('#filterForm').on('submit', {
+  //   'this': this
+  // }, this.onFilterSubmit);
 
 };
 
 leasesPagePrototype.unbind = function() {
 
+  // this.getContent().find('#filterForm').off('submit', this.onFilterSubmit);
+  // this.getContent().find('#filterDate').off('change', this.onFilterDateChange);
   this.getContent().find('#addLease').off('click', this.onAddLease);
   this.getContent().find('#refresh').off('click', this.onRefresh);
+  // this.getContent().find('#filterLink').off('click', this.onFilterLink);
   this.getContent().find('#goBack').off('click', this.onGoBack);
 
   jQuery(this).off('v-hidden', this.onHidden);
@@ -52,8 +101,59 @@ leasesPagePrototype.unbind = function() {
 
 leasesPagePrototype.onShown = function(event) {
   Log.info('> LeasesPage.onShown(event) { ... } event.isInitial=%s', event.isInitial);
+
   var self = event.data.this;
+
+  // if (event.isInitial) {
+  //
+  //   var now = new Date();
+  //   var minimumValue = Date.parse(self.getContent().find('#filterDate').data('minimumValue'));
+  //   var maximumValue = Date.parse(self.getContent().find('#filterDate').data('maximumValue'));
+  //   var defaultValue = Date.compare(now, maximumValue) <= 0 ? now : maximumValue;
+  //
+  //   var minDate = minimumValue.toString('yyyy-MM-dd');
+  //   var maxDate = new Date(maximumValue).add(1).days().toString('yyyy-MM-dd');
+  //
+  //   Log.info('    minimumValue=%j', minimumValue);
+  //   Log.info('    maximumValue=%j', maximumValue);
+  //   Log.info('    defaultValue=%j', defaultValue);
+  //   Log.info('    minDate=%j', minDate);
+  //   Log.info('    maxDate=%j', maxDate);
+  //
+  //   self.DatePicker = UIkit.datepicker(Utilities.format('#%s #filterDate', self.id), {
+  //     'format': 'YYYY-MM-DD',
+  //     'minDate': minDate,
+  //     'maxDate': maxDate
+  //   });
+  //
+  //   // var minimumDateValue = new Date(minimumValue).clearTime();
+  //   // var maximumDateValue = new Date(maximumValue).clearTime();
+  //   // var defaultDateValue = new Date(defaultValue).clearTime();
+  //   //
+  //   // var start = 0;
+  //   // var end = 24;
+  //   //
+  //   // if (Date.equals(defaultDateValue, minimumDateValue))
+  //   //   start = minimumValue.getHours();
+  //   // else if (Date.equals(defaultDateValue, maximumDateValue))
+  //   //   end = new Date(maximumValue).add(1).hours().getHours();
+  //   //
+  //   // Log.info('    minimumDateValue=%j', minimumDateValue);
+  //   // Log.info('    maximumDateValue=%j', maximumDateValue);
+  //   // Log.info('    defaultDateValue=%j', defaultDateValue);
+  //   // Log.info('    start=%j', start);
+  //   // Log.info('    end=%j', end);
+  //   //
+  //   // self.TimePicker = UIkit.timepicker(Utilities.format('#%s #filterTime', self.id), {
+  //   //   'format': '12h',
+  //   //   'start': start,
+  //   //   'end': end
+  //   // });
+  //
+  // }
+
   self.refreshElements(LeasesTable, Application.ifNotError());
+
 };
 
 leasesPagePrototype.onHidden = function(event) {
@@ -68,12 +168,24 @@ leasesPagePrototype.onHidden = function(event) {
 
   self.leasesTable.removeContent();
 
+  // if (event.isFinal) {
+  //   // self.TimePicker = null;
+  //   self.DatePicker = null;
+  // }
+
 };
 
 leasesPagePrototype.onGoBack = function(event) {
   Log.info('> LeasesPage.onGoBack(event) { ... }');
   window.application.hidePage();
 };
+
+// leasesPagePrototype.onFilterLink = function(event) {
+//   Log.info('> LeasesPage.onFilterLink(event) { ... }');
+//   var self = event.data.this;
+//   self.getContent().find('li:has(#filterLink)').toggleClass('uk-active');
+//   self.getContent().find('#filterPanel').toggleClass('uk-hidden');
+// };
 
 leasesPagePrototype.onRefresh = function(event) {
   Log.info('> LeasesPage.onRefresh(event) { ... }');
@@ -85,6 +197,58 @@ leasesPagePrototype.onAddLease = function(event) {
   Log.info('> LeasesPage.onAddLease(event) { ... }');
   window.application.showPage(LeasePage.createElement(LeasePage.Source.createSource({})), Application.ifNotError());
 };
+
+// leasesPagePrototype.onFilterDateChange = function(event) {
+//   Log.info('> LeasesPage.onFilterDateChange(event) { ... }');
+//
+//   var self = event.data.this;
+//
+//   self.getContent().find('#filterForm').submit();
+//
+//   // var minimumValue = Date.parse(self.getContent().find('#filterDate').data('minimumValue'));
+//   // var maximumValue = Date.parse(self.getContent().find('#filterDate').data('maximumValue'));
+//   //
+//   // var minimumDateValue = new Date(minimumValue).clearTime();
+//   // var maximumDateValue = new Date(maximumValue).clearTime();
+//   // var currentDateValue = Date.parse(self.getContent().find('#filterDate').val());
+//   //
+//   // var start = 0;
+//   // var end = 24;
+//   //
+//   // if (Date.equals(currentDateValue, minimumDateValue))
+//   //   start = minimumValue.getHours();
+//   // else if (Date.equals(currentDateValue, maximumDateValue))
+//   //   end = new Date(maximumValue).add(1).hours().getHours();
+//   //
+//   // Log.info('    minimumValue=%j', minimumValue);
+//   // Log.info('    maximumValue=%j', maximumValue);
+//   // Log.info('    minimumDateValue=%j', minimumDateValue);
+//   // Log.info('    maximumDateValue=%j', maximumDateValue);
+//   // Log.info('    start=%j', start);
+//   // Log.info('    end=%j', end);
+//
+//   // self.TimePicker = UIkit.timepicker(Utilities.format('#%s #filterTime', self.id), {
+//   //   'format': '12h',
+//   //   'start': start,
+//   //   'end': end
+//   // });
+//
+//   // self.TimePicker.options.start = start;
+//   // self.TimePicker.options.end = end;
+//   //
+//   // self.TimePicker.init();
+//
+// };
+
+// leasesPagePrototype.onFilterSubmit = function(event) {
+//   Log.info('> LeasesPage.onFilterSubmit(event) { ... }');
+//
+//   event.preventDefault();
+//
+//   var self = event.data.this;
+//   self.refreshElements(LeasesTable, Application.ifNotError());
+//
+// };
 
 leasesPagePrototype.onSelected = function(event) {
   Log.info('> LeasesPage.onSelected(event) { ... }\n\n%s\n\n', Utilities.inspect(JSON.parse(event.currentTarget.dataset.leaseId)));
@@ -178,7 +342,14 @@ leasesPagePrototype.refreshLeasesTable = function(callback) {
 
   Asynchronous.waterfall([
     function(callback) {
-      Application.GET('/api/leases', callback);
+
+      // var filter = self.getContent().find('li:has(#filterLink)').hasClass('uk-active') ? Date.parse(self.getContent().find('#filterDate').val()) : null;
+      //
+      // if (filter)
+      //   Application.GET(Utilities.format('/api/leases?filter=%s', filter.toISOString()), callback);
+      // else
+        Application.GET('/api/leases', callback);
+
     },
     function(leases, callback) {
       callback(null, leases.map(function(lease) {

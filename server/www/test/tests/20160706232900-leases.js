@@ -109,18 +109,6 @@ describe('LeasesPage', function() {
             callback(error);
           });
         },
-        // function(callback) {
-        //   Application.POST('/api/translations', {
-        //     'from': 'aa:11:bb:22:cc:33',
-        //     'to': 'host001'
-        //   }, callback);
-        // },
-        // function(callback) {
-        //   Application.POST('/api/translations', {
-        //     'from': 'host01',
-        //     'to': 'host001'
-        //   }, callback);
-        // },
         function(callback) {
           Application.GET('/api/exists/translations/aa:11:bb:22:cc:33', callback);
         },

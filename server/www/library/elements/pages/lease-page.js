@@ -1,8 +1,8 @@
-require('../../../vendor/DateJS');
+require('datejs');
 
-var Asynchronous = require('async');var Utilities = require('util');
-
-var Moment = require('../../../vendor/moment/moment');
+var Asynchronous = require('async');
+var Moment = require('moment');
+var Utilities = require('util');
 
 var Application = require('../../application');
 var Element = require('../../element');
@@ -43,13 +43,13 @@ LeasePageSource.createSource = function(lease, translation, prototype) {
   leasePageSource.fromAsDate = (lease.from ? Date.parse(lease.from) : new Date(0));
   leasePageSource.toAsDate = (lease.to ? Date.parse(lease.to) : new Date(0));
 
-  leasePageSource.fromNowAsString = Moment(leasePageSource.fromAsDate).fromNow();
+  // leasePageSource.fromNowAsString = Moment(leasePageSource.fromAsDate).fromNow();
   leasePageSource.toNowAsString = Moment(leasePageSource.toAsDate).fromNow();
   leasePageSource.toAsString = Moment(leasePageSource.toAsDate).format('h:mm a');
 
   leasePageSource.insertedAsDate = (lease.inserted ? Date.parse(lease.inserted) : new Date());
 
-  leasePageSource.isStatic = leasePageSource.fromAsDate.getTime() == leasePageSource.toAsDate.getTime();
+  leasePageSource.isStatic = Date.equals(leasePageSource.fromAsDate, leasePageSource.toAsDate);
   leasePageSource.isSystem = (!leasePageSource.isStatic && leasePageSource.inserted)
   leasePageSource.isNewStatic = (leasePageSource.isStatic && !leasePageSource.inserted)
   leasePageSource.isExistingStatic = (leasePageSource.isStatic && leasePageSource.inserted)
@@ -264,6 +264,8 @@ leasePagePrototype.onEditTranslation = function(event) {
 
 var LeasePage = Object.create(Page);
 
+LeasePage.Source = LeasePageSource;
+
 LeasePage.createElement = function(source, templateURL, prototype) {
 
   var leasePage = Page.createElement.call(this, templateURL || '/www/views/elements/pages/lease-page.jade', prototype || leasePagePrototype);
@@ -285,7 +287,5 @@ LeasePage.isElement = function(leasePage) {
 LeasePage.getElementPrototype = function() {
   return leasePagePrototype;
 };
-
-LeasePage.Source = LeasePageSource;
 
 module.exports = LeasePage;

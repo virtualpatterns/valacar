@@ -18,9 +18,13 @@ div(id=element.id).uk-height-1-1.v-element.v-page.v-default-page
                     type='button').uk-button.uk-button-large.uk-button-primary.uk-width-1-1
               | Translations
           li.uk-margin-top
+            button( id='goHistory',
+                    type='button').uk-button.uk-button-large.uk-button-primary.uk-width-1-1
+              | History
+          li.uk-margin-top
             button( id='goTest',
                     type='button').uk-button.uk-button-large.uk-button-primary.uk-width-1-1
-              | Go To Tests
+              | Go to tests
       div.uk-panel.uk-panel-box.uk-margin
         h3.uk-panel-title
           | Status
@@ -29,7 +33,7 @@ div(id=element.id).uk-height-1-1.v-element.v-page.v-default-page
           dd.v-status-name= status.name
           dt Version
           dd.v-status-version= status.version
-          dt Heap Total
+          dt Heap total
           dd.v-status-heap-total= status.heap.totalAsString
-          dt Heap Used
+          dt Heap used
           dd.v-status-heap-used= status.heap.usedAsString

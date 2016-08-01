@@ -1,12 +1,12 @@
+var Format = require('human-format');
 var Is = require('@pwn/is');
-
-var Readable = require('../../../vendor/human-format');
 
 var Application = require('../../application');
 var Element = require('../../element');
 var Log = require('../../log');
 var Page = require('../page');
 
+var HistoryPage = require('./history-page');
 var LeasesPage = require('./leases-page');
 var TranslationsPage = require('./translations-page');
 
@@ -22,8 +22,6 @@ defaultPagePrototype.render = function(data, callback) {
 
   var self = this;
 
-  // Log.info('> DefaultPage.render(data, callback) { ... }');
-
   Application.GET('/api/status', function(error, status) {
     if (error)
       callback(error);
@@ -31,11 +29,11 @@ defaultPagePrototype.render = function(data, callback) {
 
       data.status = status;
 
-      data.status.heap.totalAsString = Readable(data.status.heap.total, {
+      data.status.heap.totalAsString = Format(data.status.heap.total, {
        scale: 'binary',
        unit: 'B'
       });
-      data.status.heap.usedAsString = Readable(data.status.heap.used, {
+      data.status.heap.usedAsString = Format(data.status.heap.used, {
        scale: 'binary',
        unit: 'B'
       });
@@ -64,6 +62,9 @@ defaultPagePrototype.bind = function() {
   this.getContent().find('#goTranslations').on('click', {
     'this': this
   }, this.onGoTranslations);
+  this.getContent().find('#goHistory').on('click', {
+    'this': this
+  }, this.onGoHistory);
 
   this.getContent().find('#goTest').on('click', {
     'this': this
@@ -74,6 +75,7 @@ defaultPagePrototype.bind = function() {
 defaultPagePrototype.unbind = function() {
 
   this.getContent().find('#goTest').off('click', this.onGoTest);
+  this.getContent().find('#goHistory').off('click', this.onGoHistory);
   this.getContent().find('#goTranslations').off('click', this.onGoTranslations);
   this.getContent().find('#goLeases').off('click', this.onGoLeases);
   this.getContent().find('#close').off('click', this.onClose);
@@ -111,12 +113,17 @@ defaultPagePrototype.onGoTranslations = function(event) {
   window.application.showPage(TranslationsPage.createElement(), Application.ifNotError());
 };
 
+defaultPagePrototype.onGoHistory = function(event) {
+  Log.info('> DefaultPage.onGoHistory(event) { ... }');
+  window.application.showPage(HistoryPage.createElement(), Application.ifNotError());
+};
+
 defaultPagePrototype.onGoTest = function(event) {
   Log.info('> DefaultPage.onGoTest(event) { ... } window.location.href=%j', window.location.href);
 
-  if (window.location.href.endsWith('default.html'))
+  if (window.location.href.match(/default\.html/))
     window.location.href = '/www/test.html';
-  else if (window.location.href.endsWith('default.min.html'))
+  else if (window.location.href.match(/default\.min\.html/))
     window.location.href = '/www/test.min.html';
 
 };

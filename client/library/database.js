@@ -169,10 +169,8 @@ Database.runFile = function(connection, path, parameters, callback) {
   ], function(error, statement) {
     if (error)
       callback(error)
-    else {
-      Log.info('= SQLite.Database.runFile(connection, path, parameters, callback)\n\n%s', statement);
+    else
       connection.run(statement, parameters, callback);
-    }
   });
 
 }

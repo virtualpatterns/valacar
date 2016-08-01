@@ -49,10 +49,17 @@ Application.import = function(filePath, databasePath, options, callback) {
 
 Application.clean = function(databasePath, options, callback) {
   this.openDatabase(databasePath, options, function(connection, callback) {
-    Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-tlease.sql'), {
-      $From: Database.MINIMUM_DATE.toISOString(),
-      $To: Database.MINIMUM_DATE.toISOString()
-    }, callback);
+    Asynchronous.series([
+      function(callback) {
+        Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-tlease.sql'), {
+          $From: Database.MINIMUM_DATE.toISOString(),
+          $To: Database.MINIMUM_DATE.toISOString()
+        }, callback);
+      },
+      function(callback) {
+        Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-tdevicehost.sql'), [], callback);
+      }
+    ], callback);
   }, callback);
 };
 
@@ -314,6 +321,48 @@ Application.dumpLeasesWhere = function(filter, databasePath, options, callback) 
             isStatic ? '' : Utilities.format('%s\n%s', cFrom, cTo),
             Utilities.format('%s\n%s', row.cDevice, row.cHost)
             // row.cHost ? row.cHost : row.cDevice
+          ]);
+
+        });
+
+        console.log(table.toString());
+
+        callback(null);
+
+      }
+    ], callback);
+  }, callback);
+};
+
+Application.dumpDevices = function(databasePath, options, callback) {
+  this.openDatabase(databasePath, options, function(connection, callback) {
+    Asynchronous.waterfall([
+      function(callback) {
+        Database.allFile(connection, Path.join(RESOURCES_PATH, 'select-tdevicehost.sql'), [], callback);
+      },
+      function(rows, callback) {
+
+        var table = new Table({
+          head: [
+            'MAC Address',
+            'Host Name',
+            'Inserted'
+          ],
+          colWidths: [
+            25,
+            30,
+            45
+          ]
+        });
+
+        rows.forEach(function(row) {
+
+          var cInserted = new Date(row.cInserted);
+
+          table.push([
+            row.cDevice,
+            row.cHost,
+            cInserted
           ]);
 
         });

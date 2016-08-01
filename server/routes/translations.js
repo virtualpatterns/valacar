@@ -7,23 +7,10 @@ var Translations = Object.create({});
 
 Translations.createRoutes = function(server, databasePath, options) {
 
-  server.head('/api/translations', function(request, response, next) {
-    Log.info('> server.head("/api/translations", function(request, response, next) { ... })\n\nrequest.headers\n---------------\n%s\n', Utilities.inspect(request.headers));
+  server.head('/api/exists/translations', function(request, response, next) {
+    Log.info('> server.head("/api/exists/translations", function(request, response, next) { ... })\n\nrequest.headers\n---------------\n%s\n', Utilities.inspect(request.headers));
     response.send(200);
     next();
-  });
-
-  server.get('/api/translations', function(request, response, next) {
-    Log.info('> server.get("/api/translations", function(request, response, next) { ... })\n\nrequest.headers\n---------------\n%s\n', Utilities.inspect(request.headers));
-    Application.getTranslations(databasePath, options, function(error, rows) {
-      if (error)
-        response.send(error);
-      else {
-        // Log.debug('= server.get("/api/translations", function(request, response, next) { ... })\n\nrows\n----\n%s\n', Utilities.inspect(rows));
-        response.send(rows);
-      }
-      next();
-    });
   });
 
   server.get('/api/exists/translations/:from', function(request, response, next) {
@@ -39,6 +26,25 @@ Translations.createRoutes = function(server, databasePath, options) {
         response.send({
           'exists': false
         });
+      next();
+    });
+  });
+
+  server.head('/api/translations', function(request, response, next) {
+    Log.info('> server.head("/api/translations", function(request, response, next) { ... })\n\nrequest.headers\n---------------\n%s\n', Utilities.inspect(request.headers));
+    response.send(200);
+    next();
+  });
+
+  server.get('/api/translations', function(request, response, next) {
+    Log.info('> server.get("/api/translations", function(request, response, next) { ... })\n\nrequest.headers\n---------------\n%s\n', Utilities.inspect(request.headers));
+    Application.getTranslations(databasePath, options, function(error, rows) {
+      if (error)
+        response.send(error);
+      else {
+        // Log.debug('= server.get("/api/translations", function(request, response, next) { ... })\n\nrows\n----\n%s\n', Utilities.inspect(rows));
+        response.send(rows);
+      }
       next();
     });
   });

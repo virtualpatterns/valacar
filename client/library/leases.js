@@ -1,6 +1,7 @@
-'use strict'
-
+var Assert = require('assert');
 var Asynchronous = require('async');
+var Utilities = require('util');
+
 var _Leases = require('dhcpd-leases');
 var Path = require('path');
 
@@ -13,13 +14,31 @@ var RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'res
 var Leases = Object.create({});
 
 Leases.insert = function(connection, address, from, to, device, host, callback) {
-  Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-tlease.sql'), {
-    $Address: address,
-    $From: from.toISOString(),
-    $To: to.toISOString(),
-    $Device: device,
-    $Host: host
-  }, callback);
+  Log.info('> Leases.insert(connection, %j, %j, %j, %j, %j, callback) { ... }', address, from, to, device, host);
+  Asynchronous.series([
+    function(callback) {
+      Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-tlease.sql'), {
+        $Address: address,
+        $From: from.toISOString(),
+        $To: to.toISOString(),
+        $Device: device,
+        $Host: host
+      }, function(error) {
+        if (!error)
+          Assert.ok(this.changes == 1, Utilities.format('The number of rows inserted into tLease should be 1 but is instead %d.', this.changes));
+        callback(error);
+      });
+    },
+    function(callback) {
+      Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-tdevicehost.sql'), {
+        $Device: device
+      }, callback);
+    }
+  ], function(error, results) {
+    Log.debug('< Leases.insert(connection, %j, %j, %j, %j, %j, callback) { ... }\n\n%s\n', address, from, to, device, host, Utilities.inspect(results));
+    callback(error);
+  });
+
 };
 
 Leases.import = function(connection, path, callback) {
@@ -51,7 +70,7 @@ Leases.import = function(connection, path, callback) {
                       lease['starts'],
                       lease['ends'],
                       lease['hardware ethernet'] || '00:00:00:00:00:00',
-                      lease['client-hostname'] || '(unknown)',
+                      lease['client-hostname'], // || '(unknown)',
                       callback);
 
         // Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-tlease.sql'), {

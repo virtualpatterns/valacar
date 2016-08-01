@@ -49,7 +49,7 @@ namespace('bundle', function() {
   });
 
   desc(Utilities.format('Start the bundle processes on %j, output to %j', Path.trim(DEFAULT_SOURCE_PATH), Path.trim(DEFAULT_TARGET_PATH), Path.trim(TEST_TARGET_PATH)));
-  task('start', ['log', 'clean:watch'], {'async': true}, function () {
+  task('start', ['log', 'clean:bundle'], {'async': true}, function () {
 
     var self = this;
 
@@ -104,8 +104,8 @@ namespace('bundle', function() {
   task('restart', ['log'], {'async': true}, function () {
 
     Asynchronous.eachSeries([
-      'watch:stop',
-      'watch:start'
+      'bundle:stop',
+      'bundle:start'
     ], function(taskName, callback) {
       var task = jake.Task[taskName];
       task.addListener('complete', function () {
@@ -125,7 +125,7 @@ namespace('bundle', function() {
   });
 
   desc(Utilities.format('Shrink the bundle at %j, output to %j', Path.trim(DEFAULT_TARGET_PATH), Path.trim(DEFAULT_TARGET_MIN_PATH)));
-  task('shrink', ['log', 'watch:once'], {'async': true}, function () {
+  task('shrink', ['log', 'bundle:once'], {'async': true}, function () {
     Task.createTask(this.fullName)
       .addLine()
       .add('uglifyjs --output %j %j', DEFAULT_TARGET_MIN_PATH, DEFAULT_TARGET_PATH)

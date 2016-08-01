@@ -19,9 +19,19 @@ Static.createRoutes = function(server, staticPath, options) {
     })(request, response, next);
   });
 
+  server.head('/', function(request, response, next) {
+    Log.info('> server.head("/", function(request, response, next) { ... })\n\nrequest.headers\n---------------\n%s\n', Utilities.inspect(request.headers));
+    response.send(200);
+  });
+
   server.get('/', function(request, response, next) {
     Log.info('> server.get("/", function(request, response, next) { ... })\n\nrequest.headers\n---------------\n%s\n', Utilities.inspect(request.headers));
     response.redirect('/www/default.min.html', next);
+  });
+
+  server.head('/www', function(request, response, next) {
+    Log.info('> server.head("/", function(request, response, next) { ... })\n\nrequest.headers\n---------------\n%s\n', Utilities.inspect(request.headers));
+    response.send(200);
   });
 
   server.get('/www', function(request, response, next) {

@@ -1,6 +1,7 @@
 var Utilities = require('util');
 var Asynchronous = require('async');
 
+var Application = require('../library/application');
 var Database = require('../library/database');
 var Log = require('../../../client/library/log');
 var Package = require('../../../package.json');
@@ -23,17 +24,39 @@ before(function(callback) {
     },
     function(callback) {
       Database.delete(callback);
+    },
+    function(callback) {
+      Application.executeInstall(callback);
+    },
+    function(callback) {
+      Application.executeStart(callback);
+    },
+    function(callback) {
+      Application.waitUntilReady(callback);
     }
   ], callback);
 });
 
 after(function(callback) {
+  Asynchronous.series([
+    function(callback) {
+      Application.executeStop(callback);
+    },
+    function(callback) {
+      Application.waitUntilNotReady(callback);
+    },
+    function(callback) {
+      Application.executeUninstall(callback);
+    },
+    function(callback) {
 
-  Log.info('--------------------------------------------------------------------------------');
-  Log.removeFile(LOG_PATH);
+      Log.info('--------------------------------------------------------------------------------');
+      Log.removeFile(LOG_PATH);
 
-  callback(null);
+      callback(null);
 
+    }
+  ], callback);
 });
 
 describe('Begin', function() {

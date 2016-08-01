@@ -1,5 +1,5 @@
-SELECT  tTranslation.cFrom                    AS [from],
-        tTranslation.cTo                      AS [to],
-        printf('%sZ', tTranslation.cInserted) AS [inserted]
+SELECT  tTranslation.cFrom                                      AS [from],
+        tTranslation.cTo                                        AS [to],
+        strftime('%Y-%m-%dT%H:%M:%fZ', tTranslation.cInserted)  AS [inserted]
 FROM    tTranslation
 WHERE   tTranslation.cFrom = $From;

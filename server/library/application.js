@@ -1,6 +1,9 @@
+require('datejs');
+
 var Assert = require('assert');
 var Asynchronous = require('async');
 var Cluster = require('cluster');
+var Is = require('@pwn/is');
 var Server = require('restify');
 var Utilities = require('util');
 
@@ -14,9 +17,9 @@ var Process = require('../../client/library/process');
 var ProcessError = require('../../client/library/errors/process-error');
 
 var RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
-var TYPEOF_FUNCTION = 'function';
-var TYPEOF_NUMBER = 'number';
-var TYPEOF_STRING = 'string';
+// var TYPEOF_FUNCTION = 'function';
+// var TYPEOF_NUMBER = 'number';
+// var TYPEOF_STRING = 'string';
 var WAIT_DURATION = 120000;
 var WAIT_TIMEOUT = 1000;
 
@@ -140,6 +143,7 @@ Application.startMaster = function (numberOfWorkers, pidPath) {
 Application.startWorker = function (address, port, staticPath, databasePath, options) {
   Log.info('> Application.startWorker(%j, %d, %j, %j) { ... }', address, port, Path.trim(staticPath), Path.trim(databasePath), options, {});
 
+  var History = require('../routes/history');
   var Leases = require('../routes/leases');
   var Static = require('../routes/static');
   var Status = require('../routes/status');
@@ -151,12 +155,14 @@ Application.startWorker = function (address, port, staticPath, databasePath, opt
 
   server.pre(Server.pre.userAgentConnection());
 
+  server.use(Server.queryParser());
   server.use(Server.bodyParser());
 
+  Static.createRoutes(server, staticPath, options);
   Status.createRoutes(server, databasePath, options);
   Translations.createRoutes(server, databasePath, options);
   Leases.createRoutes(server, databasePath, options);
-  Static.createRoutes(server, staticPath, options);
+  History.createRoutes(server, databasePath, options);
 
   server.listen(port, address);
 
@@ -203,6 +209,7 @@ Application.postTranslation = function (from, to, databasePath, options, callbac
   var self = this;
 
   self.openDatabase(databasePath, options, function(connection, callback) {
+    // Leave it like this ... required to pass data from _getTranslation to callback!
     Asynchronous.waterfall([
       function(callback) {
         self.validateAddTranslation(from, to, callback);
@@ -242,10 +249,45 @@ Application.deleteTranslation = function (from, databasePath, options, callback)
 };
 
 Application.getLeases = function (databasePath, options, callback) {
+  Log.info('> Application.getLeases(%j, options, callback) { ... }', Path.trim(databasePath));
   this.openDatabase(databasePath, options, function(connection, callback) {
     Database.allFile(connection, Path.join(RESOURCES_PATH, 'select-tlease.sql'), [], callback);
   }, callback);
 };
+
+// Application.getLeases = function (filter, databasePath, options, callback) {
+//   Log.info('> Application.getLeases(%j, %j, options, callback) { ... }', filter, Path.trim(databasePath));
+//   this.openDatabase(databasePath, options, function(connection, callback) {
+//
+//     if (filter) {
+//
+//       var _filter = filter;
+//
+//       try {
+//
+//         _filter = new Date(_filter);
+//
+//         // Leave it like this ... required to complete validation!
+//         Log.info('=   _filter.toISOString()=%j', _filter.toISOString());
+//
+//       }
+//       catch (error) {
+//         Log.error('< Application.getLeases(%j, %j, options, callback) { ... }', filter, Path.trim(databasePath));
+//         Log.error('    error.message=%j\n\n%s\n\n', error.message, error.stack);
+//         _filter = filter;
+//       }
+//
+//       Database.allFile(connection, Path.join(RESOURCES_PATH, 'select-tlease-filter.sql'), {
+//         $Filter: Is.date(_filter) ? _filter.toISOString() : Utilities.format('%%%s%%', _filter)
+//       }, callback);
+//
+//     }
+//     else {
+//       Database.allFile(connection, Path.join(RESOURCES_PATH, 'select-tlease.sql'), [], callback);
+//     }
+//
+//   }, callback);
+// };
 
 Application._getLease = function (address, from, to, connection, callback) {
   Database.getFile(connection, Path.join(RESOURCES_PATH, 'select-tlease-where.sql'), {
@@ -270,6 +312,7 @@ Application.postLease = function (address, from, to, device, host, databasePath,
   var self = this;
 
   self.openDatabase(databasePath, options, function(connection, callback) {
+    // Leave it like this ... required to pass data from _getLease to callback!
     Asynchronous.waterfall([
       function(callback) {
         self.validateAddLease(address, device, host, callback);
@@ -306,6 +349,34 @@ Application.deleteLease = function (address, from, to, databasePath, options, ca
     }
   ], callback);
 
+};
+
+Application.getHistoryRange = function (databasePath, options, callback) {
+  this.openDatabase(databasePath, options, function(connection, callback) {
+    Database.getFile(connection, Path.join(RESOURCES_PATH, 'select-history-range.sql'), [], callback);
+  }, callback);
+};
+
+Application.getHistory = function (filterDate, filterString, filterNull, databasePath, options, callback) {
+  Log.info('> Application.getHistory(%j. %j, %j, options, callback) { ... }', filterDate, filterString, Path.trim(databasePath));
+  this.openDatabase(databasePath, options, function(connection, callback) {
+
+    var filterFrom = null;
+    var filterTo = null;
+
+    if (filterDate) {
+      filterFrom = new Date(filterDate).clearTime();
+      filterTo = new Date(filterFrom).add(1).days();
+    }
+
+    Database.allFile(connection, Path.join(RESOURCES_PATH, 'select-history.sql'), {
+      $FilterFrom: filterFrom ? filterFrom.toISOString() : null,
+      $FilterTo: filterTo ? filterTo.toISOString() : null,
+      $FilterString: filterString ? Utilities.format('%%%s%%', filterString) : null,
+      $FilterNull: filterNull
+    }, callback);
+
+  }, callback);
 };
 
 module.exports = Application;

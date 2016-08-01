@@ -19,6 +19,10 @@ describe('DefaultPage', function() {
     Assert.existsButton('Translations');
   });
 
+  it('should contain a button labelled History', function() {
+    Assert.existsButton('History');
+  });
+
   describe('DefaultPage to LeasesPage', function() {
 
     before(function(callback) {
@@ -47,6 +51,24 @@ describe('DefaultPage', function() {
 
     it('should go to the Translations page when the Translations button is clicked', function() {
       Assert.onPage('Translations');
+    });
+
+    after(function(callback) {
+      Assert.hidePage(callback);
+    });
+
+  });
+
+  describe('DefaultPage to HistoryPage', function() {
+
+    before(function(callback) {
+      Assert.waitForPageShown(function() {
+        Assert.clickButton('History');
+      }, callback);
+    });
+
+    it('should go to the History page when the History button is clicked', function() {
+      Assert.onPage('History');
     });
 
     after(function(callback) {
@@ -97,6 +119,29 @@ describe('DefaultPage', function() {
 
     it('should return to the default page when the Translations and Back buttons are clicked', function() {
       Assert.existsButton('Translations');
+    });
+
+  });
+
+  describe('DefaultPage to HistoryPage and Back', function() {
+
+    before(function(callback) {
+      Asynchronous.series([
+        function(callback) {
+          Assert.waitForPageShown(function() {
+            Assert.clickButton('History');
+          }, callback);
+        },
+        function(callback) {
+          Assert.waitForPageShown(function() {
+            Assert.clickLink('Back');
+          }, callback);
+        }
+      ], callback);
+    });
+
+    it('should return to the default page when the History and Back buttons are clicked', function() {
+      Assert.existsButton('History');
     });
 
   });

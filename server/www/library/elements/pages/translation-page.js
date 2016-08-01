@@ -111,6 +111,8 @@ translationPagePrototype.onDelete = function(event) {
 
 var TranslationPage = Object.create(Page);
 
+TranslationPage.Source = TranslationPageSource;
+
 TranslationPage.createElement = function(source, templateURL, prototype) {
 
   var translationPage = Page.createElement.call(this, templateURL || '/www/views/elements/pages/translation-page.jade', prototype || translationPagePrototype);
@@ -132,7 +134,5 @@ TranslationPage.isElement = function(translationPage) {
 TranslationPage.getElementPrototype = function() {
   return translationPagePrototype;
 };
-
-TranslationPage.Source = TranslationPageSource;
 
 module.exports = TranslationPage;

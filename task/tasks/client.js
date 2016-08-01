@@ -38,6 +38,8 @@ namespace('client', function() {
       .add('scp "%s:%s" %j', IMPORT_SOURCE_COMPUTER, IMPORT_SOURCE_LEASES_PATH, IMPORT_TARGET_LEASES_PATH, Task.OPTIONS_STDIO_IGNORE)
       .add('echo    "done"')
       .add('./client.js import %j %j --logPath %j', IMPORT_TARGET_LEASES_PATH, DATABASE_PATH, LOG_PATH)
+      .add('./client.js dumpLeases %j --logPath %j', DATABASE_PATH, LOG_PATH)
+      .add('./client.js dumpDevices %j --logPath %j', DATABASE_PATH, LOG_PATH)
       .execute(complete, fail);
   });
 
@@ -46,6 +48,8 @@ namespace('client', function() {
     Task.createTask(this.fullName)
       .addLine()
       .add('./client.js clean %j --logPath %j', DATABASE_PATH, LOG_PATH)
+      .add('./client.js dumpLeases %j --logPath %j', DATABASE_PATH, LOG_PATH)
+      .add('./client.js dumpDevices %j --logPath %j', DATABASE_PATH, LOG_PATH)
       .execute(complete, fail);
   });
 
@@ -74,7 +78,7 @@ namespace('client', function() {
         //   Log.error('         error.message=%j\n\n%s\n\n', error.message, error.stack);
         //   _filter = filter;
         // }
-        
+
         Task.createTask(this.fullName)
           .addLine()
           .add(function(callback) {
@@ -87,6 +91,14 @@ namespace('client', function() {
           .execute(complete, fail);
       });
 
+    });
+
+    desc(Utilities.format('Dump devices in %j, log to %j', Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));
+    task('devices', ['log'], {'async': true}, function () {
+      Task.createTask(this.fullName)
+        .addLine()
+        .add('./client.js dumpDevices %j --logPath %j', DATABASE_PATH, LOG_PATH)
+        .execute(complete, fail);
     });
 
     desc(Utilities.format('Dump translations in %j, log to %j', Path.trim(DATABASE_PATH), Path.trim(LOG_PATH)));

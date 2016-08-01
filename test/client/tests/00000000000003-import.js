@@ -29,6 +29,12 @@ describe('Command.command("import [filePath] [databasePath]")', function() {
     }, callback);
   });
 
+  it('should have added the device for 9c:35:eb:4e:73:4f/HOST1', function(callback) {
+    Database.openConnection(function(connection, callback) {
+      Database.existsDevice(connection, '9c:35:eb:4e:73:4f', 'HOST1', callback);
+    }, callback);
+  });
+
   after(function(callback) {
     Application.executeUninstall(callback);
   });

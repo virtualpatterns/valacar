@@ -8,11 +8,14 @@ div(id=element.id).uk-height-1-1.v-element.v-page.v-test-page
             | Go To Default
       div.uk-navbar-flip
         ul.uk-navbar-nav
-          li
+          li.uk-hidden
             a(id='refresh')
               i.uk-icon-refresh
+          li
+            a(id='start')
+              i.uk-icon-play
       div.uk-navbar-content.uk-navbar-center.v-status
-        | Running ...
+        | Tests
       div.uk-navbar-content.uk-navbar-center.v-status-failed.uk-hidden
         | Failed
         i.uk-icon-close.v-right-icon

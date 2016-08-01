@@ -5,34 +5,50 @@ var outputStream = null;
 module.exports = {
   beforeStart: function(options) {
 
-    outputStream = FileSystem.open( 'process/log/valacar.www.test.log',
-                                    'a',
-                                    'utf-8');
+    try {
 
-    outputStream.writeLine('----------------------------------------------------------------');
-    outputStream.writeLine(new Date().toISOString() + ' INFO  > BEGIN ' + options.page.url);
+      outputStream = FileSystem.open( 'process/log/valacar.www.test.log',
+                                      'a',
+                                      'utf-8');
 
-    // var onConsoleMessageFn = options.page.onConsoleMessage;
-    //
-    // options.page.onConsoleMessage = function(message) {
-    //   if (onConsoleMessageFn)
-    //     onConsoleMessageFn(message);
-    //   else
-    //     outputStream.writeLine(message);
-    // };
+      outputStream.writeLine('----------------------------------------------------------------');
+      outputStream.writeLine(new Date().toISOString() + ' INFO  > BEGIN ' + options.page.url);
 
-    var onCallbackFn = options.page.onCallback;
+      // var onConsoleMessageFn = options.page.onConsoleMessage;
+      //
+      // options.page.onConsoleMessage = function(message) {
+      //   if (onConsoleMessageFn)
+      //     onConsoleMessageFn(message);
+      //   else
+      //     outputStream.writeLine(message);
+      // };
 
-    options.page.onCallback = function(data) {
-      if (data.message)
-        outputStream.writeLine(data.message);
-      else if (onCallbackFn)
-        onCallbackFn(data);
-    };
+      var onCallbackFn = options.page.onCallback;
+
+      options.page.onCallback = function(data) {
+        if (data.message)
+          outputStream.writeLine(data.message);
+        else if (onCallbackFn)
+          onCallbackFn(data);
+      };
+
+    }
+    catch(error) {
+      console.log('An error occured in the "beforeStart" hook.');
+      console.log(error.stack);
+    }
 
   },
   afterEnd: function(options) {
-    outputStream.writeLine(new Date().toISOString() + ' INFO  < END ' + options.page.url);
-    outputStream.close();
+
+    try {
+      outputStream.writeLine(new Date().toISOString() + ' INFO  < END ' + options.page.url);
+      outputStream.close();
+    }
+    catch(error) {
+      console.log('An error occured in the "afterEnd" hook.');
+      console.log(error.stack);
+    }
+
   }
 };

@@ -1,9 +1,7 @@
-SELECT  tLease.cAddress                     AS [address],
-        printf('%sZ', tLease.cFrom)         AS [from],
-        printf('%sZ', tLease.cTo)           AS [to],
-        -- datetime(tLease.cFrom, 'localtime') AS [from],
-        -- datetime(tLease.cTo, 'localtime')   AS [to],
-        tLease.cDevice                      AS [device],
+SELECT  tLease.cAddress                                     AS [address],
+        strftime('%Y-%m-%dT%H:%M:%fZ', tLease.cFrom)        AS [from],
+        strftime('%Y-%m-%dT%H:%M:%fZ', tLease.cTo)          AS [to],
+        tLease.cDevice                                      AS [device],
         CASE
           WHEN NOT tDeviceTranslation.cTo IS NULL THEN
             tDeviceTranslation.cTo
@@ -11,8 +9,8 @@ SELECT  tLease.cAddress                     AS [address],
             tHostTranslation.cTo
           ELSE
             tLease.cHost
-        END                                 AS [host],
-        printf('%sZ', tLease.cInserted)     AS [inserted]
+        END                                                  AS [host],
+        strftime('%Y-%m-%dT%H:%M:%fZ', tLease.cInserted)     AS [inserted]
 FROM    tLease
           LEFT OUTER JOIN tTranslation AS tDeviceTranslation ON
             tLease.cDevice = tDeviceTranslation.cFrom
@@ -31,5 +29,13 @@ WHERE   ( tLease.cFrom = tLease.cTo OR
                               tLeaseExpiring.cFrom >= tLease.cFrom AND
                               tLeaseExpiring.cFrom < tLease.cTo )
 ORDER
-BY      tLease.cTo ASC,
-        tLease.cHost;
+BY      tLease.cTo,
+        tLease.cDevice,
+        CASE
+          WHEN NOT tDeviceTranslation.cTo IS NULL THEN
+            tDeviceTranslation.cTo
+          WHEN NOT tHostTranslation.cTo IS NULL THEN
+            tHostTranslation.cTo
+          ELSE
+            tLease.cHost
+        END;
