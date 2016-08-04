@@ -154,13 +154,18 @@ testPagePrototype.onFilter = function(event) {
 
   var queryAsObject = QueryString.parse(window.location.search);
 
+  delete queryAsObject.grep;
+
   if (filter)
     queryAsObject.grep = filter;
   queryAsObject.start = true;
 
   var queryAsString = QueryString.stringify(queryAsObject);
+  var href = Utilities.format('%s?%s', window.location.pathname, queryAsString);
 
-  window.location.href = Utilities.format('%s?%s', window.location.pathname, queryAsString);
+  Log.info('= TestPage.onFilter(event) { ... } href=%j', href);
+
+  window.location.href = href;
 
 };
 
