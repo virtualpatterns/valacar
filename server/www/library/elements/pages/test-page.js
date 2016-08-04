@@ -28,11 +28,15 @@ testPagePrototype.bind = function() {
   this.getContent().find('#refresh').on('click', {
     'this': this
   }, this.onRefresh);
+  this.getContent().find('a[data-filter]').on('click', {
+    'this': self
+  }, this.onFilter);
 
 };
 
 testPagePrototype.unbind = function() {
 
+  this.getContent().find('a[data-filter]').off('click', this.onFilter);
   this.getContent().find('#refresh').off('click', this.onRefresh);
   this.getContent().find('#start').off('click', this.onStart);
   this.getContent().find('#goDefault').off('click', this.onGoDefault);
@@ -54,6 +58,8 @@ testPagePrototype.onShown = function(event) {
 
     Log.info('= TestPage.onShown(event) { ... }\n\nwindow.location.search\n----------------------\n%s\n\n', Utilities.inspect(query));
 
+    if (query.grep)
+      self.getContent().find('dd#v-filter-current').html(query.grep);
     if (query.start)
       self.getContent().find('#start').click();
 
@@ -78,8 +84,10 @@ testPagePrototype.onStart = function(event) {
 
   try {
 
-    self.getContent().find('div.v-status').toggleClass('uk-hidden', true);
+    self.getContent().find('div#v-status').toggleClass('uk-hidden', true);
     self.getContent().find('li:has(#start)').toggleClass('uk-hidden', true);
+
+    self.getContent().find('div#v-results').toggleClass('uk-hidden', false);
 
     if (Is.function(window.initMochaPhantomJS)) {
       // console.log('> window.initMochaPhantomJS()');
@@ -119,11 +127,11 @@ testPagePrototype.onFinished = function(status) {
   Log.info('> TestPage.onFinished() { ... }');
 
   if (status.failures > 0)
-    this.getContent().find('div.v-status-failed').toggleClass('uk-hidden', false);
+    this.getContent().find('div#v-status-failed').toggleClass('uk-hidden', false);
   else if (status.pending > 0)
-    this.getContent().find('div.v-status-pending').toggleClass('uk-hidden', false);
+    this.getContent().find('div#v-status-pending').toggleClass('uk-hidden', false);
   else
-    this.getContent().find('div.v-status-passed').toggleClass('uk-hidden', false);
+    this.getContent().find('div#v-status-passed').toggleClass('uk-hidden', false);
 
   // Log.info(this.getContent().find('li:has(#refresh)'));
 
@@ -134,6 +142,26 @@ testPagePrototype.onFinished = function(status) {
 testPagePrototype.onRefresh = function(event) {
   Log.info('> TestPage.onRefresh(event) { ... }');
   window.location.reload(true);
+};
+
+testPagePrototype.onFilter = function(event) {
+  Log.info('> TestPage.onFilter(event) { ... }');
+
+  var self = event.data.this;
+  var filter = jQuery(event.target).data('filter');
+
+  Log.info('= TestPage.onFilter(event) { ... } #filter=%j', filter);
+
+  var queryAsObject = QueryString.parse(window.location.search);
+
+  if (filter)
+    queryAsObject.grep = filter;
+  queryAsObject.start = true;
+
+  var queryAsString = QueryString.stringify(queryAsObject);
+
+  window.location.href = Utilities.format('%s?%s', window.location.pathname, queryAsString);
+
 };
 
 var TestPage = Object.create(Page);

@@ -1,5 +1,3 @@
-
-
 var Utilities = require('util');
 
 var _Database = require('../../../client/library/database');

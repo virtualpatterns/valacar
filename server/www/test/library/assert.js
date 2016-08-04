@@ -256,7 +256,7 @@ Assert.clickSelector = function(selector, callback) {
   var error = null;
 
   try {
-    this.equal(results.selected.length, 1, Utilities.format('The selector %j cannot be clicked as it does not exist at most once.', results.selector));
+    this.equal(results.selected.length, 1, Utilities.format('The selector %j exists %d times.', results.selector, results.selected.length));
     results.selected.click();
   }
   catch (_error) {
@@ -292,8 +292,43 @@ Assert.inputSelector = function(selector, value, callback) {
   var error = null;
 
   try {
-    this.equal(results.selected.length, 1, Utilities.format('The selector %j cannot be input as it does not exist at most once.', results.selector));
-    results.selected.val(value);
+    this.equal(results.selected.length, 1, Utilities.format('The selector %j exists %d times.', results.selector, results.selected.length));
+
+    if (Is.boolean(value))
+      results.selected.prop('checked', value);
+    else
+      results.selected.val(value);
+
+  }
+  catch (_error) {
+    error = _error;
+  }
+
+  if (results.callback)
+    results.callback(error, results);
+  else if (error)
+    throw error
+
+  return results;
+
+};
+
+Assert.submitForm = function(id, callback) {
+  var argumentsArray = Array.prototype.slice.call(arguments);
+  argumentsArray.unshift('form#%s:visible');
+  return this.submitSelector.apply(this, argumentsArray);
+};
+
+Assert.submitSelector = function(selector, callback) {
+
+  var argumentsArray = Array.prototype.slice.call(arguments);
+
+  var results = this.select.apply(this, argumentsArray);
+  var error = null;
+
+  try {
+    this.equal(results.selected.length, 1, Utilities.format('The selector %j exists %d times.', results.selector, results.selected.length));
+    results.selected.submit();
   }
   catch (_error) {
     error = _error;
@@ -312,7 +347,7 @@ Assert.select = function(selector, callback) {
 
   var argumentsArray = Array.prototype.slice.call(arguments);
 
-  // Log.debug('> Assert.select(selector, callback) { ... }\n\n%s\n\n', Utilities.inspect(argumentsArray));
+  Log.debug('> Assert.select(selector, callback) { ... }\n\n%s\n\n', Utilities.inspect(argumentsArray));
 
   // if (!argumentsArray[argumentsArray.length - 1]) {
   //   argumentsArray.pop();

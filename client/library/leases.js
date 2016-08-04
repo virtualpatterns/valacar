@@ -41,6 +41,42 @@ Leases.insert = function(connection, address, from, to, device, host, callback) 
 
 };
 
+Leases.delete = function(connection, address, from, to, callback) {
+  Log.info('> Leases.delete(connection, %j, %j, %j, callback) { ... }', address, from, to);
+  Asynchronous.waterfall([
+    function(callback) {
+      Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-tlease.sql'), {
+        $Address: address,
+        $From: from.toISOString(),
+        $To: to.toISOString()
+      }, function(error) {
+        if (!error)
+          Assert.ok(this.changes <= 1, Utilities.format('The number of rows deleted from tLease should be 0 or 1 but is instead %d.', this.changes));
+        callback(error, this.changes);
+      });
+    },
+    function(numberOfLeasesDeleted, callback) {
+      Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-tdevicehost.sql'), [], function(error) {
+        callback(error, numberOfLeasesDeleted, this.changes);
+      });
+    },
+    function(numberOfLeasesDeleted, numberOfDeviceHostsDeleted, callback) {
+      Database.runFile(connection, Path.join(RESOURCES_PATH, 'insert-tdevicehost.sql'), {
+        $Device: null
+      }, function(error) {
+        callback(error, numberOfLeasesDeleted, numberOfDeviceHostsDeleted, this.changes);
+      });
+    }
+  ], function(error, numberOfLeasesDeleted, numberOfDeviceHostsDeleted, numberOfDeviceHostsInserted) {
+    Log.debug('< Leases.delete(connection, %j, %j, %j, callback) { ... }', address, from, to);
+    Log.debug('=   numberOfLeasesDeleted=%d', numberOfLeasesDeleted);
+    Log.debug('=   numberOfDeviceHostsDeleted=%d', numberOfDeviceHostsDeleted);
+    Log.debug('=   numberOfDeviceHostsInserted=%d', numberOfDeviceHostsInserted);
+    callback(error, numberOfLeasesDeleted, numberOfDeviceHostsDeleted, numberOfDeviceHostsInserted);
+  });
+
+};
+
 Leases.import = function(connection, path, callback) {
 
   var self = this;

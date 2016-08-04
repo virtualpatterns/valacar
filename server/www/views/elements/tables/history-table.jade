@@ -11,20 +11,20 @@ table(id=element.id).uk-table.uk-table-striped.uk-table-condensed.uk-margin-remo
             dt 
               span.uk-text-small MAC Address
             dd
-              a(data-filter-string=item.device).v-filter-string
+              a(data-filter-string=item.device)
                 i.uk-icon-search.v-left-icon
                 = item.device
             dt 
               span.uk-text-small IP Address
             dd
-              //- a(data-filter-string=item.address).v-filter-string
+              //- a(data-filter-string=item.address)
               //-   i.uk-icon-search.v-left-icon
               = item.address 
             dt 
               span.uk-text-small Host Name
             dd
               - if (item.host)
-                a(data-filter-string=item.host).v-filter-string
+                a(data-filter-string=item.host)
                   i.uk-icon-search.v-left-icon
                   = item.host
               - else
@@ -34,10 +34,10 @@ table(id=element.id).uk-table.uk-table-striped.uk-table-condensed.uk-margin-remo
             dt 
               span.uk-text-small From/To
             dd
-              //- a(data-filter-date=item.fromAsISOString).v-filter-date
+              //- a(data-filter-date=item.fromAsISOString)
               //-   i.uk-icon-search.v-left-icon
               = item.fromAsString
               br
-              //- a(data-filter-date=item.toAsISOString).v-filter-date
+              //- a(data-filter-date=item.toAsISOString)
               //-   i.uk-icon-search.v-left-icon
               = item.toAsString

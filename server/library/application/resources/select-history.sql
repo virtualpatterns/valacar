@@ -8,7 +8,8 @@ SELECT  qLease.cDevice                                        AS [device],
           WHEN NOT tHostTranslation.cTo IS NULL THEN
             tHostTranslation.cTo
           ELSE
-            qDeviceHost.cHost
+            tDeviceHost.cHost
+            -- qDeviceHost.cHost
         END                                                   AS [host]
 FROM    ( SELECT  tLease.cDevice                              AS [cDevice],
                   tLease.cAddress                             AS [cAddress],
@@ -18,8 +19,10 @@ FROM    ( SELECT  tLease.cDevice                              AS [cDevice],
           WHERE   NOT tLease.cFrom = tLease.cTo AND
                   ( NOT $FilterFrom IS NULL AND
                     NOT $FilterTo IS NULL AND
-                    tLease.cFrom >= datetime($FilterFrom) AND
-                    tLease.cTo < datetime($FilterTo) OR
+                    ( tLease.cFrom >= datetime($FilterFrom) AND
+                      tLease.cFrom < datetime($FilterTo) OR
+                      tLease.cTo >= datetime($FilterFrom) AND
+                      tLease.cTo < datetime($FilterTo) ) OR
                     $FilterFrom IS NULL AND
                     $FilterTo IS NULL )
           GROUP
@@ -27,16 +30,20 @@ FROM    ( SELECT  tLease.cDevice                              AS [cDevice],
                   tLease.cAddress ) AS qLease
             LEFT OUTER JOIN tTranslation AS tDeviceTranslation ON
               qLease.cDevice = tDeviceTranslation.cFrom
-            LEFT OUTER JOIN ( SELECT  tLease.cDevice          AS [cDevice],
-                                      MAX(tLease.cHost)       AS [cHost]
-                              FROM    tLease
-                              WHERE   NOT tLease.cFrom = tLease.cTo AND
-                                      NOT tLease.cHost IS NULL
-                              GROUP
-                              BY      tLease.cDevice ) AS qDeviceHost ON
-              qLease.cDevice = qDeviceHost.cDevice
+            LEFT OUTER JOIN tDeviceHost ON
+              qLease.cDevice = tDeviceHost.cDevice
                 LEFT OUTER JOIN tTranslation AS tHostTranslation ON
-                  qDeviceHost.cHost = tHostTranslation.cFrom
+                  tDeviceHost.cHost = tHostTranslation.cFrom
+            -- LEFT OUTER JOIN ( SELECT  tLease.cDevice          AS [cDevice],
+            --                           MAX(tLease.cHost)       AS [cHost]
+            --                   FROM    tLease
+            --                   WHERE   NOT tLease.cFrom = tLease.cTo AND
+            --                           NOT tLease.cHost IS NULL
+            --                   GROUP
+            --                   BY      tLease.cDevice ) AS qDeviceHost ON
+            --   qLease.cDevice = qDeviceHost.cDevice
+            --     LEFT OUTER JOIN tTranslation AS tHostTranslation ON
+            --       qDeviceHost.cHost = tHostTranslation.cFrom
 WHERE   NOT $FilterNull AND
         ( NOT $FilterString IS NULL AND
           ( qLease.cDevice LIKE $FilterString OR
@@ -47,7 +54,8 @@ WHERE   NOT $FilterNull AND
               WHEN NOT tHostTranslation.cTo IS NULL THEN
                 tHostTranslation.cTo
               ELSE
-                qDeviceHost.cHost
+                tDeviceHost.cHost
+                -- qDeviceHost.cHost
             END LIKE $FilterString ) OR
           $FilterString IS NULL ) OR
         $FilterNull AND
@@ -57,7 +65,8 @@ WHERE   NOT $FilterNull AND
           WHEN NOT tHostTranslation.cTo IS NULL THEN
             tHostTranslation.cTo
           ELSE
-            qDeviceHost.cHost
+            tDeviceHost.cHost
+            -- qDeviceHost.cHost
         END IS NULL
 ORDER
 BY      qLease.cMinimumFrom,

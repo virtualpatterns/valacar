@@ -51,10 +51,7 @@ Application.clean = function(databasePath, options, callback) {
   this.openDatabase(databasePath, options, function(connection, callback) {
     Asynchronous.series([
       function(callback) {
-        Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-tlease.sql'), {
-          $From: Database.MINIMUM_DATE.toISOString(),
-          $To: Database.MINIMUM_DATE.toISOString()
-        }, callback);
+        Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-tlease.sql'), [], callback);
       },
       function(callback) {
         Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-tdevicehost.sql'), [], callback);
@@ -204,15 +201,23 @@ Application.validateRemoveLease = function(address, callback) {
 };
 
 Application._removeLease = function(address, from, to, connection, callback) {
-  Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-tlease-static.sql'), {
-    $Address: address,
-    $From: from.toISOString(),
-    $To: to.toISOString()
-  }, function(error) {
-    if (!error)
-      Assert.ok(this.changes <= 1, Utilities.format('The number of rows deleted from tLease should be 0 or 1 but is instead %d.', this.changes));
-    callback(error, this.changes);
-  });
+
+  Leases.delete(  connection,
+                  address,
+                  from,
+                  to,
+                  callback);
+
+  // Database.runFile(connection, Path.join(RESOURCES_PATH, 'delete-tlease-where.sql'), {
+  //   $Address: address,
+  //   $From: from.toISOString(),
+  //   $To: to.toISOString()
+  // }, function(error) {
+  //   if (!error)
+  //     Assert.ok(this.changes <= 1, Utilities.format('The number of rows deleted from tLease should be 0 or 1 but is instead %d.', this.changes));
+  //   callback(error, this.changes);
+  // });
+
 };
 
 Application.removeLease = function(address, from, to, databasePath, options, callback) {

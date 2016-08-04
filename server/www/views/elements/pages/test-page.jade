@@ -1,6 +1,6 @@
 div(id=element.id).uk-height-1-1.v-element.v-page.v-test-page
   div.uk-container.uk-height-1-1.uk-padding-remove.uk-margin-remove
-    nav(data-uk-sticky).uk-navbar.uk-navbar-attached
+    nav.uk-navbar.uk-navbar-attached
       ul.uk-navbar-nav
         li
           a(id='goDefault')
@@ -14,15 +14,51 @@ div(id=element.id).uk-height-1-1.v-element.v-page.v-test-page
           li
             a(id='start')
               i.uk-icon-play
-      div.uk-navbar-content.uk-navbar-center.v-status
+      div(id='v-status').uk-navbar-content.uk-navbar-center
         | Tests
-      div.uk-navbar-content.uk-navbar-center.v-status-failed.uk-hidden
+      div(id='v-status-failed').uk-navbar-content.uk-navbar-center.uk-hidden
         | Failed
         i.uk-icon-close.v-right-icon
-      div.uk-navbar-content.uk-navbar-center.v-status-pending.uk-hidden
+      div(id='v-status-pending').uk-navbar-content.uk-navbar-center.uk-hidden
         | Pending
         i.uk-icon-exclamation.v-right-icon
-      div.uk-navbar-content.uk-navbar-center.v-status-passed.uk-hidden
+      div(id='v-status-passed').uk-navbar-content.uk-navbar-center.uk-hidden
         | Passed
         i.uk-icon-check.v-right-icon
-    div(id='mocha')
+    div(id='v-filter').uk-panel.uk-panel-box.uk-panel-header.uk-margin-bottom.uk-margin-left.uk-margin-right.uk-margin-top
+      h3.uk-panel-title
+        | Filters
+      dl.uk-description-list-line
+        dt 
+          | Current
+        dd(id='v-filter-current')
+          | (all tests)
+        dt
+          | Other
+        dd
+          ul.uk-list
+            li
+              a(data-filter='')
+                | (all tests)
+            li
+              a(data-filter='DefaultPage')
+                | DefaultPage tests
+            li
+              a(data-filter='TranslationsPage')
+                | TranslationsPage tests
+            li
+              a(data-filter='TranslationPage')
+                | TranslationPage tests
+            li
+              a(data-filter='LeasesPage')
+                | LeasesPage tests
+            li
+              a(data-filter='LeasePage')
+                | LeasePage tests
+            li
+              a(data-filter='HistoryPage')
+                | HistoryPage tests
+    div(id='v-results').uk-panel.uk-panel-box.uk-panel-header.uk-margin-bottom.uk-margin-left.uk-margin-right.uk-margin-top.uk-hidden
+      h3.uk-panel-title
+        | Results
+      div(id='mocha')

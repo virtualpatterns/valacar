@@ -141,8 +141,8 @@ historyPagePrototype.onHidden = function(event) {
   self.historyTable.hide();
   self.historyTable.unbind();
 
-  self.historyTable.getContent().find('a.v-filter-string').off('click', self.onFilterString);
-  self.historyTable.getContent().find('a.v-filter-date').off('click', self.onFilterDate);
+  self.historyTable.getContent().find('a[data-filter-string]').off('click', self.onFilterString);
+  self.historyTable.getContent().find('a[data-filter-string]').off('click', self.onFilterDate);
 
   self.historyTable.removeContent();
 
@@ -290,8 +290,8 @@ historyPagePrototype.refreshHistoryTable = function(callback) {
     element.hide();
     element.unbind();
 
-    element.getContent().find('a.v-filter-string').off('click', self.onFilterString);
-    element.getContent().find('a.v-filter-date').off('click', self.onFilterDate);
+    element.getContent().find('a[data-filter-string]').off('click', self.onFilterString);
+    element.getContent().find('a[data-filter-date]').off('click', self.onFilterDate);
 
     element.removeContent();
 
@@ -340,12 +340,12 @@ historyPagePrototype.refreshHistoryTable = function(callback) {
 
       self.getContent().find('> div').append(content);
 
-      element.getContent().find('a.v-filter-string').on('click', {
-        'this': self
-      }, self.onFilterString);
-      element.getContent().find('a.v-filter-date').on('click', {
+      element.getContent().find('a[data-filter-date]').on('click', {
         'this': self
       }, self.onFilterDate);
+      element.getContent().find('a[data-filter-string]').on('click', {
+        'this': self
+      }, self.onFilterString);
 
       element.bind();
       element.show();
