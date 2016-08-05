@@ -9,7 +9,8 @@ namespace('www', function() {
 
   desc('Run filtered tests');
   task('filter', ['log', 'clean:test:www'], {'async': true}, function (filter) {
-    Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
+    Task.createTask(this.fullName, Task.OPTIONS_STDIO_INHERIT)
+      .addLine()
       .add('mocha-phantomjs --bail \
                             --grep %j \
                             --hooks %j \
