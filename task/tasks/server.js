@@ -19,6 +19,24 @@ var WAIT_TIMEOUT = 1000;
 
 namespace('server', function() {
 
+  desc(Utilities.format('Run/debug server on %j, log to %j, pid to %j', Path.trim(DATABASE_PATH), Path.trim(MASTER_LOG_PATH), Path.trim(MASTER_PID_PATH)));
+  task('debug', ['log', 'clean:server'], {'async': true}, function (numberOfWorkers) {
+    Task.createTask(this.fullName)
+      .addLine()
+      .add('node-debug ./server.js start %j --port %d \
+                                            --masterLogPath %j \
+                                            --workerLogPath %j \
+                                            --masterPIDPath %j \
+                                            --numberOfWorkers %d \
+                                            --enableTrace', DATABASE_PATH,
+                                                            PORT,
+                                                            MASTER_LOG_PATH,
+                                                            WORKER_LOG_PATH,
+                                                            MASTER_PID_PATH,
+                                                            numberOfWorkers || NUMBER_OF_WORKERS)
+      .execute(complete, fail);
+  });
+
   desc(Utilities.format('Run server on %j, log to %j, pid to %j', Path.trim(DATABASE_PATH), Path.trim(MASTER_LOG_PATH), Path.trim(MASTER_PID_PATH)));
   task('run', ['log', 'clean:server'], {'async': true}, function (numberOfWorkers) {
     Task.createTask(this.fullName)

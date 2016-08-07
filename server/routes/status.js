@@ -1,10 +1,7 @@
-
-
 var Utilities = require('util');
 
+var Application = require('../library/application');
 var Log = require('../../client/library/log');
-var Package = require('../../package.json');
-var Process = require('../../client/library/process');
 
 var Status = Object.create({});
 
@@ -18,18 +15,13 @@ Status.createRoutes = function(server, databasePath, options) {
 
   server.get('/api/status', function(request, response, next) {
     Log.info('> server.get("/api/status", function(request, response, next) { ... })\n\nrequest.headers\n---------------\n%s\n', Utilities.inspect(request.headers));
-
-    var memory = Process.memoryUsage();
-
-    response.send({
-      'name': Package.name,
-      'version': Package.version,
-      'heap': {
-        'total': memory.heapTotal,
-        'used': memory.heapUsed
-      }
+    Application.getStatus(databasePath, options, function(error, status) {
+      if (error)
+        response.send(error);
+      else
+        response.send(status);
+      next();
     });
-    next();
   });
 
 };

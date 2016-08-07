@@ -1,3 +1,5 @@
+require('datejs');
+
 var Format = require('human-format');
 var Is = require('@pwn/is');
 
@@ -37,6 +39,8 @@ defaultPagePrototype.render = function(data, callback) {
        scale: 'binary',
        unit: 'B'
       });
+
+      data.status.database.nowAsDate = Date.parse(data.status.database.now);
 
       pagePrototype.render.call(self, data, callback);
 

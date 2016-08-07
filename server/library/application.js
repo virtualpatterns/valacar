@@ -182,6 +182,38 @@ Application.stopMaster = function (pidPath) {
   Process.killPID(pidPath);
 };
 
+Application.getStatus = function (databasePath, options, callback) {
+  Log.info('> Application.getStatus(%j, options, callback) { ... }', Path.trim(databasePath));
+  this.openDatabase(databasePath, options, function(connection, callback) {
+    Database.getFile(connection, Path.join(RESOURCES_PATH, 'select-status.sql'), [], function(error, data) {
+      if (error)
+        callback(error);
+      else {
+
+        Log.info('= Application.getStatus(databasePath, options, callback) { ... }\n\n%s\n\n', Utilities.inspect(data));
+
+        var memory = Process.memoryUsage();
+
+        var status = {
+          'name': Package.name,
+          'version': Package.version,
+          'heap': {
+            'total': memory.heapTotal,
+            'used': memory.heapUsed
+          },
+          'database': {
+            'now': data.now,
+            'version': data.version
+          }
+        };
+
+        callback(null, status);
+
+      }
+    });
+  }, callback);
+};
+
 Application.getTranslations = function (databasePath, options, callback) {
   this.openDatabase(databasePath, options, function(connection, callback) {
     Database.allFile(connection, Path.join(RESOURCES_PATH, 'select-ttranslation.sql'), [], callback);

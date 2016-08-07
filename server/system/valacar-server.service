@@ -1,0 +1,12 @@
+[Unit]
+Description=DHCP Lease Browser
+After=network.target
+
+[Service]
+User=fficnar
+Environment=
+WorkingDirectory=/home/fficnar
+ExecStart=/usr/bin/valacar-server start "./data/valacar.db" --port 8080 --masterLogPath "./data/valacar.master.log" --workerLogPath "./data/valacar.worker.log" --masterPIDPath  "./data/valacar.master.pid" --numberOfWorkers 1
+
+[Install]
+WantedBy=multi-user.target

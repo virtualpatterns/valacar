@@ -33,6 +33,10 @@ div(id=element.id).uk-height-1-1.v-element.v-page.v-default-page
           dd.v-status-name= status.name
           dt Version
           dd.v-status-version= status.version
+          dt Database version
+          dd= status.database.version
+          dt Database date/time
+          dd.uk-text-small= status.database.now
           dt Heap total
           dd.v-status-heap-total= status.heap.totalAsString
           dt Heap used
