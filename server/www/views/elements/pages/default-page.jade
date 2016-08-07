@@ -30,14 +30,16 @@ div(id=element.id).uk-height-1-1.v-element.v-page.v-default-page
           | Status
         dl.uk-description-list-line
           dt Name
-          dd.v-status-name= status.name
+          dd= status.name
           dt Version
-          dd.v-status-version= status.version
+          dd= status.version
           dt Database version
           dd= status.database.version
           dt Database date/time
-          dd.uk-text-small= status.database.now
+          dd.uk-text-small= status.database.nowAsString
+          dt System date/time
+          dd.uk-text-small= status.nowAsString
           dt Heap total
-          dd.v-status-heap-total= status.heap.totalAsString
+          dd= status.heap.totalAsString
           dt Heap used
-          dd.v-status-heap-used= status.heap.usedAsString
+          dd= status.heap.usedAsString

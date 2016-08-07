@@ -41,6 +41,10 @@ defaultPagePrototype.render = function(data, callback) {
       });
 
       data.status.database.nowAsDate = Date.parse(data.status.database.now);
+      data.status.database.nowAsString = data.status.database.nowAsDate.toUTCString();
+
+      data.status.nowAsDate = new Date();
+      data.status.nowAsString = data.status.nowAsDate.toUTCString();
 
       pagePrototype.render.call(self, data, callback);
 
