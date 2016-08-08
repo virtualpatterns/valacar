@@ -397,7 +397,7 @@ Application.getHistory = function (filterDate, filterString, filterNull, databas
     var filterTo = null;
 
     if (filterDate) {
-      filterFrom = new Date(filterDate).clearTime();
+      filterFrom = filterDate; //new Date(filterDate).clearTime();
       filterTo = new Date(filterFrom).add(1).days();
     }
 
