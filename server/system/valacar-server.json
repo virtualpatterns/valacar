@@ -1,0 +1,15 @@
+{
+  "apps": [
+    {
+      "name": "valacar-server",
+      "script": "/usr/bin/valacar-server",
+      "args": "start /home/fficnar/data/valacar.db --port 8080 --masterLogPath /home/fficnar/data/valacar.master.log --workerLogPath /home/fficnar/data/valacar.worker.log --masterPIDPath /home/fficnar/data/valacar.master.pid --numberOfWorkers 1",
+      "autorestart": true,
+      "exec_mode": "fork",
+      "instances": 1,
+      "kill_timeout": 10000,
+      "max_restarts": 3,
+      "watch": true
+    }
+  ]
+}

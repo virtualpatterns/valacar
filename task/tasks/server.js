@@ -56,7 +56,7 @@ namespace('server', function() {
   });
 
   desc(Utilities.format('Start server on %j, log to %j, pid to %j', Path.trim(DATABASE_PATH), Path.trim(MASTER_LOG_PATH), Path.trim(MASTER_PID_PATH)));
-  task('start', ['log', 'bundle:start', 'clean:server'], {'async': true}, function (numberOfWorkers) {
+  task('start', ['log', 'clean:server'], {'async': true}, function (numberOfWorkers) {
     Task.createTask(this.fullName)
       .add('./server.js start %j  --fork \
                                   --port %d \
@@ -77,11 +77,11 @@ namespace('server', function() {
   });
 
   desc(Utilities.format('Stop server, log to %j, pid from %j', Path.trim(MASTER_LOG_PATH), Path.trim(MASTER_PID_PATH)));
-  task('stop', ['log', 'bundle:stop'], {'async': true}, function () {
+  task('stop', ['log'], {'async': true}, function () {
     Task.createTask(this.fullName)
       .add('./server.js stop  --masterLogPath %j \
-                                  --masterPIDPath %j',  MASTER_LOG_PATH,
-                                                        MASTER_PID_PATH)
+                              --masterPIDPath %j',  MASTER_LOG_PATH,
+                                                    MASTER_PID_PATH)
       .add(function(callback){
         FileSystem.waitUntilFileNotExists(WAIT_TIMEOUT, WAIT_DURATION, MASTER_PID_PATH, callback);
       })

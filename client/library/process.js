@@ -85,46 +85,68 @@ Process.waitUntil = function(timeout, maximumDuration, testFn, callback) {
 
 };
 
-Process.notExistsPID = function(path) {
-
-  var FileSystem = require('./file-system');
-  var Log = require('./log');
-
-  Log.info('> Process.notExistsPID(%j)', Path.trim(path));
-
-  var error = null;
-
-  try {
-    Log.info('> FileSystem.accessSync(%j, FileSystem.F_OK)', Path.trim(path));
-    FileSystem.accessSync(path, FileSystem.F_OK);
-  }
-  catch (_error) {
-    error = _error;
-    // Log.info('< FileSystem.accessSync(%j, FileSystem.F_OK)', Path.trim(path));
-    // Log.info('    error.message=%j\n\n%s\n\n', error.message, error.stack);
-  }
-
-  if (!error)
-    throw new ArgumentError(Utilities.format('The PID file %j already exists.', Path.trim(path)));
-
-};
+// Process.notExistsPID = function(path) {
+//
+//   var FileSystem = require('./file-system');
+//   var Log = require('./log');
+//
+//   Log.info('> Process.notExistsPID(%j)', Path.trim(path));
+//
+//   var error = null;
+//
+//   try {
+//     Log.info('> FileSystem.accessSync(%j, FileSystem.F_OK)', Path.trim(path));
+//     FileSystem.accessSync(path, FileSystem.F_OK);
+//   }
+//   catch (_error) {
+//     error = _error;
+//     // Log.info('< FileSystem.accessSync(%j, FileSystem.F_OK)', Path.trim(path));
+//     // Log.info('    error.message=%j\n\n%s\n\n', error.message, error.stack);
+//   }
+//
+//   if (!error)
+//     throw new ArgumentError(Utilities.format('The path %j already exists.', Path.trim(path)));
+//
+// };
 
 Process.existsPID = function(path) {
 
   var FileSystem = require('./file-system');
   var Log = require('./log');
 
-  Log.info('> Process.existsPID(%j)', Path.trim(path));
+  // Log.info('> Process.existsPID(%j)', Path.trim(path));
 
   try {
-    Log.info('> FileSystem.accessSync(%j, FileSystem.F_OK)', Path.trim(path));
+    // Log.info('> FileSystem.accessSync(%j, FileSystem.F_OK)', Path.trim(path));
     FileSystem.accessSync(path, FileSystem.F_OK);
   }
   catch (error) {
-    Log.info('< FileSystem.accessSync(%j, FileSystem.F_OK)', Path.trim(path));
-    Log.info('    error.message=%j\n\n%s\n\n', error.message, error.stack);
-    throw new ArgumentError(Utilities.format('The PID file %j does not exist.', Path.trim(path)));
+    // Log.info('< Process.existsPID(%j)', Path.trim(path));
+    // Log.info('    error.message=%j\n\n%s\n\n', error.message, error.stack);
+    return false;
+    // throw new ArgumentError(Utilities.format('The path %j does not exist.', Path.trim(path)));
   }
+
+  // Log.info('> FileSystem.readFileSync(%j, ...)', Path.trim(path));
+  var pid = FileSystem.readFileSync(path, {
+    encoding: 'utf-8'
+  });
+
+  try {
+    this.kill(pid, 0);
+  } catch (error) {
+
+    // Log.info('= Process.existsPID(%j)', Path.trim(path));
+    // Log.info('    error.message=%j\n\n%s\n\n', error.message, error.stack);
+
+    Log.info('> FileSystem.unlinkSync(%j)', Path.trim(path));
+    FileSystem.unlinkSync(path);
+
+    return false;
+
+  }
+
+  return true;
 
 };
 
@@ -135,25 +157,31 @@ Process.createPID = function(path, _process) {
 
   _process = _process || this;
 
-  Log.info('> Process.createPID(%j, _process) _process.pid=%d', Path.trim(path), _process.pid);
+  // Log.info('> Process.createPID(%j, _process) _process.pid=%d', Path.trim(path), _process.pid);
 
-  this.notExistsPID(path);
+  if (this.existsPID(path))
+    throw new ArgumentError(Utilities.format('The path %j exists.', Path.trim(path)));
+  else {
 
-  Log.info('> FileSystem.writeFileSync(%j, %j, ...)', Path.trim(path), _process.pid);
-  FileSystem.writeFileSync(path, _process.pid, {
-    encoding: 'utf-8'
-  });
+    // Log.info('> FileSystem.writeFileSync(%j, %j, ...)', Path.trim(path), _process.pid);
+    FileSystem.writeFileSync(path, _process.pid, {
+      encoding: 'utf-8'
+    });
 
-  _process.once('exit', function() {
-    try {
-      FileSystem.accessSync(path, FileSystem.F_OK);
-      FileSystem.unlinkSync(path);
-    }
-    catch (error) {
-      console.log('< Process.once("exit", function() { ... }');
-      console.log('    error.message=%j\n\n%s\n\n', error.message, error.stack);
-    }
-  });
+    _process.once('exit', function() {
+      console.log('> Process.once("exit", function() { ... }');
+      try {
+        FileSystem.accessSync(path, FileSystem.F_OK);
+        FileSystem.unlinkSync(path);
+        console.log('< Process.once("exit", function() { ... }');
+      }
+      catch (error) {
+        console.log('< Process.once("exit", function() { ... }');
+        console.log('    error.message=%j\n\n%s\n\n', error.message, error.stack);
+      }
+    });
+
+  }
 
 };
 
@@ -162,17 +190,21 @@ Process.killPID = function(path) {
   var FileSystem = require('./file-system');
   var Log = require('./log');
 
-  Log.info('> Process.killPID(%j)', Path.trim(path));
+  // Log.info('> Process.killPID(%j)', Path.trim(path));
 
-  this.existsPID(path);
+  if (this.existsPID(path)) {
 
-  Log.info('> FileSystem.readFileSync(%j, ...)', Path.trim(path));
-  var pid = FileSystem.readFileSync(path, {
-    encoding: 'utf-8'
-  });
+    // Log.info('> FileSystem.readFileSync(%j, ...)', Path.trim(path));
+    var pid = FileSystem.readFileSync(path, {
+      encoding: 'utf-8'
+    });
 
-  Log.info('> Process.kill(%d, "SIGTERM")', pid);
-  this.kill(pid, 'SIGTERM');
+    // Log.info('> Process.kill(%d, "SIGTERM")', pid);
+    this.kill(pid, 'SIGTERM');
+
+  }
+  else
+    throw new ArgumentError(Utilities.format('The path %j does not exist.', Path.trim(path)));
 
 };
 
@@ -185,7 +217,9 @@ Process.exit = function(code) {
   var self = this;
 
   setTimeout(function() {
-    process.exit.call(code);
+    console.log('< Process.exit(%j)', code);
+    process.exit(code);
+    // process.exit.call(code);
   }, EXIT_TIMEOUT);
 
 };

@@ -13,6 +13,17 @@ namespace('client', function() {
       .execute(complete, fail);
   });
 
+  desc('Run process tests');
+  task('process', ['log', 'clean:test:client'], {'async': true}, function () {
+    Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)
+      .add('mocha --bail \
+                  --timeout 0 \
+                  test/client/tests/00000000000000-begin.js \
+                  test/client/tests/20160808183400-process.js \
+                  test/client/tests/99999999999999-end.js', Task.OPTIONS_STDIO_INHERIT)
+      .execute(complete, fail);
+  });
+
   desc('Run install tests');
   task('install', ['log', 'clean:test:client'], {'async': true}, function () {
     Task.createTask(this.fullName, Task.OPTIONS_STDIO_IGNORE)

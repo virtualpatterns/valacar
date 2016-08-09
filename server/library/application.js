@@ -17,9 +17,6 @@ var Process = require('../../client/library/process');
 var ProcessError = require('../../client/library/errors/process-error');
 
 var RESOURCES_PATH = Path.join(__dirname, Path.basename(__filename, '.js'), 'resources');
-// var TYPEOF_FUNCTION = 'function';
-// var TYPEOF_NUMBER = 'number';
-// var TYPEOF_STRING = 'string';
 var WAIT_DURATION = 120000;
 var WAIT_TIMEOUT = 1000;
 
@@ -179,7 +176,14 @@ Application.startWorker = function (address, port, staticPath, databasePath, opt
 
 Application.stopMaster = function (pidPath) {
   Log.info('> Application.stopMaster(%j) { ... }', Path.trim(pidPath));
-  Process.killPID(pidPath);
+
+  try {
+    Process.killPID(pidPath);
+  } catch (error) {
+    Log.info('< Application.stopMaster(%j) { ... }', Path.trim(pidPath));
+    Log.error('    error.message=%j\n\n%s\n', error.message, error.stack);
+  }
+
 };
 
 Application.getStatus = function (databasePath, options, callback) {

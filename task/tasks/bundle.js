@@ -87,7 +87,7 @@ namespace('bundle', function() {
       function(options, callback) {
         Task.createTask(self.fullName)
           .add('echo "Killing PID\'s ... "', options)
-          .add('pgrep -f watchify', options)
+          // .add('pgrep -f watchify', options)
           .add('pkill -f watchify', options)
           .execute(callback);
       }
