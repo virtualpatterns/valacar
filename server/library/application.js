@@ -22,8 +22,10 @@ var WAIT_TIMEOUT = 1000;
 
 var Application = Object.create(_Application);
 
+Application.numberOfWorkers = 0;
 Application.numberOfWorkersListening = 0;
 Application.allWorkersListening = false;
+Application.disconnecting = false;
 
 Application.waitUntilListening = function(callback) {
 
@@ -76,26 +78,46 @@ Application.startMaster = function (numberOfWorkers, pidPath) {
 
   Process.createPID(pidPath);
 
-  for (var i = 0; i < numberOfWorkers; i++) {
+  Application.numberOfWorkers = numberOfWorkers;
+
+  for (var i = 0; i < Application.numberOfWorkers; i++) {
     Cluster.fork();
   }
 
   Cluster.on('listening', function(worker, address) {
+
     Application.numberOfWorkersListening ++;
-    Application.allWorkersListening = (Application.numberOfWorkersListening == numberOfWorkers ? true : false);
-    Log.info('< Cluster.on("listening", function(worker, address) { ... }) worker.process.pid=%d Application.numberOfWorkersListening=%d Application.allWorkersListening=%s', worker.process.pid, Application.numberOfWorkersListening, Application.allWorkersListening);
+    Application.allWorkersListening = (Application.numberOfWorkersListening == Application.numberOfWorkers ? true : false);
+
+    Log.info('< Cluster.on("listening", function(worker, address) { ... })');
+    Log.info('    worker.process.pid=%d', worker.process.pid);
+    Log.info('    Application.numberOfWorkers=%d', Application.numberOfWorkers);
+    Log.info('    Application.numberOfWorkersListening=%d', Application.numberOfWorkersListening);
+    Log.info('    Application.allWorkersListening=%s', Application.allWorkersListening);
+
   });
 
   Cluster.on('exit', function(worker, code, signal) {
+
     if (Application.numberOfWorkersListening > 0) {
       Application.numberOfWorkersListening --;
       Application.allWorkersListening = false;
     }
-    Log.info('< Cluster.on("exit", function(worker, %d, %j) { ... }) worker.process.pid=%d Application.numberOfWorkersListening=%d Application.allWorkersListening=%s', code, signal, worker.process.pid, Application.numberOfWorkersListening, Application.allWorkersListening);
+
+    Log.info('< Cluster.on("exit", function(worker, %d, %j) { ... })', code, signal || '(none)');
+    Log.info('    worker.process.pid=%d', worker.process.pid);
+    Log.info('    Application.numberOfWorkers=%d', Application.numberOfWorkers);
+    Log.info('    Application.numberOfWorkersListening=%d', Application.numberOfWorkersListening);
+    Log.info('    Application.allWorkersListening=%s', Application.allWorkersListening);
+
+    if (!Application.disconnecting)
+      Cluster.fork();
+
   });
 
   Process.once('SIGHUP', function() {
     Log.info('> Process.once("SIGHUP", function() { ... })');
+    Application.disconnecting = true;
     Cluster.disconnect(function() {});
   });
 
@@ -140,11 +162,11 @@ Application.startMaster = function (numberOfWorkers, pidPath) {
 Application.startWorker = function (address, port, staticPath, databasePath, options) {
   Log.info('> Application.startWorker(%j, %d, %j, %j) { ... }', address, port, Path.trim(staticPath), Path.trim(databasePath), options, {});
 
-  var History = require('../routes/history');
-  var Leases = require('../routes/leases');
-  var Static = require('../routes/static');
-  var Status = require('../routes/status');
-  var Translations = require('../routes/translations');
+  var History = require('./routes/history');
+  var Leases = require('./routes/leases');
+  var Static = require('./routes/static');
+  var Status = require('./routes/status');
+  var Translations = require('./routes/translations');
 
   var server = Server.createServer({
     'name': Utilities.format('%s v%s', Package.name, Package.version)

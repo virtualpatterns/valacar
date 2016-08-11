@@ -19,23 +19,23 @@ var WAIT_TIMEOUT = 1000;
 
 namespace('server', function() {
 
-  desc(Utilities.format('Run/debug server on %j, log to %j, pid to %j', Path.trim(DATABASE_PATH), Path.trim(MASTER_LOG_PATH), Path.trim(MASTER_PID_PATH)));
-  task('debug', ['log', 'clean:server'], {'async': true}, function (numberOfWorkers) {
-    Task.createTask(this.fullName)
-      .addLine()
-      .add('node-debug ./server.js start %j --port %d \
-                                            --masterLogPath %j \
-                                            --workerLogPath %j \
-                                            --masterPIDPath %j \
-                                            --numberOfWorkers %d \
-                                            --enableTrace', DATABASE_PATH,
-                                                            PORT,
-                                                            MASTER_LOG_PATH,
-                                                            WORKER_LOG_PATH,
-                                                            MASTER_PID_PATH,
-                                                            numberOfWorkers || NUMBER_OF_WORKERS)
-      .execute(complete, fail);
-  });
+  // desc(Utilities.format('Run/debug server on %j, log to %j, pid to %j', Path.trim(DATABASE_PATH), Path.trim(MASTER_LOG_PATH), Path.trim(MASTER_PID_PATH)));
+  // task('debug', ['log', 'clean:server'], {'async': true}, function (numberOfWorkers) {
+  //   Task.createTask(this.fullName)
+  //     .addLine()
+  //     .add('node-debug ./server.js start %j --port %d \
+  //                                           --masterLogPath %j \
+  //                                           --workerLogPath %j \
+  //                                           --masterPIDPath %j \
+  //                                           --numberOfWorkers %d \
+  //                                           --enableTrace', DATABASE_PATH,
+  //                                                           PORT,
+  //                                                           MASTER_LOG_PATH,
+  //                                                           WORKER_LOG_PATH,
+  //                                                           MASTER_PID_PATH,
+  //                                                           numberOfWorkers || NUMBER_OF_WORKERS)
+  //     .execute(complete, fail);
+  // });
 
   desc(Utilities.format('Run server on %j, log to %j, pid to %j', Path.trim(DATABASE_PATH), Path.trim(MASTER_LOG_PATH), Path.trim(MASTER_PID_PATH)));
   task('run', ['log', 'clean:server'], {'async': true}, function (numberOfWorkers) {
@@ -89,7 +89,7 @@ namespace('server', function() {
   });
 
   desc(Utilities.format('Restart the server on %j, log to %j, pid to %j', Path.trim(DATABASE_PATH), Path.trim(MASTER_LOG_PATH), Path.trim(MASTER_PID_PATH)));
-  task('restart', ['log', 'bundle:restart'], {'async': true}, function () {
+  task('restart', ['log'], {'async': true}, function () {
 
     Asynchronous.eachSeries([
       'server:stop',
@@ -108,6 +108,35 @@ namespace('server', function() {
         fail(error);
       else
         complete()
+    });
+
+  });
+
+  desc('GET server status');
+  task('status', ['log'], {'async': true}, function () {
+    Task.createTask(this.fullName)
+      .addLine()
+      .add('curl --include --request GET --url http://localhost:%d/api/status --verbose', PORT)
+      .addLine()
+      .execute(complete, fail);
+  });
+
+  desc('HEAD server error');
+  task('error', ['log'], {'async': true}, function () {
+    Task.createTask(this.fullName)
+      .addLine()
+      .add('curl --include --request HEAD --url http://localhost:%d/api/error --verbose', PORT)
+      .execute(complete, fail);
+  });
+
+  namespace('error', function() {
+
+    desc('HEAD server error w/ throw');
+    task('throw', ['log'], {'async': true}, function () {
+      Task.createTask(this.fullName)
+        .addLine()
+        .add('curl --include --request HEAD --url http://localhost:%d/api/error?throw=true --verbose', PORT)
+        .execute(complete, fail);
     });
 
   });

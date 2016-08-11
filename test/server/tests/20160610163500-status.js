@@ -27,6 +27,10 @@ describe('/api/status', function() {
       Application.isHEADStatusCode('/api/status', 200, callback);
     });
 
+    it('should respond to HEAD /api/error with 500 Internal Server Error', function(callback) {
+      Application.isHEADStatusCode('/api/error', 500, callback);
+    });
+
   });
 
   describe('GET', function() {

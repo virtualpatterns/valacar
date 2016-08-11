@@ -58,7 +58,7 @@ Command
                                   options.masterPIDPath || MASTER_PID_PATH);
 
         Application.waitUntilListening(function(error) {
-          if (error)  {
+          if (error) {
             Log.error('< Application.waitUntilListening(function(error) { ... })');
             Log.error('    error.message=%j\n\n%s\n', error.message, error.stack);
             Process.kill(Process.pid, 'SIGHUP');
