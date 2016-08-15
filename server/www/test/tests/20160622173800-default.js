@@ -23,6 +23,10 @@ describe('DefaultPage', function() {
     Assert.existsButton('History');
   });
 
+  it('should contain a button labelled Settings', function() {
+    Assert.existsButton('Settings');
+  });
+
   describe('DefaultPage to LeasesPage', function() {
 
     before(function(callback) {
@@ -69,6 +73,24 @@ describe('DefaultPage', function() {
 
     it('should go to the History page when the History button is clicked', function() {
       Assert.onPage('History');
+    });
+
+    after(function(callback) {
+      Assert.hidePage(callback);
+    });
+
+  });
+
+  describe('DefaultPage to SettingsPage', function() {
+
+    before(function(callback) {
+      Assert.waitForPageShown(function() {
+        Assert.clickButton('Settings');
+      }, callback);
+    });
+
+    it('should go to the Settings page when the Settings button is clicked', function() {
+      Assert.onPage('Settings');
     });
 
     after(function(callback) {
@@ -142,6 +164,29 @@ describe('DefaultPage', function() {
 
     it('should return to the default page when the History and Back buttons are clicked', function() {
       Assert.existsButton('History');
+    });
+
+  });
+
+  describe('DefaultPage to SettingsPage and Back', function() {
+
+    before(function(callback) {
+      Asynchronous.series([
+        function(callback) {
+          Assert.waitForPageShown(function() {
+            Assert.clickButton('Settings');
+          }, callback);
+        },
+        function(callback) {
+          Assert.waitForPageShown(function() {
+            Assert.clickLink('Back');
+          }, callback);
+        }
+      ], callback);
+    });
+
+    it('should return to the default page when the Settings and Back buttons are clicked', function() {
+      Assert.existsButton('Settings');
     });
 
   });

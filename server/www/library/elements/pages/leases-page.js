@@ -161,12 +161,16 @@ leasesPagePrototype.onHidden = function(event) {
 
   var self = event.data.this;
 
-  self.leasesTable.hide();
-  self.leasesTable.unbind();
+  if (self.leasesTable.existsContent()) {
 
-  self.leasesTable.getContent().find('tbody > tr').off('click', self.onSelected);
+    self.leasesTable.hide();
+    self.leasesTable.unbind();
 
-  self.leasesTable.removeContent();
+    self.leasesTable.getContent().find('tbody > tr').off('click', self.onSelected);
+
+    self.leasesTable.removeContent();
+
+  }
 
   // if (event.isFinal) {
   //   // self.TimePicker = null;
@@ -390,7 +394,7 @@ LeasesPage.createElement = function(templateURL, prototype) {
 
   Object.defineProperty(leasesPage, 'leasesTable', {
     'enumerable': false,
-    'wrileasesTable': false,
+    'writable': false,
     'value': LeasesTable.createElement()
   });
 

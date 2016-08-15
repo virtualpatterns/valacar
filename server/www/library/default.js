@@ -1,7 +1,6 @@
 var Asynchronous = require('async');
 
 var Application = require('./application');
-
 var DefaultPage = require('./elements/pages/default-page');
 
 jQuery.noConflict();

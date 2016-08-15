@@ -1,0 +1,29 @@
+div(id=element.id).uk-height-1-1.v-element.v-page.v-settings-page
+  div.uk-container.uk-height-1-1.uk-padding-remove.uk-margin-remove
+    nav.uk-navbar.uk-navbar-attached
+      ul.uk-navbar-nav
+        li
+          a(id='goBack')
+            i.uk-icon-chevron-left.v-left-icon
+            | Back
+      div.uk-navbar-flip
+        ul.uk-navbar-nav
+          li
+            a(id='done')
+              | Done
+      div.uk-navbar-content.uk-navbar-center
+        | Settings
+    div.uk-block.uk-padding-remove.uk-margin.uk-margin-left.uk-margin-right
+      form.uk-form.uk-form-stacked
+        div.uk-form-row
+          label(for='url').uk-form-label
+            | API URL
+          div.uk-form-controls
+            input(id='url', 
+                  placeholder='e.g. http://valacar.virtualpatterns.com', 
+                  type='text', 
+                  value=element.source.url).uk-width-1-1
+          div.uk-form-help-block.uk-text-small
+            | Leave this setting blank to use the url of the static assets, i.e. 
+            code
+              = element.source.urlNullAsString

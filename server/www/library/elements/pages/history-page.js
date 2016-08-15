@@ -6,10 +6,9 @@ var Utilities = require('util');
 
 var Application = require('../../application');
 var Element = require('../../element');
+var HistoryTable = require('../tables/history-table');
 var Log = require('../../log');
 var Page = require('../page');
-
-var HistoryTable = require('../tables/history-table');
 
 var pagePrototype = Page.getElementPrototype();
 var historyPagePrototype = Object.create(pagePrototype);
@@ -138,13 +137,17 @@ historyPagePrototype.onHidden = function(event) {
 
   var self = event.data.this;
 
-  self.historyTable.hide();
-  self.historyTable.unbind();
+  if (self.historyTable.existsContent()) {
 
-  self.historyTable.getContent().find('a[data-filter-string]').off('click', self.onFilterString);
-  self.historyTable.getContent().find('a[data-filter-string]').off('click', self.onFilterDate);
+    self.historyTable.hide();
+    self.historyTable.unbind();
 
-  self.historyTable.removeContent();
+    self.historyTable.getContent().find('a[data-filter-string]').off('click', self.onFilterString);
+    self.historyTable.getContent().find('a[data-filter-string]').off('click', self.onFilterDate);
+
+    self.historyTable.removeContent();
+
+  }
 
   if (event.isFinal)
     self.DatePicker = null;
@@ -364,7 +367,7 @@ HistoryPage.createElement = function(templateURL, prototype) {
 
   Object.defineProperty(historyPage, 'historyTable', {
     'enumerable': false,
-    'wrihistoryTable': false,
+    'writable': false,
     'value': HistoryTable.createElement()
   });
 

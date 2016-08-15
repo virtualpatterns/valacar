@@ -108,6 +108,7 @@ testPagePrototype.onStart = function(event) {
     require('../../../test/tests/20160706232900-leases');
     require('../../../test/tests/20160707002900-lease');
     require('../../../test/tests/20160731022800-history');
+    require('../../../test/tests/20160814101200-settings');
     require('../../../test/tests/99999999999999-end');
 
     var tests = Mocha.run();

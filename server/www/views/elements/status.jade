@@ -1,0 +1,17 @@
+dl(id=element.id).uk-description-list-line.v-element.v-status
+  dt Name
+  dd= status.name
+  dt Local date/time
+  dd(id='now').uk-text-small ...
+  dt Server version
+  dd= status.version
+  dt Server date/time
+  dd.uk-text-small= status.nowAsString
+  dt Server heap total
+  dd= status.heap.totalAsString
+  dt Server heap used
+  dd= status.heap.usedAsString
+  dt Database version
+  dd= status.database.version
+  dt Database date/time
+  dd.uk-text-small= status.database.nowAsString
