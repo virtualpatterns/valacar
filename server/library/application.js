@@ -174,6 +174,7 @@ Application.startWorker = function (address, port, staticPath, databasePath, opt
 
   server.pre(Server.pre.userAgentConnection());
 
+  server.use(Server.CORS());
   server.use(Server.queryParser());
   server.use(Server.bodyParser());
 
@@ -222,14 +223,16 @@ Application.getStatus = function (databasePath, options, callback) {
 
         var status = {
           'name': Package.name,
+          'now': new Date().toISOString(),
           'version': Package.version,
+          'database': {
+            'now': data.now,
+            'source': data.source,
+            'version': data.version
+          },
           'heap': {
             'total': memory.heapTotal,
             'used': memory.heapUsed
-          },
-          'database': {
-            'now': data.now,
-            'version': data.version
           }
         };
 

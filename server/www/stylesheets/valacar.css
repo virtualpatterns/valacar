@@ -57,17 +57,11 @@ div.v-translation-page div.uk-form-row:first-child {
   margin-top: 0px;
 }
 
-/*div.v-leases-page div div.uk-panel {
-  padding-bottom: 7px;
-  padding-left: 7px;
-  padding-right: 7px;
-  padding-top: 5px;
-}
-
-div.v-leases-page div div.uk-panel h3 {
-  margin-bottom: 5px;
-}*/
-
 div.v-lease-page div.uk-block ul.uk-grid {
   margin-top: 20px;
+}
+
+.uk-form-help-block {
+  margin-left: 7px;
+  margin-right: 7px;
 }

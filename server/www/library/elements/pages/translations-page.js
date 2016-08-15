@@ -66,12 +66,16 @@ translationsPagePrototype.onHidden = function(event) {
 
   var self = event.data.this;
 
-  self.translationsTable.hide();
-  self.translationsTable.unbind();
+  if (self.translationsTable.existsContent()) {
 
-  self.translationsTable.getContent().find('tbody > tr').off('click', self.onSelected);
+    self.translationsTable.hide();
+    self.translationsTable.unbind();
 
-  self.translationsTable.removeContent();
+    self.translationsTable.getContent().find('tbody > tr').off('click', self.onSelected);
+
+    self.translationsTable.removeContent();
+
+  }
 
 };
 
@@ -205,7 +209,7 @@ TranslationsPage.createElement = function(templateURL, prototype) {
 
   Object.defineProperty(translationsPage, 'translationsTable', {
     'enumerable': false,
-    'writranslationsTable': false,
+    'writable': false,
     'value': TranslationsTable.createElement()
   });
 

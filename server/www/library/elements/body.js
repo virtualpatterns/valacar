@@ -19,8 +19,8 @@ bodyPrototype.bind = function() {
 
 bodyPrototype.unbind = function() {
 
-  this.getContent().off('hide.uk.modal', window.application.onModalHidden);
-  this.getContent().off('show.uk.modal', window.application.onModalShown);
+  this.getContent().off('hide.uk.modal', this.onModalHidden);
+  this.getContent().off('show.uk.modal', this.onModalShown);
 
   elementPrototype.unbind.call(this);
 

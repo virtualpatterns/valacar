@@ -299,14 +299,14 @@ Application.createApplication = function(prototype, callback) {
 
   application.body.bind();
 
-  Application.GET('/api/status', function(error, data) {
-    if (error)
-      callback(error);
-    else {
-      document.title = Utilities.format('%s v%s', data.name, data.version);
+  // Application.GET('/api/status', function(error, data) {
+  //   if (error)
+  //     callback(error);
+  //   else {
+  //     document.title = Utilities.format('%s v%s', data.name, data.version);
       callback(null, application);
-    }
-  });
+  //   }
+  // });
 
 };
 
@@ -415,7 +415,14 @@ Application.request = function(method, path, requestData, callback) {
 
   var settings = {};
   settings.method = method;
-  settings.url = path;
+
+  var url = window.localStorage.getItem('url');
+
+  if (url)
+    settings.url = Utilities.format('%s%s', url, path);
+  else
+    settings.url = path;
+
   settings.dataType = 'json';
 
   if (requestData) {
@@ -428,10 +435,10 @@ Application.request = function(method, path, requestData, callback) {
 
   }
 
-  // Log.debug('> jQuery.ajax(settings)\n\n%s\n\n', Utilities.inspect(settings));
+  Log.info('> jQuery.ajax(settings)\n\n%s\n\n', Utilities.inspect(settings));
   jQuery.ajax(settings)
     .done(function(responseData, status, request) {
-      // Log.debug('> jQuery.ajax(settings).done(function(responseData, %j, request) { ... })\n\n%s\n\n', status, Utilities.inspect(responseData));
+      Log.debug('> jQuery.ajax(settings).done(function(responseData, %j, request) { ... })', status);
       if (!Is.undefined(request.responseJSON)) {
       // if (request.responseJSON) {
         Log.info('< Application.request(%j, %j, requestData, callback) { ... }\n\n%s\n\n', method, path, Utilities.inspect(request.responseJSON));
@@ -448,7 +455,7 @@ Application.request = function(method, path, requestData, callback) {
       Log.error('    request.statusText=%j', request.statusText);
       Log.error('    request.responseJSON.message=%j', (request.responseJSON && request.responseJSON.message) ? request.responseJSON.message : '(none)');
       // Log.error(request);
-      callback((request.responseJSON && request.responseJSON.message) ? new Error(request.responseJSON.message) : new Application.RequestError(method, path, request.status, request.statusText));
+      callback((request.responseJSON && request.responseJSON.message) ? new Error(Utilities.format('%s (%d %s)', request.responseJSON.message, request.status, request.statusText)) : new Application.RequestError(method, path, request.status, request.statusText));
       // callback(new URIError((request.responseJSON && request.responseJSON.message) ? request.responseJSON.message : Utilities.format('An error occurred with the request %s %j (%d %s).', method, path, request.status, request.statusText)));
       // callback(new URIError(Utilities.format('An error occurred with the request %s %j (%d %s ... %s).', method, path, request.status, request.statusText)));
     });
