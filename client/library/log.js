@@ -1,5 +1,3 @@
-
-
 var Cluster = require('cluster');
 var Pad = require('pad');
 var Utilities = require('util');
