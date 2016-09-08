@@ -23,7 +23,7 @@ By default log information is stored in `./valacar.log`.  This can be changed us
 ### Import
 Import DHCP leases inlo a local database ...
 
-	$ valacar /var/lib/dhcp/dhcpd.leases ./data/valacar.db --logPath ./data/valacar.log
+	$ valacar import /var/lib/dhcp/dhcpd.leases ./data/valacar.db --logPath ./data/valacar.log
 
 This can be scheduled via `cron` using an entry like the following in `crontab` ...
 
@@ -32,7 +32,7 @@ This can be scheduled via `cron` using an entry like the following in `crontab` 
 This will import the DHCP leases file every 15 minutes into a local database.  Duplicate entries will be overwritten.
 
 ### Server
-To view imported DHCP leases in a web app start the server using ...
+To view imported DHCP leases in a web app, start the server using ...
 
 	valacar-server start ./data/valacar.db --port 8080 --masterLogPath ./data/valacar.master.log --workerLogPath ./data/valacar.worker.log --masterPIDPath ./data/valacar.master.pid --numberOfWorkers 1
 
